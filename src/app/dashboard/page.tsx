@@ -1,29 +1,50 @@
+import {
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  Sparkles,
+  Target,
+  type LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
-import { LogoutButton } from "./LogoutButton";
+import { getSatExamSummaries } from "@/app/dashboard/sat/actions";
+import { DashboardHeader } from "@/components/DashboardHeader";
+import { ExamSelectionCard } from "@/components/ExamSelectionCard";
+import { EXAMS } from "@/lib/exams";
 
 function StatCard({
   label,
   value,
   hint,
+  icon: Icon,
 }: {
   label: string;
   value: string;
   hint?: string;
+  icon: LucideIcon;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-        {label}
-      </p>
-      <p className="mt-2 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+    <div className="rounded-2xl border border-card-border bg-card p-5 shadow-card">
+      <div className="flex items-center gap-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft">
+          <Icon className="h-4 w-4 text-accent" aria-hidden />
+        </span>
+        <p className="text-sm font-medium text-muted">{label}</p>
+      </div>
+      <p className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
         {value}
       </p>
-      {hint && (
-        <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{hint}</p>
-      )}
+      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );
+}
+
+function greetingForHour(hour: number) {
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
 }
 
 export default async function DashboardPage() {
@@ -36,52 +57,152 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const displayName = user.email?.split("@")[0] ?? "there";
+  const displayName =
+    (typeof user.user_metadata?.full_name === "string" &&
+      user.user_metadata.full_name.split(" ")[0]) ||
+    user.email?.split("@")[0] ||
+    "there";
+
+  const hour = new Date().getHours();
+  const greeting = greetingForHour(hour);
+
+  const satSummaries = await getSatExamSummaries();
+  const satAttempts = Object.values(satSummaries);
+  const satAttemptCount = satAttempts.length;
+  const latestSat = satAttempts.reduce<(typeof satAttempts)[number] | null>(
+    (latest, summary) => {
+      if (!summary.lastCompletedAt) return latest;
+      if (!latest?.lastCompletedAt) return summary;
+      return summary.lastCompletedAt > latest.lastCompletedAt
+        ? summary
+        : latest;
+    },
+    null
+  );
+
+  const bestSat =
+    satAttempts.find((s) => s.bestScore != null && s.bestTotal != null) ?? null;
+  const bestAccuracy =
+    bestSat?.bestScore != null && bestSat.bestTotal
+      ? Math.round((bestSat.bestScore / bestSat.bestTotal) * 100)
+      : null;
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-950">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Exam Prep
-          </h1>
-          <LogoutButton />
-        </div>
-      </header>
+    <div className="flex flex-1 flex-col bg-background">
+      <DashboardHeader />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Welcome back, {displayName}
-          </h2>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Here&apos;s an overview of your exam practice progress.
-          </p>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <StatCard label="Questions solved" value="—" hint="All time" />
-          <StatCard label="Accuracy" value="—" hint="Last 30 days" />
-          <StatCard
-            label="Weakest topic"
-            value="—"
-            hint="Needs more practice"
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8 sm:py-10">
+        {/* Compact welcome — atmosphere without crowding navigation */}
+        <section className="relative mb-8 overflow-hidden rounded-2xl border border-card-border bg-card px-6 py-6 shadow-card sm:px-8 sm:py-7">
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent-soft blur-3xl"
+            aria-hidden
           />
-        </div>
+          <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-accent">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                Kepler dashboard
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                {greeting}, {displayName}
+              </h2>
+              <p className="mt-1.5 max-w-lg text-sm text-muted sm:text-base">
+                Pick an exam below to keep practicing. Your progress updates as
+                you finish sets.
+              </p>
+            </div>
 
-        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Recent sessions
-          </h3>
-          <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 py-12 dark:border-zinc-700">
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
-              No sessions yet
-            </p>
-            <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-              Your practice history will show up here once you start.
+            {latestSat?.lastScore != null && latestSat.lastTotal != null ? (
+              <Link
+                href="/dashboard/sat"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover"
+              >
+                Continue SAT
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard/sat"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-card-border bg-background px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-accent-soft"
+              >
+                Start with SAT
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            )}
+          </div>
+        </section>
+
+        {/* Primary navigation — exams stay the clear center of the page */}
+        <section>
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                Your exams
+              </h3>
+              <p className="mt-0.5 text-sm text-muted">
+                Choose a track and jump straight into practice.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {EXAMS.map((exam) => (
+              <ExamSelectionCard key={exam.id} exam={exam} />
+            ))}
+          </div>
+        </section>
+
+        {/* Slim progress — useful, not a second dashboard */}
+        <section className="mt-10">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-foreground">
+              Your progress
+            </h3>
+            <p className="mt-0.5 text-sm text-muted">
+              A quick look at how your SAT practice is going.
             </p>
           </div>
-        </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <StatCard
+              label="SAT attempts"
+              value={satAttemptCount > 0 ? String(satAttemptCount) : "—"}
+              hint={
+                satAttemptCount > 0
+                  ? "Exams you've completed"
+                  : "Finish an exam to start tracking"
+              }
+              icon={CheckCircle2}
+            />
+            <StatCard
+              label="Best accuracy"
+              value={bestAccuracy != null ? `${bestAccuracy}%` : "—"}
+              hint={
+                bestSat?.bestScore != null && bestSat.bestTotal
+                  ? `${bestSat.bestScore}/${bestSat.bestTotal} on your best run`
+                  : "Your strongest SAT score"
+              }
+              icon={BarChart3}
+            />
+            <StatCard
+              label="Last score"
+              value={
+                latestSat?.lastScore != null && latestSat.lastTotal
+                  ? `${latestSat.lastScore}/${latestSat.lastTotal}`
+                  : "—"
+              }
+              hint={
+                latestSat?.lastCompletedAt
+                  ? `Completed ${new Date(
+                      latestSat.lastCompletedAt
+                    ).toLocaleDateString()}`
+                  : "Most recent SAT result"
+              }
+              icon={Target}
+            />
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabaseServer";
+import { createGradingClient } from "@/lib/supabaseAdmin";
 import type {
   PracticeQuestion,
   StartPracticeResult,
@@ -78,7 +79,8 @@ export async function startPractice(
     .eq("status", "published");
 
   if (questionsError) {
-    return { success: false, error: questionsError.message };
+    console.error("Failed to load practice questions:", questionsError);
+    return { success: false, error: "Failed to load practice questions." };
   }
 
   if (!questionRows?.length) {
@@ -104,10 +106,8 @@ export async function startPractice(
     .single();
 
   if (sessionError || !session) {
-    return {
-      success: false,
-      error: sessionError?.message ?? "Failed to start practice session.",
-    };
+    console.error("Failed to start practice session:", sessionError);
+    return { success: false, error: "Failed to start practice session." };
   }
 
   return {
@@ -142,7 +142,12 @@ export async function submitAnswer(
     return { success: false, error: "Practice session not found." };
   }
 
-  const { data: question, error: questionError } = await supabase
+  // Answer keys (`is_correct`) are not readable by client roles, and attempt
+  // rows must be written server-side so grading cannot be forged. Both use the
+  // service-role client, gated by the auth + ownership checks above.
+  const db = await createGradingClient();
+
+  const { data: question, error: questionError } = await db
     .from("questions")
     .select(
       `
@@ -176,7 +181,7 @@ export async function submitAnswer(
     return { success: false, error: "Invalid answer choice." };
   }
 
-  const { error: attemptError } = await supabase.from("question_attempts").insert({
+  const { error: attemptError } = await db.from("question_attempts").insert({
     session_id: sessionId,
     user_id: user.id,
     question_id: questionId,
@@ -185,7 +190,8 @@ export async function submitAnswer(
   });
 
   if (attemptError) {
-    return { success: false, error: attemptError.message };
+    console.error("Failed to save question attempt:", attemptError);
+    return { success: false, error: "Failed to save your answer." };
   }
 
   return {
@@ -215,7 +221,8 @@ export async function completePracticeSession(
     .eq("user_id", user.id);
 
   if (error) {
-    return { success: false, error: error.message };
+    console.error("Failed to complete practice session:", error);
+    return { success: false, error: "Failed to complete practice session." };
   }
 
   return { success: true };

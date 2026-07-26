@@ -1,48 +1,25 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
-import { QuestionForm } from "./QuestionForm";
+import { QuestionBankForm } from "@/components/admin/QuestionBankForm";
 
-export default async function NewQuestionPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+export default async function NewQuestionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ exam?: string }>;
+}) {
+  const { exam } = await searchParams;
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-950">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              Admin
-            </p>
-            <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-              New question
-            </h1>
-          </div>
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-          >
-            Dashboard
-          </Link>
-        </div>
-      </header>
+    <div>
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        New question
+      </h1>
+      <p className="mt-2 text-muted">
+        Create a question for any exam section — SAT, TOEFL, DIM, or a future
+        one.
+      </p>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-8 text-sm text-zinc-500 dark:text-zinc-400">
-            Create a new practice question with four answer choices and an
-            explanation.
-          </p>
-          <QuestionForm />
-        </div>
-      </main>
+      <div className="mt-8 rounded-2xl border border-card-border bg-card p-8 shadow-card">
+        <QuestionBankForm defaultExamType={exam} />
+      </div>
     </div>
   );
 }

@@ -11,7 +11,9 @@ import { EXAM_OPTIONS, TOPIC_OPTIONS } from "@/types/question";
 import type { PracticeQuestion } from "@/types/practice";
 
 const inputClassName =
-  "w-full rounded-lg border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-400 dark:focus:ring-zinc-400/10";
+  "w-full rounded-lg border border-card-border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20";
+
+const labelClassName = "mb-1.5 block text-sm font-medium text-foreground";
 
 type Feedback = {
   isCorrect: boolean;
@@ -127,7 +129,7 @@ export function PracticeSession() {
       <div className="space-y-6">
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="exam" className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="exam" className={labelClassName}>
               Exam
             </label>
             <select
@@ -145,7 +147,7 @@ export function PracticeSession() {
           </div>
 
           <div>
-            <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="topic" className={labelClassName}>
               Topic
             </label>
             <select
@@ -173,7 +175,7 @@ export function PracticeSession() {
           type="button"
           onClick={handleStart}
           disabled={loading}
-          className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Loading…" : "Start Practice"}
         </button>
@@ -185,10 +187,10 @@ export function PracticeSession() {
     return (
       <div className="space-y-6 text-center">
         <div>
-          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h2 className="text-2xl font-semibold text-foreground">
             Session complete
           </h2>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+          <p className="mt-2 text-muted">
             You answered {score} of {questions.length} correctly.
           </p>
         </div>
@@ -197,13 +199,13 @@ export function PracticeSession() {
           <button
             type="button"
             onClick={handleRestart}
-            className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover"
           >
             Practice again
           </button>
           <Link
             href="/dashboard"
-            className="rounded-lg border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-card-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent-soft"
           >
             Back to dashboard
           </Link>
@@ -218,24 +220,24 @@ export function PracticeSession() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="flex items-center justify-between text-sm text-muted">
         <span>
           Question {currentIndex + 1} of {questions.length}
         </span>
         <span className="capitalize">{currentQuestion.difficulty}</span>
       </div>
 
-      <div className="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+      <div className="h-2 overflow-hidden rounded-full bg-card-border">
         <div
-          className="h-full rounded-full bg-zinc-900 transition-all dark:bg-zinc-50"
+          className="h-full rounded-full bg-accent transition-all"
           style={{
             width: `${((currentIndex + (feedback ? 1 : 0)) / questions.length) * 100}%`,
           }}
         />
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-base leading-relaxed text-zinc-900 dark:text-zinc-50">
+      <div className="rounded-xl border border-card-border bg-background p-5">
+        <p className="text-base leading-relaxed text-foreground">
           {currentQuestion.questionText}
         </p>
       </div>
@@ -261,10 +263,10 @@ export function PracticeSession() {
                 "border-red-500 bg-red-50 dark:border-red-500 dark:bg-red-950/30";
             } else if (isSelected) {
               choiceClassName +=
-                "border-zinc-900 bg-zinc-100 dark:border-zinc-400 dark:bg-zinc-800";
+                "border-accent bg-accent-soft";
             } else {
               choiceClassName +=
-                "border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700";
+                "border-card-border bg-card hover:border-accent/50";
             }
 
             return (
@@ -275,13 +277,13 @@ export function PracticeSession() {
                   value={choice.id}
                   checked={isSelected}
                   onChange={() => setSelectedChoiceId(choice.id)}
-                  className="mt-1 h-4 w-4 border-zinc-300 text-zinc-900 focus:ring-zinc-900 dark:border-zinc-600 dark:bg-zinc-950"
+                  className="mt-1 h-4 w-4 border-card-border text-accent focus:ring-accent"
                 />
                 <span className="flex-1">
-                  <span className="mr-2 font-semibold text-zinc-900 dark:text-zinc-50">
+                  <span className="mr-2 font-semibold text-foreground">
                     {choice.label}.
                   </span>
-                  <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="text-muted">
                     {choice.choiceText}
                   </span>
                 </span>
@@ -305,11 +307,11 @@ export function PracticeSession() {
               : `Incorrect. The correct answer is ${feedback.correctLabel}.`}
           </p>
 
-          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+          <div className="rounded-xl border border-card-border bg-card p-4">
+            <p className="text-sm font-medium text-foreground">
               Explanation
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="mt-2 text-sm leading-relaxed text-muted">
               {feedback.explanation}
             </p>
           </div>
@@ -328,7 +330,7 @@ export function PracticeSession() {
             type="button"
             onClick={handleSubmit}
             disabled={loading || !selectedChoiceId}
-            className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Submitting…" : "Submit"}
           </button>
@@ -337,7 +339,7 @@ export function PracticeSession() {
             type="button"
             onClick={handleNext}
             disabled={loading}
-            className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading
               ? "Saving…"
