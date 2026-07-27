@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { AuthHeader } from "@/components/AuthHeader";
+import {
+  isTurnstileRequired,
+  TurnstileField,
+} from "@/components/TurnstileField";
+import { verifySignupTurnstile } from "@/app/signup/actions";
 import { supabase } from "@/lib/supabaseClient";
 
 const inputClassName =
@@ -18,7 +23,13 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const turnstileRequired = isTurnstileRequired();
+  const canSubmit =
+    !loading && (!turnstileRequired || Boolean(turnstileToken));
 
   useEffect(() => {
     if (!showConfirmModal) return;
@@ -46,6 +57,15 @@ export default function SignupPage() {
     setError(null);
     setLoading(true);
 
+    const turnstileCheck = await verifySignupTurnstile(turnstileToken ?? "");
+    if (!turnstileCheck.success) {
+      setError(turnstileCheck.error);
+      setTurnstileToken(null);
+      setTurnstileResetKey((k) => k + 1);
+      setLoading(false);
+      return;
+    }
+
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -53,6 +73,8 @@ export default function SignupPage() {
 
     if (authError) {
       setError(authError.message);
+      setTurnstileToken(null);
+      setTurnstileResetKey((k) => k + 1);
       setLoading(false);
       return;
     }
@@ -127,6 +149,18 @@ export default function SignupPage() {
               />
             </div>
 
+            <TurnstileField
+              key={turnstileResetKey}
+              onToken={setTurnstileToken}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => setTurnstileToken(null)}
+              onWidgetError={() =>
+                setError(
+                  "Could not load the security check. Try disabling ad blockers or use another browser."
+                )
+              }
+            />
+
             {error && (
               <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
                 {error}
@@ -135,7 +169,7 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={!canSubmit}
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
