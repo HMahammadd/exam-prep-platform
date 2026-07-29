@@ -14,6 +14,11 @@ export async function GET(request: NextRequest) {
   const errorRedirect = new URL("/login", origin);
   errorRedirect.searchParams.set("error", "auth");
 
+  // Provider / Supabase returned an error (e.g. redirect URL not allowlisted).
+  if (searchParams.get("error")) {
+    return NextResponse.redirect(errorRedirect);
+  }
+
   if (code) {
     const redirectUrl = buildRedirectUrl(request, origin, next);
     const response = NextResponse.redirect(redirectUrl);

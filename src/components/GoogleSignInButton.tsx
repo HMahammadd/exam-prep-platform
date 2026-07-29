@@ -49,10 +49,12 @@ export function GoogleSignInButton({
     onError?.("");
     setLoading(true);
 
+    // Keep redirectTo path-only (no ?next=). Query strings often fail Supabase
+    // Redirect URL allowlists in production and fall back to Site URL (home).
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard")}`,
+        redirectTo: `${window.location.origin}/auth/callback`,
         queryParams: {
           access_type: "offline",
           prompt: "select_account",
