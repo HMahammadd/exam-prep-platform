@@ -58,6 +58,8 @@ export default async function DashboardPage() {
   }
 
   const displayName =
+    (typeof user.user_metadata?.username === "string" &&
+      user.user_metadata.username) ||
     (typeof user.user_metadata?.full_name === "string" &&
       user.user_metadata.full_name.split(" ")[0]) ||
     user.email?.split("@")[0] ||
@@ -91,7 +93,7 @@ export default async function DashboardPage() {
     <div className="flex flex-1 flex-col bg-background">
       <DashboardHeader />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8 sm:py-10">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 sm:py-10">
         {/* Compact welcome — atmosphere without crowding navigation */}
         <section className="relative mb-8 overflow-hidden rounded-2xl border border-card-border bg-card px-6 py-6 shadow-card sm:px-8 sm:py-7">
           <div
@@ -108,8 +110,8 @@ export default async function DashboardPage() {
                 {greeting}, {displayName}
               </h2>
               <p className="mt-1.5 max-w-lg text-sm text-muted sm:text-base">
-                Pick an exam below to keep practicing. Your progress updates as
-                you finish sets.
+                Study with lessons and full practice tests. We&apos;re focused
+                on SAT first — pick a track below to get started.
               </p>
             </div>
 
@@ -138,15 +140,15 @@ export default async function DashboardPage() {
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-foreground">
-                Your exams
+                Your tracks
               </h3>
               <p className="mt-0.5 text-sm text-muted">
-                Choose a track and jump straight into practice.
+                Lessons and practice exams for each exam — SAT is live today.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="flex flex-col gap-6">
             {EXAMS.map((exam) => (
               <ExamSelectionCard key={exam.id} exam={exam} />
             ))}

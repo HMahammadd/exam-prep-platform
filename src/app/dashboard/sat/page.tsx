@@ -1,4 +1,5 @@
-import { BookOpen } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -32,9 +33,33 @@ export default async function SatDashboardPage() {
               SAT Practice
             </h2>
             <p className="mt-1 text-sm text-muted">
-              Choose a practice exam and start preparing.
+              Practice exams and lessons — choose a set below or study with
+              guided lessons.
             </p>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <Link
+            href="/dashboard/sat/lessons"
+            className="group flex items-center justify-between gap-4 rounded-2xl border border-blue-200/90 bg-card p-5 shadow-[0_8px_32px_-10px_rgba(37,99,235,0.18)] transition hover:border-blue-400 hover:shadow-[0_0_0_1px_rgba(59,130,246,0.4),0_12px_40px_-12px_rgba(37,99,235,0.3)] dark:border-blue-900/80"
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-950/60">
+                <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden />
+              </span>
+              <div>
+                <p className="font-semibold text-foreground">SAT Lessons</p>
+                <p className="text-sm text-muted">
+                  Build skills with structured lesson modules
+                </p>
+              </div>
+            </div>
+            <ArrowRight
+              className="h-5 w-5 shrink-0 text-blue-600 transition group-hover:translate-x-0.5 dark:text-blue-400"
+              aria-hidden
+            />
+          </Link>
         </div>
 
         <div className="space-y-3">

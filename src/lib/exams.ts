@@ -6,6 +6,8 @@ export type Exam = {
   description: string;
   status: ExamStatus;
   dashboardHref: string;
+  lessonsHref: string;
+  lessonsStatus: ExamStatus;
 };
 
 export const EXAMS: Exam[] = [
@@ -15,6 +17,8 @@ export const EXAMS: Exam[] = [
     description: "Verbal practice with exam-style questions and explanations.",
     status: "available",
     dashboardHref: "/dashboard/sat",
+    lessonsHref: "/dashboard/sat/lessons",
+    lessonsStatus: "available",
   },
   {
     id: "toefl",
@@ -22,12 +26,16 @@ export const EXAMS: Exam[] = [
     description: "English proficiency practice for reading, listening, and more.",
     status: "coming-soon",
     dashboardHref: "/dashboard/toefl",
+    lessonsHref: "/dashboard/toefl",
+    lessonsStatus: "coming-soon",
   },
   {
     id: "dim",
     name: "DIM",
     description: "Targeted practice for DIM exam preparation.",
-    status: "available",
+    status: "coming-soon",
     dashboardHref: "/dashboard/dim",
+    lessonsHref: "/dashboard/dim",
+    lessonsStatus: "coming-soon",
   },
 ];

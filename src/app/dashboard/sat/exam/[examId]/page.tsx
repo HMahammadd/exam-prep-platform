@@ -55,6 +55,8 @@ export default async function SatExamPage({ params }: ExamPageProps) {
   }));
 
   const studentName =
+    (typeof user.user_metadata?.username === "string" &&
+      user.user_metadata.username) ||
     (typeof user.user_metadata?.full_name === "string" &&
       user.user_metadata.full_name) ||
     (typeof user.user_metadata?.name === "string" &&

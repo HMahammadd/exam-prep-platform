@@ -1,24 +1,42 @@
 "use client";
 
-import { CheckCircle2, Loader2, Lock, Mail, UserPlus, X } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+  UserPlus,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { AuthHeader } from "@/components/AuthHeader";
 import {
+  AuthDivider,
+  GoogleSignInButton,
+} from "@/components/GoogleSignInButton";
+import {
   isTurnstileRequired,
   TurnstileField,
 } from "@/components/TurnstileField";
-import { verifySignupTurnstile } from "@/app/signup/actions";
+import {
+  checkUsernameAvailability,
+  verifySignupTurnstile,
+} from "@/app/signup/actions";
 import { supabase } from "@/lib/supabaseClient";
+import { validateUsername } from "@/lib/username";
 
 const inputClassName =
   "w-full rounded-lg border border-card-border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20";
 
 export default function SignupPage() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -55,7 +73,31 @@ export default function SignupPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const formatError = validateUsername(username);
+    if (formatError) {
+      setError(formatError);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
+
+    const usernameCheck = await checkUsernameAvailability(username);
+    if (!usernameCheck.success) {
+      setError(usernameCheck.error);
+      setLoading(false);
+      return;
+    }
 
     const turnstileCheck = await verifySignupTurnstile(turnstileToken ?? "");
     if (!turnstileCheck.success) {
@@ -69,6 +111,13 @@ export default function SignupPage() {
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/login")}`,
+        data: {
+          username: usernameCheck.username,
+          full_name: usernameCheck.username,
+        },
+      },
     });
 
     if (authError) {
@@ -81,6 +130,7 @@ export default function SignupPage() {
 
     setSubmittedEmail(email.trim());
     setPassword("");
+    setConfirmPassword("");
     setLoading(false);
     setShowConfirmModal(true);
   }
@@ -107,7 +157,41 @@ export default function SignupPage() {
             </p>
           </div>
 
+          <div className="mb-5 space-y-4">
+            <GoogleSignInButton
+              label="Continue with Google"
+              disabled={loading}
+              onError={(message) => setError(message || null)}
+            />
+            <AuthDivider />
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label
+                htmlFor="username"
+                className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
+              >
+                <User className="h-4 w-4 text-accent" aria-hidden />
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                required
+                minLength={3}
+                maxLength={20}
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className={inputClassName}
+                placeholder="e.g. kepler_student"
+              />
+              <p className="mt-1.5 text-xs text-muted">
+                3–20 characters: letters, numbers, and underscores
+              </p>
+            </div>
+
             <div>
               <label
                 htmlFor="email"
@@ -146,6 +230,27 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={inputClassName}
                 placeholder="At least 6 characters"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirm-password"
+                className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
+              >
+                <Lock className="h-4 w-4 text-accent" aria-hidden />
+                Confirm password
+              </label>
+              <input
+                id="confirm-password"
+                type="password"
+                required
+                minLength={6}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={inputClassName}
+                placeholder="Repeat your password"
               />
             </div>
 
