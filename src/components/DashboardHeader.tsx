@@ -1,9 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
+import { AccountButton } from "./AccountButton";
 import { AdminHeaderLink } from "./AdminHeaderLink";
 import { KeplerLogo } from "./KeplerLogo";
 import { ThemeToggle } from "./ThemeToggle";
-import { LogoutButton } from "@/app/dashboard/LogoutButton";
 
 type DashboardHeaderProps = {
   title?: string;
@@ -49,7 +50,16 @@ export function DashboardHeader({
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AdminHeaderLink />
           <ThemeToggle />
-          <LogoutButton />
+          <Suspense
+            fallback={
+              <div
+                className="h-10 w-28 animate-pulse rounded-lg bg-accent-soft"
+                aria-hidden
+              />
+            }
+          >
+            <AccountButton />
+          </Suspense>
         </div>
       </div>
     </header>
