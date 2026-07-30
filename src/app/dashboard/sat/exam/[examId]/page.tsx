@@ -47,9 +47,11 @@ export default async function SatExamPage({ params }: ExamPageProps) {
   const clientQuestions: SatClientQuestion[] = questions.map((question) => ({
     id: question.id,
     examId: question.examId,
+    module: question.module,
     section: question.section,
     passage: question.passage,
     passageImageUrl: question.passageImageUrl,
+    chartId: question.chartId,
     questionText: question.questionText,
     choices: question.choices,
   }));

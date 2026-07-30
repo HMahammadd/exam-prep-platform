@@ -1,5 +1,9 @@
 import type { SatPracticeExam } from "@/types/sat-exam";
 
+const MODULE_MINUTES = 32;
+const QUESTIONS_PER_MODULE = 27;
+const MODULE_COUNT = 2;
+
 export const SAT_PRACTICE_EXAMS: SatPracticeExam[] = Array.from(
   { length: 10 },
   (_, index) => {
@@ -10,8 +14,9 @@ export const SAT_PRACTICE_EXAMS: SatPracticeExam[] = Array.from(
       id,
       name: `SAT Practice Exam ${id}`,
       status: available ? "available" : "coming-soon",
-      questionCount: id === 1 ? 27 : 20,
-      timeLimitMinutes: id === 1 ? 32 : 30,
+      questionCount: available ? QUESTIONS_PER_MODULE * MODULE_COUNT : 20,
+      timeLimitMinutes: MODULE_MINUTES,
+      moduleCount: available ? MODULE_COUNT : 1,
     };
   }
 );

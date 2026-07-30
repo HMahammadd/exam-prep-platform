@@ -34,11 +34,59 @@ export function saveLocalSatAttempt(attempt: LocalSatAttempt) {
     localAttemptStorageKey(attempt.id),
     JSON.stringify(attempt)
   );
-  // Also store as latest for this exam
-  localStorage.setItem(
-    `sat-local-latest:${attempt.exam_id}`,
-    attempt.id
-  );
+  localStorage.setItem(`sat-local-latest:${attempt.exam_id}`, attempt.id);
+  updateLocalExamSummary(attempt);
+}
+
+const SUMMARIES_KEY = "sat-local-summaries";
+
+export type LocalExamSummary = {
+  lastScore: number;
+  lastTotal: number;
+  bestScore: number;
+  bestTotal: number;
+  lastCompletedAt: string;
+  lastAttemptId: string;
+};
+
+export function loadLocalExamSummaries(): Record<string, LocalExamSummary> {
+  if (typeof window === "undefined") {
+    return {};
+  }
+  const raw = localStorage.getItem(SUMMARIES_KEY);
+  if (!raw) {
+    return {};
+  }
+  try {
+    return JSON.parse(raw) as Record<string, LocalExamSummary>;
+  } catch {
+    return {};
+  }
+}
+
+export function updateLocalExamSummary(attempt: LocalSatAttempt) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const all = loadLocalExamSummaries();
+  const existing = all[attempt.exam_id];
+  const isNewBest =
+    !existing ||
+    attempt.score > existing.bestScore ||
+    (attempt.score === existing.bestScore &&
+      attempt.total_questions >= existing.bestTotal);
+
+  all[attempt.exam_id] = {
+    lastScore: attempt.score,
+    lastTotal: attempt.total_questions,
+    bestScore: isNewBest ? attempt.score : existing.bestScore,
+    bestTotal: isNewBest ? attempt.total_questions : existing.bestTotal,
+    lastCompletedAt: attempt.completed_at,
+    lastAttemptId: attempt.id,
+  };
+
+  localStorage.setItem(SUMMARIES_KEY, JSON.stringify(all));
 }
 
 export function loadLocalSatAttempt(

@@ -7,16 +7,34 @@ export type SatPracticeExam = {
   name: string;
   status: SatExamStatus;
   questionCount: number;
+  /** Minutes allowed per Reading and Writing module */
   timeLimitMinutes: number;
+  moduleCount: number;
 };
+
+export type SatModuleNumber = 1 | 2;
+
+export type SatChartId =
+  | "exam1-lok-sabha"
+  | "exam1-fatty-liver"
+  | "exam2-pigeons"
+  | "exam2-fruit-drinks"
+  | "exam2-social-exclusion"
+  | "exam3-presidents"
+  | "exam3-tourism"
+  | "exam3-hurricanes"
+  | "exam3-shopping";
 
 export type SatQuestion = {
   id: string;
   examId: number;
+  module: SatModuleNumber;
   section: string;
   passage: string;
   /** Optional figure/chart shown with the passage */
   passageImageUrl?: string;
+  /** Optional interactive chart rendered with Recharts */
+  chartId?: SatChartId;
   questionText: string;
   choices: { label: SatChoiceLabel; text: string }[];
   correctAnswer: SatChoiceLabel;
@@ -55,6 +73,9 @@ export type SubmitSatExamResult =
   | {
       success: true;
       attemptId: string;
+      score: number;
+      totalQuestions: number;
+      percentage: number;
       /** When true, client must persist attempt via localStorage */
       local?: true;
       localAttempt?: {

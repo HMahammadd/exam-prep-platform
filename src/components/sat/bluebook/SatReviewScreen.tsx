@@ -10,6 +10,7 @@ type NavItem = {
 
 type SatReviewScreenProps = {
   items: NavItem[];
+  moduleNumber?: number;
   onSelectQuestion: (index: number) => void;
   onBack: () => void;
   onNext: () => void;
@@ -18,6 +19,7 @@ type SatReviewScreenProps = {
 
 export function SatReviewScreen({
   items,
+  moduleNumber = 1,
   onSelectQuestion,
   onBack,
   onNext,
@@ -39,7 +41,7 @@ export function SatReviewScreen({
         <div className="mt-8 rounded-xl border border-[#e5e7eb] bg-white p-5 shadow-sm sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <h2 className="text-sm font-semibold text-[#202124]">
-              Section 1, Module 1: Reading and Writing Questions
+              Section 1, Module {moduleNumber}: Reading and Writing Questions
             </h2>
             <div className="flex flex-wrap items-center gap-4 text-xs text-[#5f6368]">
               <span className="inline-flex items-center gap-1.5">

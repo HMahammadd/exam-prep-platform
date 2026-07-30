@@ -13,6 +13,7 @@ type SatQuestionNavPopoverProps = {
   open: boolean;
   onClose: () => void;
   items: NavItem[];
+  moduleNumber?: number;
   onSelect: (index: number) => void;
   onGoToReview: () => void;
 };
@@ -21,6 +22,7 @@ export function SatQuestionNavPopover({
   open,
   onClose,
   items,
+  moduleNumber = 1,
   onSelect,
   onGoToReview,
 }: SatQuestionNavPopoverProps) {
@@ -46,7 +48,7 @@ export function SatQuestionNavPopover({
         </button>
 
         <h3 className="pr-8 text-center text-sm font-semibold text-[#202124]">
-          Section 1, Module 1: Reading and Writing Questions
+          Section 1, Module {moduleNumber}: Reading and Writing Questions
         </h3>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-[#5f6368]">

@@ -1,362 +1,794 @@
-import type { SatChoiceLabel, SatQuestion } from "@/types/sat-exam";
+import type { SatChoiceLabel, SatChartId, SatQuestion } from "@/types/sat-exam";
 
 const SECTION = "Section 1: Reading and Writing";
 const LABELS: SatChoiceLabel[] = ["A", "B", "C", "D"];
 
-type Exam1Draft = {
+type ExamDraft = {
+  module: 1 | 2;
   passage: string;
   passageImageUrl?: string;
+  chartId?: SatChartId;
   questionText: string;
   choices: [string, string, string, string];
   correctAnswer: SatChoiceLabel;
   explanation: string;
 };
 
-const EXAM_1_DRAFTS: Exam1Draft[] = [
+const EXAM_1_DRAFTS: ExamDraft[] = [
   {
-    passage:
-      "Dark energy may be even more __________ than scientists have bargained for, potentially “evolving” over time rather than remaining relentlessly constant in its acceleration of cosmic expansion.",
-    questionText:
-      "Which choice completes the text with the most logical and precise word or phrase?",
-    choices: ["complicated", "multifaceted", "immutable", "constant"],
-    correctAnswer: "A",
-    explanation:
-      "The sentence contrasts scientists’ expectation of constancy with the possibility that dark energy evolves, so “complicated” best fits the blank.",
-  },
-  {
-    passage:
-      "Charles Darwin proposed that evolution is driven by gradual variations in organisms that have a survival advantage in a changing environment. But University of Maryland evolutionary biologist Karen Carleton says that scientists have long grappled with the __________ that “evolution can happen abruptly, as described by Steven Jay Gould in [the theory of] punctuated equilibrium.",
-    questionText:
-      "Which choice completes the text with the most logical and precise word or phrase?",
-    choices: ["interpretation", "confirmation", "quandary", "offer"],
-    correctAnswer: "C",
-    explanation:
-      "“Grappled with” signals a difficult puzzle; “quandary” matches that meaning.",
-  },
-  {
-    passage:
-      "Despite a significant decrease in crime rates in the U.S. and specific cities like New York, public perception remains __________ fearful, with many Americans believing crime is worsening, influenced by media, political rhetoric, and historical events like 9/11. This heightened sense of danger affects daily behaviors and attitudes, leading to unnecessary precautions and a pervasive fear that impacts mental health and community engagement, even in areas with low crime rates.",
-    questionText:
-      "Which choice completes the text with the most logical and precise word or phrase?",
-    choices: ["slightly", "reasonably", "disproportionately", "occasionally"],
-    correctAnswer: "C",
-    explanation:
-      "Fear persists despite falling crime, so the fear is out of proportion—“disproportionately.”",
-  },
-  {
-    passage:
-      "Gene editing technology, particularly CRISPR, has revolutionized biomedical research by enabling precise alterations in the DNA of living organisms. These modifications can lead to significant improvements in crop resilience and disease resistance, highlighting its transformative potential. However, ethical concerns about the __________ spread of edited genes into wild populations remain a contentious issue among scientists.",
-    questionText:
-      "Which choice completes the text with the most logical and precise word or phrase?",
-    choices: ["natural", "rapid", "minimal", "uncontrolled"],
-    correctAnswer: "D",
-    explanation:
-      "Ethical worry centers on edited genes spreading without control into wild populations.",
-  },
-  {
-    passage: `The following text is from The Great Gatsby by F. Scott Fitzgerald.
-
-He smiled understandingly—much more than understandingly. It was one of those rare smiles with a quality of eternal reassurance in it, that you may come across four or five times in life. It faced—or seemed to face—the whole eternal world for a moment, and then concentrated on you with an irresistible prejudice in your favor. It understood you just as far as you wanted to be understood, believed in you as you would like to believe in yourself.`,
-    questionText:
-      "As used in the text, what does the word “irresistible” most nearly mean?",
-    choices: ["undeniable", "overwhelming", "potent", "compelling"],
-    correctAnswer: "D",
-    explanation:
-      "In context, the smile powerfully draws favor toward you—“compelling.”",
-  },
-  {
-    passage: `Gibson Morib, a biology student, rediscovered the long-lost Attenborough’s long-beaked echidna in Indonesian New Guinea, inspiring a study led by Thomas Evans which created a catalog of 856 "lost" species, finding that about a quarter are likely extinct. The study, published in Global Change Biology, utilized advanced technology to detect elusive species, noting that small, less charismatic animals like reptiles have higher chances of being extant. Island-dwelling mammals are more likely to be extinct, whereas there's an optimal 66-year window for rediscovering lost bird species. However, rediscovery poses risks, such as attracting poachers or tourists, but it can also lead to increased protection and conservation efforts.
-
-[Underlined sentence] However, rediscovery poses risks, such as attracting poachers or tourists, but it can also lead to increased protection and conservation efforts.`,
-    questionText:
-      "Which choice best describes the function of the underlined sentence in the text as a whole?",
+    module: 1,
+    passage: `The Chilean volcano Calabozos is located in ________ area. Therefore, the risk of loss of human life in the event of an eruption is minimal.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
     choices: [
-      "It emphasizes the urgency and potential negative impacts of rediscovering lost species, contributing to a balanced view of conservation efforts.",
-      "It introduces the main topic of the study, which is the methodology used in cataloging the \"lost\" species.",
-      "It provides a statistical analysis of the species studied, highlighting the specific findings related to their likelihood of extinction.",
-      "It contrasts the methodologies of past research with the current study to show improvements in data gathering and analysis.",
+      `a hazardous`,
+      `an active`,
+      `a mountainous`,
+      `a remote`,
+    ],
+    correctAnswer: "D",
+    explanation: `"Remote" means far from populated places. If the volcano is in a remote area, relatively few people would be nearby during an eruption, which explains why the risk of loss of human life is minimal.`,
+  },
+  {
+    module: 1,
+    passage: `Contemporaries of American modernist poet H.D. focused only on her important contributions to the Imagist movement in the 1920s, taking ________ view of her work. However, she wrote in a variety of forms and genres, from short, lyrical works to complex, book-length poems.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `an expansive`,
+      `a limited`,
+      `an imaginative`,
+      `a complicated`,
+    ],
+    correctAnswer: "B",
+    explanation: `The contemporaries focused only on one part of H.D.'s career even though she wrote in many forms and genres. Therefore, they took a "limited," or narrow, view of her work.`,
+  },
+  {
+    module: 1,
+    passage: `The Atlantic bluefin tuna (hereafter referred to as "bluefin tuna"), one of the world's most valuable and exploited fish species, has been declining in abundance throughout the Atlantic from the 1960s until the mid-2000s. Following the establishment of ________ management measures, the stock has started to recover recently and, as a result, stakeholders have raised catch quotas by 50% for the period 2017-2020.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `intense`,
+      `drastic`,
+      `stark`,
+      `comparative`,
+    ],
+    correctAnswer: "B",
+    explanation: `"Drastic" describes measures that are severe or far-reaching. Strong restrictions would logically help a heavily depleted fish population recover; the other choices do not fit the meaning or the phrase "management measures" as precisely.`,
+  },
+  {
+    module: 1,
+    passage: `Galileo Galilei was one of the first scientists to discuss scaling trends in nature, observing that a scaled-up "giant ten times taller than ordinary man" could not exist in the natural world unless his limbs were greatly altered to bear the extra mass. Although he was unaware of it, Galileo was describing the concept of what is now called allometry. Allometry was originally ________ in 1936 as a term to describe the discrepancy between the rate of growth of a part of the body and the body as a whole, i.e., the deviation from self-similar scaling.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `coined`,
+      `formulated`,
+      `implemented`,
+      `modified`,
     ],
     correctAnswer: "A",
-    explanation:
-      "The underlined sentence adds risks of rediscovery while also noting protection benefits, balancing the account.",
+    explanation: `A term is "coined" when it is created or introduced. The sentence concerns the introduction of the word "allometry" as a term in 1936, not the implementation or modification of a concept.`,
   },
   {
-    passage:
-      "Hummingbirds, known for their agility and varied flying capabilities, use unique visual processing modes for different types of flight, particularly forward flight, as discovered in a study published in the Proceedings of the Royal Society B. Researchers analyzed over 3,500 flights in a tunnel, finding that hummingbirds have an internal sense of speed, rather than relying solely on visual cues like pattern velocity from their environment. This internal gauge was evident when movements that contradicted their expected visual surroundings caused them to slow down. Their brains have evolved to rapidly transition from visual signals to motor outputs, essential for their complex flight maneuvers.",
-    questionText:
-      "According to the text, which choice most effectively describes the mechanism used by hummingbirds for forward flight?",
+    module: 1,
+    passage: `Text 1
+An animal is said to have a theory of mind when it is able to act according to the mental states of other individuals. Psychologists David Premack and Guy Woodruff studied whether chimpanzees have such a theory of mind. They showed videos of human actors struggling with various problems. The chimpanzees were able to select photographs that showed the best tool to solve each actor's problem.
+
+Text 2
+Biologist Daniel J. Povinelli and psychologists Kurt E. Nelson and Sarah T. Boysen have argued that previous research into whether chimpanzees have a theory of mind has not adequately addressed alternative explanations for the chimpanzees' behaviors. Specifically, it may be the case that chimpanzees are following learned behaviors in a known environment, rather than applying a theory of mind in a novel situation.`,
+    questionText: `Based on the texts, how would Povinelli, Nelson, and Boysen (Text 2) most likely respond to Premack and Woodruff (Text 1)?`,
     choices: [
-      "Hummingbirds navigate by solely interpreting the patterns seen in their environment to maintain velocity.",
-      "Hummingbirds possess an innate velocity gauge that influences their flight adjustments when external visual inputs are inconsistent.",
-      "The flight of hummingbirds is enhanced by their ability to process auditory signals for complex aerial maneuvers.",
-      "In flight, hummingbirds depend primarily on their physical reactions rather than visual feedback from their surroundings.",
+      `They would argue that nonhuman primates other than chimpanzees, such as baboons and gorillas, may also have a theory of mind.`,
+      `They would argue that the chimpanzees would be able to solve the problems themselves without referencing the photographs by struggling with the situation themselves and eventually determining the correct solution.`,
+      `They would encourage Premack and Woodruff to show the same videos and photographs to other nonhuman primates and compare the other nonhuman primates' reactions to the chimpanzees' reactions.`,
+      `They would suggest that placing the chimpanzee subjects in novel environments, such as rooms distinct from the chimpanzees' regular enclosures, may help better ascertain whether chimpanzees have a theory of mind.`,
     ],
-    correctAnswer: "B",
-    explanation:
-      "The text states hummingbirds have an internal sense of speed and slow when visual input conflicts with expectation.",
+    correctAnswer: "D",
+    explanation: `Text 2 argues that the observed behavior may reflect learned responses in a familiar setting rather than genuine reasoning about another individual's mental state. Testing the chimpanzees in a novel environment would reduce that alternative explanation and better test whether they possess a theory of mind.`,
   },
   {
-    passage:
-      "Research published in the Proceedings of the National Academy of Sciences USA suggests that stimulating cells with hyperactivated RAC genes, which are involved in cellular engulfment, could enhance a novel cancer immunotherapy called CAR-M. This therapy genetically engineers macrophages to recognize and consume cancer cells, but was limited by the macrophages' tendency to only nibble after the long period patient diagnosed with cancer.",
-    questionText:
-      "According to the text, which of the following treatment outcomes might indicate the likelihood that the authors of the study overcame the main obstacle exhibited by macrophages?",
+    module: 1,
+    passage: `A comprehensive study on the origins of wine has revealed new insights into the history of grape cultivation. Contrary to the belief that wild grapes originated in central Asia and spread westward, genetic data suggests they naturally grew across the western and central Eurasian continent hundreds of thousands of years ago. Researchers previously believed grapevines were domesticated 8,000 years ago, but the study suggests humans in western Asia domesticated table grapes about 11,000 years ago, and wine grapes were domesticated simultaneously in the Caucasus.`,
+    questionText: `Which finding, if true, would most directly support the study's claim?`,
     choices: [
-      "Reports of cancer cells showing signs of being completely consumed by macrophages",
-      "A significant increase in the activity of hyperactivated RAC genes during treatment, promoting more aggressive cellular interactions.",
-      "A reduction in the activation of RAC genes post-therapy, showing less cellular engagement.",
-      "Evidence of increased macrophage activity targeting and destroying cancer cells at the onset of their detection.",
+      `Archaeological evidence from central Asia indicating domestication of grapevines 9,000 years ago.`,
+      `Genetic markers from wild grapes found in the western and central Eurasian continent dating back 500,000 years.`,
+      `Records of wine production from the Caucasus region dating back 6,000 years.`,
+      `Discovery of ancient table grape remnants in western Asia from approximately 11,000 years ago.`,
+    ],
+    correctAnswer: "D",
+    explanation: `The study specifically claims that table grapes were domesticated in western Asia about 11,000 years ago. Ancient table-grape remains from that location and time would directly support that claim. Choice B concerns the much earlier natural distribution of wild grapes, not their domestication.`,
+  },
+  {
+    module: 1,
+    passage: `The following text is from Frederick Marryat's 1847 novel The Children of the New Forest. The old forester lay awake the whole of this night, reflecting how he should act relative to the children; he felt the great responsibility that he had incurred, and was alarmed when he considered what might be the consequences if his days were shortened. What would become of them-living in so sequestered a spot that few knew even of its existence-totally shut out from the world, and left to their own resources?`,
+    questionText: `Based on the text, what is true about the children?`,
+    choices: [
+      `They are isolated from people other than the old forester.`,
+      `They are completely unable to take care of themselves.`,
+      `The old forester is resentful of having to take care of them.`,
+      `They attempt to help the old forester with his responsibilities.`,
     ],
     correctAnswer: "A",
-    explanation:
-      "The obstacle is that macrophages only nibble; full consumption would show that obstacle was overcome.",
+    explanation: `The children live in a secluded place that few people know exists and are described as "totally shut out from the world." This supports the conclusion that they are isolated from everyone except the old forester.`,
   },
   {
-    passage:
-      "A study by Eva Zangerle and colleagues at the University of Innsbruck analyzed 353,320 songs from 1970 to 2020 and found that popular music lyrics have become simpler and more repetitive, with a rise in choruses and rhyming lines. The study, covering five major English-language music genres, used machine learning to examine linguistic features like repeated words, emotional cues, and vocabulary richness. Results showed an increase in negative emotions in lyrics, a decline in lyrical complexity, and a higher use of personal pronouns. The authors of the study also analyzed German-language and French-language songs, measuring complexity and emotional intention in their lyrics.",
-    questionText:
-      "The design of the study by Eva Zangerle and colleagues helped exclude which potential objection?",
-    choices: [
-      "The study only analyzes popular music, ignoring other forms like classical or folk music.",
-      "The study does not take into account the influence of music streaming platforms on song popularity.",
-      "The study focuses only on English-language songs, neglecting other languages.",
-      "The study does not consider the impact of technological advancements in music production.",
-    ],
-    correctAnswer: "C",
-    explanation:
-      "Analyzing German- and French-language songs directly answers the objection that the study covers only English.",
-  },
-  {
-    passage:
-      "Researchers led by Selmaan Chettih at Columbia University suggest that Black-capped Chickadees use unique neural “barcodes” in their brain to remember the locations of their food caches. This study, involving chickadees equipped with headgear to measure neural activity, argues that when these birds hide a seed, specific and sparse neural patterns fire in their hippocampus. These barcodes, which are unique for each memory of a hidden item, help the chickadees recall specific locations without confusion.",
-    questionText:
-      "Which finding, if true, would most directly weaken the study's claim?",
-    choices: [
-      "Chickadees were found to have a significantly larger hippocampus than other bird species, indicating enhanced memory capabilities.",
-      "The neural activity in the chickadees’ hippocampus remained constant, regardless of whether they were hiding seeds or engaging in other activities.",
-      "Other bird species, such as sparrows, also demonstrate similar barcode-like neural patterns when hiding food.",
-      "Chickadees often succeeded to relocate their food caches, suggesting a lack of precise memory recall.",
-    ],
-    correctAnswer: "B",
-    explanation:
-      "If hippocampal activity does not change when caching, the unique “barcode” claim for each memory is weakened.",
-  },
-  {
-    passage:
-      "In 2024, the Eastern U.S. will witness a rare simultaneous emergence of two different broods of periodical cicadas: the 13-year Brood XIX and the 17-year Brood XIII. These insects, which have spent over a decade underground, emerge en masse for mating and egg-laying, contributing significantly to the ecosystem. The overlap of these two broods, particularly in Illinois, offers a unique opportunity for scientific observation, including the potential for interbreeding between the different cicada species.",
-    questionText:
-      "According to the text, what is unique about the 2024 emergence of Brood XIX and Brood XIII cicadas?",
-    choices: [
-      "The broods will rise in distinct regions, ensuring minimal ecological impact.",
-      "They are set to emerge in separate years, maintaining their lifecycle patterns.",
-      "These broods will synchronously appear in an unusual event, especially in the East.",
-      "One brood is expected to dominate, overshadowing the emergence of the other.",
-    ],
-    correctAnswer: "C",
-    explanation:
-      "The text stresses a rare simultaneous emergence of the two broods in the Eastern U.S.",
-  },
-  {
-    passage: `Archaeologists have long believed that ancient Egyptians, around 2000 B.C., relied on rudimentary methods, like canals and buckets, for transporting water. This perception was primarily based on the limited archaeological evidence available from that era. However, a recent excavation in Crocodilopolis, an ancient Egyptian city, has challenged this view. The discovery of a sophisticated network of wooden pipes suggests that their water transportation technology was more advanced than previously thought. Therefore, __________
+    module: 1,
+    passage: `The following text is from Baron George Gordon Byron's poem "Answer to ______'s Professions of Affection," written around 1814. The poem is addressed to an unknown person.
 
-This scientific text is a fictional creation by Murad Mammadov for educational purposes and does not represent actual research findings.`,
-    questionText: "Which choice most effectively completes the text?",
+In hearts like thine ne'er may I hold a place
+Till I renounce all sense, all shame, all grace-
+That seat,-like seats, the bane of Freedom's realm,
+But dear to those presiding at the helm-
+Is basely purchased, not with gold alone;
+Add Conscience, too, this bargain is your own-
+'Tis thine to offer with corrupting art
+The rotten borough of the human heart.`,
+    questionText: `What is the main idea of the text?`,
     choices: [
-      "reassessment of other technological capabilities of ancient Egyptians becomes imperative.",
-      "the findings validate long-held beliefs about the primitive nature of Egyptian technology.",
-      "implications of similar advanced systems in surrounding civilizations are worth exploring.",
-      "the ancient Egyptians’ understanding of water management was possibly underestimated.",
-    ],
-    correctAnswer: "D",
-    explanation:
-      "The discovery of advanced pipes most directly supports that water management was underestimated.",
-  },
-  {
-    passage: `Scientists recently argued that the evolution of the striking orange stripes in Graphosoma italicum, a shield bug, is a direct adaptation to avoid predation by their main predator, Argiope lobata, a spider known to lack the pigments necessary for detecting orange colors. To test this hypothesis, the researchers designed an experiment where both orange-striped and non-striped variations of Graphosoma italicum were introduced into environments with and without the presence of Argiope lobata. In environments with these spiders, the scientists observed the predator’s response to both variations of the shield bug. They particularly monitored the rate at which Argiope lobata captured orange-striped versus non-striped bugs, expecting fewer orange-striped insects to be preyed upon.
-
-This scientific text is a fictional creation by Murad Mammadov for educational purposes and does not represent actual research findings.`,
-    questionText:
-      "Which finding, if true, would most directly support the scientists' argument?",
-    choices: [
-      "In regions where Argiope lobata spiders are common, a significant increase in the population of non-striped Graphosoma italicum was observed.",
-      "The Graphosoma italicum population showed a predominant orange coloration even in areas where Argiope lobata spiders are absent.",
-      "In different geographical regions where Argiope lobata spiders are not prevalent, the Graphosoma italicum lacked the distinctive orange coloration.",
-      "Despite the presence of Argiope lobata spiders, orange-striped Graphosoma italicum were more frequently preyed upon compared to their non-striped counterparts.",
-    ],
-    correctAnswer: "C",
-    explanation:
-      "If orange coloration is absent where the spider predator is absent, that supports orange as an adaptation to that predator.",
-  },
-  {
-    passage: `The theory that football teams wearing red kits are more likely to win is supported by several statistical analyses. Research suggests that the color red may have a psychological impact on players, boosting confidence and aggression levels during matches. Additionally, opponents may perceive teams in red as more dominant, potentially influencing their performance. These effects, when combined, might contribute to a higher win rate for teams adorned in red. For example, __________
-
-This scientific text is a fictional creation by Murad Mammadov for educational purposes and does not represent actual research findings.`,
-    passageImageUrl: "/sat/exam1-q14-chart.png",
-    questionText:
-      "Which choice most effectively uses data from the table to complete the example?",
-    choices: [
-      "all four teams demonstrate higher win percentages in home games where they wear red kits.",
-      "the teams perform equally well at home and away, regardless of kit color.",
-      "teams wearing non-red kits away have lower win percentages, with the data showing reductions ranging from 11% to 12% compared to their performance in red kits at home.",
-      "teams C and D, when wearing non-red kits away, have win percentages of 54% and 49% respectively.",
+      `The speaker is expressing disapproval toward the unknown person.`,
+      `The speaker is unimportant to the unknown person.`,
+      `The speaker is thinking of purchasing a seat.`,
+      `The speaker holds a place in the heart of the unknown person.`,
     ],
     correctAnswer: "A",
-    explanation:
-      "The chart shows every team has a higher win percentage in Home (Red) than Away (Non-Red), so A best completes the example. C is inaccurate because Team B’s drop is 10%, not 11–12%.",
+    explanation: `The speaker refuses a place in the addressee's heart unless he abandons "sense," "shame," "grace," and conscience, and calls that heart corrupt and rotten. These descriptions clearly express moral disapproval of the unknown person.`,
   },
   {
-    passage: `The following text is from Jane Austen's 1813 novel Pride and Prejudice.
-
-It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters. 'My dear Mr. Bennet,' said his lady to him one day, 'have you heard that Netherfield Park is let at last?' Mr. Bennet replied that he had not.`,
-    questionText: "Which choice best states the main purpose of the text?",
+    module: 1,
+    passage: `So-called "fake news" has renewed concerns about the prevalence and effects of misinformation in political campaigns. Given the potential for widespread dissemination of this material, researchers examined the individual-level characteristics associated with sharing false articles during the 2016 U.S. presidential campaign. To do so, they uniquely linked an original survey with respondents' sharing activity as recorded in Facebook profile data. First and foremost, they found that sharing this content was a relatively rare activity. Conservatives were more likely to share articles from fake news domains, which in 2016 were largely pro- Trump in orientation, than liberals or moderates. They also found a strong age effect, which persists after controlling for partisanship and ideology: On average, users over 65 shared nearly seven times as many articles from fake news domains as the youngest age group.`,
+    questionText: `Which choice best states the function of the underlined portion in the overall structure of the text?`,
     choices: [
-      "To introduce the characters of Mr. and Mrs. Bennet and set up a dialogue that explores their differing personalities.",
-      "To critique societal expectations and the commodification of marriage through the ironic portrayal of societal views on wealthy bachelors.",
-      "To provide a humorous take on the societal customs of early 19th century England, focusing on marriage and wealth.",
-      "To establish the setting of Netherfield Park and its significance in the local community as a symbol of social status.",
-    ],
-    correctAnswer: "B",
-    explanation:
-      "The famous opening ironically treats marriage as social property, critiquing those expectations.",
-  },
-  {
-    passage:
-      "“The Road Not Taken” is an 1915 poem by Robert Frost. In the poem, the narrator rationalizes his decision to choose a certain way by revealing natural feature that attracted him, saying, __________",
-    questionText:
-      "Which quotation from “The Road Not Taken” most effectively illustrates the claim?",
-    choices: [
-      "Two roads diverged in a yellow wood, / And sorry I could not travel both",
-      "And both that morning equally lay / In leaves no step had trodden black.",
-      "And having perhaps the better claim, / Because it was grassy and wanted wear;",
-      "Two roads diverged in a wood, and I— / I took the one less traveled by,",
+      `To delineate the credibility of research control measures applied in the study.`,
+      `To suggest that age was the most significant factor in sharing fake news.`,
+      `To emphasize that the age effect was independent of political beliefs.`,
+      `To contrast the sharing habits of different age groups.`,
     ],
     correctAnswer: "C",
-    explanation:
-      "Only C cites a natural feature (“grassy and wanted wear”) that attracted the speaker.",
+    explanation: `The underlined phrase states that the relationship between age and sharing false articles remains even after political affiliation and ideology are statistically accounted for. Its function is therefore to show that the age effect is independent of political beliefs.`,
   },
   {
-    passage:
-      "A healthy colon is a marvelously effective organ that squeezes nutrients and water out of food while pumping out __________ small clumps of abnormal cells grow on the colon’s lining and turn into cancer.",
-    questionText:
-      "Which choice completes the text so that it conforms to the conventions of Standard English?",
+    module: 1,
+    passage: `"Alone" is an 1829 poem by Edgar Allan Poe. In the poem, Poe uses imagery to describe a transformation of a natural formation, writing, ________.`,
+    questionText: `Which quotation from "Alone" most effectively illustrates the claim?`,
     choices: [
-      "waste, however; sometimes",
-      "waste, however, sometimes",
-      "waste however sometimes",
-      "waste; however, sometimes",
-    ],
-    correctAnswer: "D",
-    explanation:
-      "Two independent clauses join with a semicolon before “however,” then a comma after it.",
-  },
-  {
-    passage:
-      "In trying to predict the future, the past is always __________ is wont to repeat itself, at least on Earth.",
-    questionText:
-      "Which choice completes the text so that it conforms to the conventions of Standard English?",
-    choices: ["key, history", "key—history", "key; history", "key history"],
-    correctAnswer: "C",
-    explanation:
-      "Two independent clauses should be joined by a semicolon: “key; history.”",
-  },
-  {
-    passage:
-      "Children who are born with heart valve defects often undergo surgery to receive frozen valves from __________ thawed cadaver tissue is dead and doesn’t grow, however, the child must periodically have operations to get larger valves—which can lead to a poor prognosis.",
-    questionText:
-      "Which choice completes the text so that it conforms to the conventions of Standard English?",
-    choices: [
-      "cadavers because",
-      "cadavers. Because",
-      "cadavers—because",
-      "cadavers, because",
+      `"From the lightning in the sky / As it pass'd me flying by- / From the thunder, and the storm-"`,
+      `"And the cloud that took the form / (When the rest of Heaven was blue) / Of a demon in my view-"`,
+      `"From ev'ry depth of good and ill / The mystery which binds me still-"`,
+      `"From the torrent, or the fountain- / From the red cliff of the mountain-"`,
     ],
     correctAnswer: "B",
-    explanation:
-      "A new sentence beginning with “Because” correctly separates the ideas.",
+    explanation: `Choice B depicts a cloud changing into, or taking, the form of a demon. This is a clear transformation of a natural formation and therefore directly illustrates the claim.`,
   },
   {
-    passage:
-      "AlphaGeometry, an AI program developed by researchers from Google DeepMind and New York University, successfully solved 25 out of 30 past International Mathematical Olympiad (IMO) geometry problems, demonstrating a capability comparable to human gold medalists. Exhibiting this advanced performance, __________",
-    questionText:
-      "Which choice completes the text so that it conforms to the conventions of Standard English?",
+    module: 1,
+    passage: `India is the largest democracy in the world, with over 614 million people voting in the 2019 election for the Lok Sabha, the parliament of the federal government. In the early years of Indian independence, from the first election in 1951-52 through the eighth Lok Sabha in 1984, each election resulted in one party winning the majority of seats. However, starting with the 1989 election, the party with the largest number of seats failed to win more than half of the total seats. This trend was eventually broken by the Bharatiya Janata Party, which ________.`,
+    chartId: "exam1-lok-sabha" as SatChartId,
+    questionText: `Which choice most effectively uses data from the graph to illustrate the claim?`,
     choices: [
-      "the potential for nonhuman participants in future IMOs becomes more feasible.",
-      "the possibility of AI challenging human contestants in the IMO seems increasingly likely.",
-      "human contestants are subject to be outcompeted by AI.",
-      "the AI suggests the potential for nonhuman participants in future IMOs.",
+      `went from holding the second most seats among the top 3 parties in parliament in 2004 and 2009 to holding a majority of seats in 2014 and 2019.`,
+      `reached its highest percentage of seats the same year that the Indian National Congress had its lowest percentage of seats over the same time period.`,
+      `won a lower percentage of seats in the 2009 election than in the 2004 election.`,
+      `had a lower percentage of seats than the Indian National Congress in 2004 but a higher percentage of seats than the Indian National Congress in 1999.`,
     ],
-    correctAnswer: "D",
-    explanation:
-      "The modifier “Exhibiting this advanced performance” must modify the AI, so the subject must be the AI.",
-  },
-  {
-    passage:
-      "Rabindranath Tagore was a pivotal figure in the Bengali Renaissance, infusing literature and arts with new life through his profound poetry and visionary ideas. __________, his influence was not confined to Bengal or even India, as his thoughts and works resonated globally, earning him the Nobel Prize in Literature in 1913. His legacy continues to inspire discussions on culture, education, and the arts worldwide.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Further", "However", "Thus", "Similarly"],
-    correctAnswer: "B",
-    explanation:
-      "The second sentence contrasts local importance with global reach—“However.”",
-  },
-  {
-    passage:
-      "By thinking of the collective actions of electrons as quasiparticles, physicists have made testable predictions that have been verified time and again in experiments on metals such as gold, silver, copper and aluminum. __________, the electrical resistivity—how much a material resists the flow of a current through it—of a Fermi liquid at low temperatures is predicted to vary in proportion to the square of the temperature, and experiments show that it does.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Indeed", "For example", "Moreover", "As a result"],
-    correctAnswer: "B",
-    explanation:
-      "The resistivity result is a specific instance of the verified predictions—“For example.”",
-  },
-  {
-    passage:
-      "Does Planet Nine exist? The first credible observations supporting the existence of such is the discovery of trans-Neptunian object (or TNO) Sedna. At very roughly 1,000 kilometers across it’s classified as a dwarf planet, and its orbit is very unusual: it never gets closer than approximately 11 billion kilometers to the sun, well outside Neptune’s orbit. Theoretical models show that it’s difficult to form a body with those characteristics in place. __________, it formed closer in to the sun, and an unseen planetary mass farther out—Planet Nine?—pulled it into its current orbit.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Surprisingly", "Notwithstanding", "Consequently", "More likely"],
-    correctAnswer: "D",
-    explanation:
-      "After rejecting in-place formation, the text offers the likelier alternative—“More likely.”",
-  },
-  {
-    passage:
-      "The Venus flytrap is renowned for its ability to snap shut in less than a second, making it one of the fastest-moving carnivorous plants. __________, compared to other insect-eating plants, its closing speed is remarkably quick, ensuring it rarely misses a passing meal.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Regardless", "In fact", "Still", "Additionally"],
-    correctAnswer: "B",
-    explanation:
-      "The second sentence intensifies the same claim about speed—“In fact.”",
-  },
-  {
-    passage:
-      "The strong force has been traditionally difficult to measure accurately at different energy scales, notably at longer distances termed as Terra Damnata. Recent collaborative efforts in both experimental and theoretical physics have started to unveil more about the strong force’s behavior. __________, these discoveries not only enhance our understanding of the fundamental forces but also pave the way for new theoretical approaches in quantum field theories.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Nonetheless", "Granted", "Indeed", "Despite this"],
-    correctAnswer: "C",
-    explanation:
-      "“Indeed” affirms and expands on the importance of the discoveries.",
-  },
-  {
-    passage:
-      "Research in navigational skills highlights significant variability among individuals, influenced by factors like upbringing, experience, and cultural context. __________, while some people naturally excel at navigation, many struggle due to a lack of practice or inherent difficulties in developing spatial awareness. Technologies like GPS have proven both to aid in navigation and to potentially degrade natural navigational skills when overused.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["In particular", "In addition", "In effect", "Admittedly"],
     correctAnswer: "A",
-    explanation:
-      "The next sentence specifies the variability—“In particular.”",
+    explanation: `The table shows that the Bharatiya Janata Party held 25% of seats in 2004 and 21% in 2009, placing it second among the three named parties in both years. It then won majorities in 2014 and 2019, with 52% and 56% of seats, respectively, directly illustrating that the no-majority trend was broken.`,
   },
   {
-    passage:
-      "Batteries vary in size and shape based on their specific uses and the amount of charge they need to store, from small button cells for watches to large lead-acid batteries for cars. The design and structure of batteries, such as cylindrical lithium-ion cells or blocky lead-acid units, are influenced by manufacturing processes, cost-effectiveness, and application requirements. __________, market demands and technological advancements continue to shape the development of battery types, influencing future designs and uses based on energy storage capacity and production efficiency.",
-    questionText:
-      "Which choice completes the text with the most logical transition?",
-    choices: ["Lastly", "In addition", "To sum up", "Therefore"],
+    module: 1,
+    passage: `Fatty liver disease (FLD) occurs when excess fat builds up in the liver. While there are often few or no symptoms of FLD, if left untreated, it can lead to cirrhosis or liver cancer. Because FLD is often asymptomatic, doctors and researchers rely on indicators such as steatosis (retention of fat in the liver), fibrosis (scarring), blood glucose (sugar), serum insulin, and insulin resistance to measure and track the development of FLD. A group of researchers led by radiologist Hamid Reza Talari hypothesized that those who take vitamin B12 would experience improvements in fibrosis and insulin resistance when compared to a control group over the same time period.`,
+    chartId: "exam1-fatty-liver" as SatChartId,
+    questionText: `Which choice best describes data from the table that support the researchers' hypothesis?`,
+    choices: [
+      `Those in the control group had decreases in their steatosis values and fasting blood glucose but had increases in fibrosis values and HOMA-IR.`,
+      `Those in the vitamin B12 group had decreases in fibrosis values and HOMA-IR levels, whereas those in the control group had increases in these same values.`,
+      `Both those in the vitamin B12 group and the control group had decreases in their steatosis values.`,
+      `Those in the control group had a decrease in their fasting blood glucose, but those in the vitamin B12 group had an increase in their fasting blood glucose.`,
+    ],
     correctAnswer: "B",
-    explanation:
-      "Market demands are another shaping factor alongside manufacturing—“In addition.”",
+    explanation: `The hypothesis predicts improvement in fibrosis and insulin resistance for the vitamin B12 group relative to the control group. The table shows decreases in fibrosis (-0.35) and HOMA-IR (-0.23) for the vitamin B12 group but increases in those measures (0.10 and 0.06) for the control group.`,
+  },
+  {
+    module: 1,
+    passage: `The following text is from Archibald Lampman's 1899 poem "The Mystery of a Year." In this poem, the speaker is describing a woman whom he has known for some time.
+
+A little while, a year agone, I knew her for a romping child,
+A dimple and a glance that shone With idle mischief when she smiled.
+To-day she passed me in the press, And turning with a quick surprise
+I wondered at her stateliness, I wondered at her altered eyes.`,
+    questionText: `Which choice best states the main idea of the text?`,
+    choices: [
+      `The speaker is reminiscing about a past romantic relationship with a woman.`,
+      `The speaker is astonished at the changes within a certain individual.`,
+      `The speaker is an expert in observing subtle changes in others.`,
+      `The speaker uses intricate and complex thought processes to impress those around him.`,
+    ],
+    correctAnswer: "B",
+    explanation: `The speaker remembers the woman as a playful child and is now surprised by her stateliness and altered appearance. The central idea is his astonishment at how much she has changed.`,
+  },
+  {
+    module: 1,
+    passage: `Neurons respond to stimuli from sensory organs or other neurons. Learning occurs when neurons change how they respond to stimuli based on previous experience, which is a property of memory. Electrical engineers seek to replicate similar processes in their development of computer memory. Recently, research by electrical engineer Mohammad Samizadeh Nikoo has demonstrated that vanadium dioxide (VO2) has a similar memory property to that of neurons, suggesting that ________.`,
+    questionText: `Which choice most logically completes the text?`,
+    choices: [
+      `VO2 could be used in the development of computer memory.`,
+      `neurons use VO2 when forming memories.`,
+      `VO2 can learn to respond to stimuli from sensory organs.`,
+      `electrical engineers can now use neurons to develop computer memory.`,
+    ],
+    correctAnswer: "A",
+    explanation: `Engineers want materials that can reproduce neuron-like memory processes. Because VO2 has a similar memory property, it may be useful in developing computer memory; the passage does not suggest that neurons contain VO2 or that the material receives sensory input.`,
+  },
+  {
+    module: 1,
+    passage: `Uruguayan-Spanish author Carmen Posadas has written the children's books Juego de Ninos (Child's Play) and La Cinta Roja (The Red Ribbon). Currently, ________ available in over fifty countries and thirty languages.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `some are`,
+      `this is`,
+      `they are`,
+      `it is`,
+    ],
+    correctAnswer: "C",
+    explanation: `The antecedent is the plural noun "books," so the plural pronoun and verb "they are" correctly complete the sentence.`,
+  },
+  {
+    module: 1,
+    passage: `During a meeting, a group of twelve young deaf people shared their feelings of isolation and their desire for support. In 1988, the group worked together to form Action Deaf Youth, an ________ provides services and programs for deaf children and youth throughout Northern Ireland.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `organization, that`,
+      `organization`,
+      `organization that`,
+      `organization,`,
+    ],
+    correctAnswer: "C",
+    explanation: `The sentence needs the noun "organization" followed by the restrictive relative clause "that provides services and programs." No comma should separate the noun from this essential identifying information.`,
+  },
+  {
+    module: 1,
+    passage: `In 1986, after a 56-day expedition, Ann Bancroft became the first woman to reach the North Pole. Her experience as a physical education teacher and her leadership of the first all-female team to cross the ice to the South ________ her to create a foundation that supports girls in pursuing their dreams.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `Pole to inspire`,
+      `Pole that inspired`,
+      `Pole, inspiring`,
+      `Pole inspired`,
+    ],
+    correctAnswer: "D",
+    explanation: `The compound subject "Her experience ... and her leadership ..." requires the main verb "inspired." Therefore, "Pole inspired" produces a complete and grammatically correct sentence.`,
+  },
+  {
+    module: 1,
+    passage: `American artist Simone Leigh creates art in various mediums, including sculptures, video, and ________ the themes and images in her artwork, Leigh has emphasized that Black women are her primary audience and that they would be familiar with the allusions in her work.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `performance. Discussing`,
+      `performance discussing`,
+      `performance and discussing`,
+      `performance, discussing`,
+    ],
+    correctAnswer: "A",
+    explanation: `"American artist Simone Leigh creates art ... including sculptures, video, and performance" is a complete sentence. A period correctly ends it, and "Discussing the themes and images ..." begins a new sentence with a modifying phrase that logically describes Leigh.`,
+  },
+  {
+    module: 1,
+    passage: `Japanese origamist Akira Yoshizawa is considered the grandmaster of origami, creating more than 50,000 models as well as wet-folding, the most well-known of his invented techniques. ________ dampening the paper before folding, leading to origami models with rounder and more sculpted looks.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `It involves`,
+      `They involve`,
+      `One involves`,
+      `These involve`,
+    ],
+    correctAnswer: "A",
+    explanation: `The singular pronoun "It" clearly refers to the singular technique "wet-folding." The singular verb "involves" agrees with that subject and correctly introduces a description of the technique.`,
+  },
+  {
+    module: 1,
+    passage: `Chinese artist Xu Bing is known for his art installations that showcase his printmaking skills and his creative use of languages and texts. His 1991 installation A Book from the Sky, for example, consists of volumes and scrolls printed with characters he invented, while his 2004 installation The Glassy Surface of a ________ uses the text of Henry David Thoreau's Walden to create the illusion of a lake.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `Lake:`,
+      `Lake`,
+      `Lake,`,
+      `Lake-`,
+    ],
+    correctAnswer: "B",
+    explanation: `"The Glassy Surface of a Lake" is the complete title and serves as the subject of the verb "uses." No punctuation should separate the subject from its verb.`,
+  },
+  {
+    module: 1,
+    passage: `Developed along with the swing style of jazz music in the 1920s, swing dance is a group of social dances that once comprised hundreds of styles. Not all of the styles survived beyond that time ________ the dances that are still popular today include Lindy Hop, Balboa, Collegiate Shag, and Charleston.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `period; however,`,
+      `period, however;`,
+      `period, however,`,
+      `period, however`,
+    ],
+    correctAnswer: "A",
+    explanation: `The blank joins two independent clauses. A semicolon correctly ends the first clause, and the conjunctive adverb "however" is followed by a comma: "period; however, the dances ..." Transition`,
+  },
+  {
+    module: 1,
+    passage: `Evolutionary biologist Jonathan Calede may have discovered the oldest amphibious beaver species in the world. Calede first compared measurements of the beaver's ankle to those of almost 350 other rodent species to learn more about how it moved. ________ Calede dated the species to approximately 30 million years ago based on its location between rock and ash layers.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `For example,`,
+      `In conclusion,`,
+      `Next,`,
+      `In fact,`,
+    ],
+    correctAnswer: "C",
+    explanation: `The passage describes two stages of Calede's research in chronological order: first comparing anatomical measurements and then dating the species. "Next" clearly signals the second step.`,
+  },
+  {
+    module: 1,
+    passage: `Male and female American citizens had starkly different roles during World War II. Men served as soldiers or took part in the workforce to create weapons and other wartime materials. ________ women were responsible for maintaining the home and supporting the men. Some women also ventured into the workforce for the first time, and the famous "We Can Do It" poster featuring "Rosie the Riveter" was created to motivate women to pursue this new role.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `Besides,`,
+      `Instead,`,
+      `Likewise,`,
+      `Meanwhile,`,
+    ],
+    correctAnswer: "D",
+    explanation: `The sentence shifts from what men were doing during the war to what women were doing at the same time. "Meanwhile" logically signals simultaneous but different activities.`,
+  },
+  {
+    module: 1,
+    passage: `While treatment for hearing loss is typically associated with the ears, some patients with damaged ear structures are not able to use traditional cochlear implants. ________ researchers are working to develop hearing aids anchored to patients' bones in order to combat hearing loss through vibrations in the skull.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `Secondly,`,
+      `In addition,`,
+      `Finally,`,
+      `Hence,`,
+    ],
+    correctAnswer: "D",
+    explanation: `The development of bone-anchored hearing aids is a consequence of the fact that some patients cannot use traditional cochlear implants. "Hence" means "for this reason" and correctly signals that cause-andeffect relationship.`,
+  },
+  {
+    module: 1,
+    passage: `Korean artist Anicka Yi uses a unique process and materials to generate her art installations. Her materials are often perishable and biological, such as soap and flowers, and are not traditionally used for artwork. ________ Yi spends almost as much time transforming these substances into completely new materials as she does creating the actual art pieces.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `Meanwhile,`,
+      `Instead,`,
+      `In fact,`,
+      `To conclude`,
+    ],
+    correctAnswer: "C",
+    explanation: `The final sentence adds a striking detail that reinforces how unusual and labor-intensive Yi's process is. "In fact" appropriately introduces this supporting elaboration. Expression of Ideas`,
+  },
+  {
+    module: 1,
+    passage: `While researching a topic, a student has taken the following notes:
+• A writing system for expressing numbers is a numeral system.
+• Two examples of numeral systems from history are Babylonian cuneiform numerals and Roman numerals.
+• The Babylonian cuneiform numeral system is a base-60 system and lacks a zero digit.
+• It is a positional numeral system in which the position of a digit affects its value.
+• The Roman numeral system is a base-10 system and lacks a zero digit.
+• It is a non-positional numeral system in which the position of a digit does not affect its value.`,
+    questionText: `The student wants to emphasize a difference between the two numeral systems. Which choice most effectively uses relevant information from the notes to accomplish this goal?`,
+    choices: [
+      `Babylonian cuneiform numerals and Roman numerals are two writing systems for expressing numbers.`,
+      `The Roman numeral system is a base-10 non-positional system that lacks a zero digit.`,
+      `One system for expressing numbers is Babylonian cuneiform; however, another one is the Roman numeral system.`,
+      `The Babylonian cuneiform numeral system is base-60 and positional, while the Roman numeral system is base-10 and non-positional.`,
+    ],
+    correctAnswer: "D",
+    explanation: `Choice D directly contrasts two relevant differences: the systems use different numerical bases, and one is positional while the other is non-positional. The other choices either state similarities or describe only one system.`,
+  },
+  {
+    module: 1,
+    passage: `While researching a topic, a student has taken the following notes:
+• Archaeologists studied the burial of an individual at the Newen Antug site in Argentinian Patagonia.
+• The individual was buried in a wooden structure over 800 years ago.
+• An analysis of the structure revealed that it was carved from a tree with excellent buoyancy.
+• The wooden structure was a canoe, suggesting that canoes were used as coffins at that time.`,
+    questionText: `The student wants to present the Newen Antug study and its conclusions. Which choice most effectively uses relevant information from the notes to accomplish this goal?`,
+    choices: [
+      `The burial site of an individual over 800 years ago was found at the Newen Antug site in Argentinian Patagonia.`,
+      `Archaeologists studied the burial site of an individual who was buried at the Newen Antug site over 800 years ago.`,
+      `An analysis of a burial site at the Newen Antug site in Argentinian Patagonia provided evidence that canoes were used as coffins over 800 years ago.`,
+      `As part of a study of a burial site at the Newen Antug site in Argentinian Patagonia, a wooden structure buried with an individual was analyzed.`,
+    ],
+    correctAnswer: "C",
+    explanation: `Choice C identifies the study and clearly states its conclusion: the burial provides evidence that canoes were used as coffins more than 800 years ago. The other choices mention the study but omit the main conclusion.`,
+  },
+  {
+    module: 2,
+    passage: `Shakespeare intentionally provided no stage directions for his play Macbeth regarding whether to have Banquo's ghost physically present on stage or simply to have Macbeth react fearfully to something invisible, thus providing future directors with the ______ to indulge their own artistic interpretations.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `confusion`,
+      `dedication`,
+      `instruction`,
+      `liberty`,
+    ],
+    correctAnswer: "D",
+    explanation: `"Liberty" means freedom to act or interpret as one chooses. By leaving the staging unspecified, Shakespeare gave future directors freedom to develop their own artistic interpretations.`,
+  },
+  {
+    module: 2,
+    passage: `German-Dutch paleontologist Ralph von Koenigswald was the first to discover the fossilized remains of Gigantopithecus blacki, a gargantuan ape believed to have lived during the Pleistocene Epoch. Because the fossils were exclusively found in caves in southern China, many experts believe that the species was ______ that region-that is, anyone claiming to have found remains of Gigantopithecus elsewhere would be mistaken.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `restricted to`,
+      `eliminated from`,
+      `common in`,
+      `unknown to`,
+    ],
+    correctAnswer: "A",
+    explanation: `"Restricted to" means limited to a particular place. The sentence explains that experts believe the species existed only in southern China.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Computer scientist Ray Kurzweil ______ that although artificial intelligence will not displace human beings, it will undoubtedly become smarter than people within this generation. This possibility has been the domain of science fiction writers for decades, whose works explore the ramifications of just such a future.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `proves`,
+      `requires`,
+      `predicts`,
+      `denies`,
+    ],
+    correctAnswer: "C",
+    explanation: `Kurzweil is making a claim about what will happen in the future, so "predicts" is the precise word. Nothing in the passage suggests that he proves, requires, or denies the outcome.`,
+  },
+  {
+    module: 2,
+    passage: `In psychology, it is critical not to generalize from the results of studies in which the subjects are not representative of the larger population. The infamous Stanford Prison Experiment ______ this principle: the participants, whose behavior supposedly demonstrated the "human" tendency toward alarming aggression in authoritarian situations, were a handful of male college-age individuals from the same private university in California rather than a diverse sampling of subjects.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `illustrates`,
+      `refutes`,
+      `supersedes`,
+      `critiques`,
+    ],
+    correctAnswer: "A",
+    explanation: `The Stanford Prison Experiment serves as an example of the danger described in the first sentence. Therefore, it "illustrates" the principle rather than refuting or replacing it.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Neurologists know that prosopagnosia-the ______ to recognize faces-involves a specific lesion in the brain and can be caused by disease or head injury. However, prominent author Dr. Oliver Sacks believes that this "face blindness" also has a definite genetic component.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `capability`,
+      `incapacity`,
+      `tendency`,
+      `reluctance`,
+    ],
+    correctAnswer: "B",
+    explanation: `Prosopagnosia is the inability to recognize faces. "Incapacity" means lack of ability and therefore precisely describes the condition.`,
+  },
+  {
+    module: 2,
+    passage: `The shark's competitive advantage in the oceanic ecosystem is principally due to electroreception, or ability to detect electrical impulses. Marine biologists believe that this heightened ______ to electrical stimuli allows the shark to easily find its prey, for as fish swim through water, their movement produces minute electrical signals.`,
+    questionText: `Which choice completes the text with the most logical and precise word or phrase?`,
+    choices: [
+      `allergy`,
+      `sensitivity`,
+      `indifference`,
+      `aversion`,
+    ],
+    correctAnswer: "B",
+    explanation: `"Sensitivity" is the ability to detect or respond to slight stimuli. That meaning directly matches the shark's heightened ability to detect weak electrical signals.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `The following text is from Herman Melville's 1924 short novel Billy Budd and pertains to Edward Vere, the captain of the ship on which Billy is sailing. Captain the Honorable Edward Fairfax Vere, to give his full title, was a bachelor of forty or thereabouts, a sailor of distinction even in a time prolific of renowned seamen. Though allied to the higher nobility, his advancement had not been altogether owing to influences connected with that circumstance. He had seen much service, been in various engagements, always acquitting himself as an officer mindful of the welfare of his men, but never tolerating an infraction of discipline; thoroughly versed in the science of his profession, and intrepid to the verge of temerity, though never injudiciously so.`,
+    questionText: `According to the text, what is true of Captain Vere?`,
+    choices: [
+      `He dislikes many of the men who serve under him.`,
+      `He is proud of his aristocratic background.`,
+      `He is a capable and evenhanded naval officer.`,
+      `He prefers navy life to life outside the navy.`,
+    ],
+    correctAnswer: "C",
+    explanation: `The passage describes Vere as experienced, knowledgeable, brave, attentive to his crew's welfare, and firm about discipline. These details support the conclusion that he is both capable and evenhanded.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Dracula is an 1897 novel by Bram Stoker. In the story, English lawyer Jonathan Harker has traveled to Transylvania to conduct business with Count Dracula at his castle. In his journal, Harker conveys his belief that he has become Dracula's prisoner: ______`,
+    questionText: `Which quotation from Jonathan Harker's journal most effectively illustrates the claim?`,
+    choices: [
+      `"What manner of man is this, or what manner of creature, is it in the semblance of man? I feel the dread of this horrible place overpowering me."`,
+      `"My lamp seemed to be of little effect in the brilliant moonlight, but I was glad to have it with me, for there was a dread loneliness in the place which chilled my heart and made my nerves tremble."`,
+      `"I start at my own shadow, and am full of all sorts of horrible imaginings. God knows that there is ground for my terrible fear in this accursed place."`,
+      `"I rushed up and down the stairs, trying every door and peering out of every window I could find, but after a little the conviction of my helplessness overpowered all other feelings."`,
+    ],
+    correctAnswer: "D",
+    explanation: `The quoted attempt to find an exit, followed by Harker's realization of his helplessness, most directly shows that he believes he is unable to leave and is therefore a prisoner.`,
+  },
+  {
+    module: 2,
+    passage: `"In Flanders Fields" is a 1915 poem written by Lieutenant-Colonel John McCrae, a Canadian military officer who died three years later in World War I. The poem is meant to be a plea toward others to join the war effort, as is evident by the following lines: ______`,
+    questionText: `Which quotation from "In Flanders Fields" most effectively illustrates the claim?`,
+    choices: [
+      `"Loved and were loved and now we lie / In Flanders fields"`,
+      `"In Flanders fields the poppies blow / Between the crosses row on row"`,
+      `"To you from failing hands we throw / The torch; be yours to hold it high"`,
+      `"We are the dead. Short days ago / We lived, felt dawn, saw sunset glow"`,
+    ],
+    correctAnswer: "C",
+    explanation: `These lines directly call on the living to take up the "torch," symbolically continuing the soldiers' cause. The other quotations describe the dead or the battlefield without making such an appeal.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `The curator of a museum claims that a dress in his possession was worn by the wife of one of Lincoln's generals at the presidential inauguration in 1865. Radiocarbon dating, which dates organic material with an error range of about thirty years in either direction, was performed on the sleeves of the dress, revealing that they date back to the 1975-2005 period. If both the curator's claim and the radiocarbon dating analysis are correct, that would suggest that ______.`,
+    questionText: `Which choice most logically completes the text?`,
+    choices: [
+      `the dress was made sometime between 1835 and 1895 and then damaged sometime after 1975.`,
+      `vintage dresses are more commonly recovered from the late twentieth and early twenty-first centuries than from the mid-nineteenth century.`,
+      `over one hundred years after the dress was made, its sleeves were replaced.`,
+      `the dress was made from material different from that used for most dresses in the nineteenth century.`,
+    ],
+    correctAnswer: "C",
+    explanation: `If the dress was worn in 1865 but the sleeves date to 1975-2005, the original sleeves could not still be attached. The most logical conclusion is that the sleeves were replaced more than a century later.`,
+  },
+  {
+    module: 2,
+    passage: `In the early 1900s, paleontologists largely believed that there were no undocumented prehistoric aquatic species that had survived to the present day because it would be impossible for such a species to have enough animals to sustain a breeding population while escaping detection in the modern era. However, a coelacanth, a large lobe-finned fish universally believed by scientists to have gone extinct sixty-six million years ago, was found off the coast of South Africa as recently as 1938. This event may suggest that ______.`,
+    questionText: `Which choice most logically completes the text?`,
+    choices: [
+      `fewer coelacanths are required to sustain a breeding population than was previously thought.`,
+      `it is possible for a prehistoric species to go undiscovered for longer than expected.`,
+      `the scientists who determined that the coelacanth was extinct ignored critical evidence.`,
+      `the same environmental conditions that eliminated the dinosaurs nearly killed off the coelacanths.`,
+    ],
+    correctAnswer: "B",
+    explanation: `The discovery of a supposedly extinct species demonstrates that a surviving population can remain undetected for a very long time. The passage provides no evidence for the other claims.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `The door-in-the-face technique involves initially making an outrageous or unappealing request or offer, which the other person is highly likely to refuse, then following up with a more reasonable one. The subject is more likely to look favorably upon this second request or offer because it seems acceptable compared to the initial proposition. So, if an employee wants the best raise in annual salary from her boss that she can get, she might succeed by asking for a ______.`,
+    questionText: `Which choice most logically completes the text?`,
+    choices: [
+      `50% raise, then asking for a 5% raise.`,
+      `3% raise, then asking for a 2% raise.`,
+      `10% raise, then asking for a 50% raise.`,
+      `3% raise, then asking for a 3% raise again.`,
+    ],
+    correctAnswer: "A",
+    explanation: `The technique requires an extreme first request that is likely to be rejected, followed by a much more reasonable request. A 50% raise followed by a 5% raise fits that pattern.`,
+  },
+  {
+    module: 2,
+    passage: `The North American Free Trade Agreement (NAFTA) was an agreement among the United States, Canada, and Mexico that was in effect between 1994 and 2020. During this time, the number of manufacturing jobs in the United States and Canada declined, but the total number of manufacturing jobs in the countries covered by NAFTA increased. This suggests that, between 1994 and 2020, ______.`,
+    questionText: `Which choice most logically completes the text?`,
+    choices: [
+      `the number of manufacturing jobs in Mexico increased by a greater amount than the combined decreases in the United States and Canada.`,
+      `NAFTA made it more difficult for manufacturers to establish factories in the United States and Canada.`,
+      `the cost of manufacturing goods in the area covered by NAFTA decreased.`,
+      `complex goods, such as automobiles and electronics, were increasingly manufactured in the United States, Canada, and Mexico.`,
+    ],
+    correctAnswer: "A",
+    explanation: `The total across all three countries increased even though the totals in the United States and Canada fell. Therefore, Mexico's increase must have been larger than the combined declines in the other two countries.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `The following text is adapted from Charles Dickens's 1859 novel A Tale of Two Cities. Mr. Lorry, traveling to France on business, is delivering some news to Miss Manette, the daughter of one of his friends. "Miss Manette, I am a man of business. I have a business charge to acquit myself of. In your reception of it, don't heed me any more than if I was a speaking machine-truly, I am not much else. I will, with your leave, relate to you, miss, the story of one of our customers." "Story!" He seemed wilfully to mistake the word she had repeated, when he added, in a hurry, "Yes, customers; in the banking business we usually call our connection our customers. He was a French gentleman; a scientific gentleman; a man of great acquirements-a Doctor."`,
+    questionText: `Based on the text, how does Mr. Lorry interact with Miss Manette?`,
+    choices: [
+      `Although he claims to be uninterested in the news, he makes purposeful decisions during his conversation with Miss Manette.`,
+      `Although he is a professional, he misunderstands Miss Manette's interjection.`,
+      `Although he acts as if the news has no importance to him, he cannot keep the details of the story accurate.`,
+      `Although he is unthinkingly following directions, he is flustered by Miss Manette's rudeness.`,
+    ],
+    correctAnswer: "A",
+    explanation: `Mr. Lorry presents himself as an impersonal "speaking machine," but the narrator says he deliberately pretends to misunderstand Miss Manette and carefully frames the information as a business matter. His choices are purposeful, not accidental.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Nisga'a poet Jordan Abel addresses the experiences of Indigenous people as European settlers and their descendants took over North America. Abel's first book of poetry, The Place of Scraps (2014), uses Totem Poles, a 1929 book by anthropologist Marius Barbeau, as source material. Abel claims that his use of Barbeau's text shows how anthropological texts can be used to portray Indigenous people differently based on the author.`,
+    questionText: `Which finding, if true, would most directly support Abel's claim?`,
+    choices: [
+      `Abel intersperses Barbeau's text with images of Indigenous people and personal anecdotes written in the third person.`,
+      `Abel explains that Barbeau presented two chiefs feuding over constructing the largest pole as unreasonable, yet other anthropologists claim that such arguments between chiefs of Indigenous tribes were important political exchanges.`,
+      `The Place of Scraps won the Dorothy Livesay Poetry Prize and was a finalist for the Gerald Lampert Award.`,
+      `Before Abel wrote The Place of Scraps, other Indigenous writers had used texts from anthropologists in their works.`,
+    ],
+    correctAnswer: "B",
+    explanation: `Choice B shows the same type of behavior being portrayed differently by different authors, which directly supports Abel's claim that an author's perspective affects how Indigenous people are represented.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Caribbean box jellyfish, despite having only 1,000 active neurons at a time and no central brain, demonstrated evidence of learning, according to a recent study in the journal Current Biology. The research classified learning into two types: nonassociative (like habituation) and associative, which involves connecting cues in the environment. The study's experiment involved placing jellyfish in tanks with different visual contrasts. Only jellyfish in tanks with medium-contrast stripes learned to associate the visual pattern with the risk of hitting a wall, adjusting their behavior rapidly after a few bumps. This study suggests that even simple animals can exhibit basic neural processes associated with learning, without needing complex structures like a human brain.`,
+    questionText: `Which choice best states the main purpose of the text?`,
+    choices: [
+      `To analyze the various visual patterns perceived by jellyfish in different environments.`,
+      `To explore the neural complexities and learning behaviors across marine species.`,
+      `To investigate the potential for associative learning in a simple marine organism.`,
+      `To compare the brain structures of humans, mice, and jellyfish and their role in learning.`,
+    ],
+    correctAnswer: "C",
+    explanation: `The passage focuses on an experiment testing whether box jellyfish can connect a visual cue with the risk of collision. That is an investigation of associative learning in a simple organism.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `If you've ever been in an unhealthy work situation, you probably know how hard it can be to leave. Leaving a bad job is never easy, and each person's breaking point is different, so beating yourself up over why you stayed so long in a traumatic situation won't ______ from each experience will empower you to own your career choices and leave earlier if you find yourself in a comparable situation again.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `help however learning`,
+      `help however, learning`,
+      `help, however, learning`,
+      `help; however, learning`,
+    ],
+    correctAnswer: "D",
+    explanation: `"Beating yourself up ... won't help" and "learning from each experience will empower you" are independent clauses. A semicolon before the conjunctive adverb "however" and a comma after it correctly join them.`,
+  },
+  {
+    module: 2,
+    passage: `Electrically active constructs can have a beneficial effect on electroresponsive tissues, ______ the brain, heart, and nervous system. Conducting polymers (CPs) are being considered as components of these constructs because of their intrinsic electroactive and flexible nature.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `such as:`,
+      `such as`,
+      `such as,`,
+      `such as---`,
+    ],
+    correctAnswer: "B",
+    explanation: `The phrase "such as" directly introduces examples and should not be separated from them by punctuation. The sentence correctly reads "tissues, such as the brain, heart, and nervous system."
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `To handle the increasing variety and complexity of managerial forecasting problems, many forecasting techniques have been developed in recent years. Each has ______ special use, and care must be taken to select the correct technique for a particular application.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `their`,
+      `its`,
+      `it's`,
+      `they're`,
+    ],
+    correctAnswer: "B",
+    explanation: `"Each" is singular, so the singular possessive pronoun "its" is required. "It's" means "it is," and the plural forms do not agree with "each."
+
+Exam 9 M2 Transition`,
+  },
+  {
+    module: 2,
+    passage: `When bees pollinate flowers, they may be exposed to insecticides, potentially affecting their nervous systems. Recently, Dr. Rachel Parkinson of the University of Oxford added the common ______ to a sucralose solution to examine the insecticide's impact on honeybees' ability to walk in a straight line.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `insecticide sulfoxaflor`,
+      `insecticide, sulfoxaflor,`,
+      `insecticide sulfoxaflor,`,
+      `insecticide, sulfoxaflor`,
+    ],
+    correctAnswer: "A",
+    explanation: `"Sulfoxaflor" identifies which common insecticide was used, so it is essential information and should not be set off with commas.`,
+  },
+  {
+    module: 2,
+    passage: `Researchers studying bacteria have solved a 50-year mystery of how bacteria are able to move using appendages that are made of a single ______ the subunits of the protein can exist in 11 different shapes, allowing the appendages to "supercoil" into corkscrews that the bacteria use to propel themselves.`,
+    questionText: `Which choice completes the text so that it conforms to the conventions of Standard English?`,
+    choices: [
+      `protein`,
+      `protein while`,
+      `protein,`,
+      `protein:`,
+    ],
+    correctAnswer: "D",
+    explanation: `The first clause is complete, and the following clause explains how a single protein can form the appendages. A colon correctly introduces that explanation.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Fault tree analysis was originally used in engineering to enhance safety practices in high-risk fields, such as nuclear power and pharmaceuticals, but other fields are experimenting with ways to utilize this process to benefit their work. ______ fault tree analysis is also being used in low-risk fields, such as social services and software engineering.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `Increasingly,`,
+      `Nevertheless,`,
+      `Therefore,`,
+      `In addition,`,
+    ],
+    correctAnswer: "A",
+    explanation: `The passage describes fault tree analysis spreading from its original high-risk uses into a growing range of other fields. "Increasingly" most precisely signals this expanding trend.`,
+  },
+  {
+    module: 2,
+    passage: `When Monika Sosnowska began her career in Amsterdam as a painter, she never expected to branch out into other media. ______ she had primarily worked on canvas, but she quickly found her works evolving to include the three-dimensional space around her.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `Instead,`,
+      `Consequently,`,
+      `Previously,`,
+      `Similarly,`,
+    ],
+    correctAnswer: "C",
+    explanation: `The sentence contrasts her earlier work on canvas with the later development of three-dimensional work. "Previously" clearly refers to that earlier period.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `Fish sometimes appear in otherwise uninhabited bodies of water, seemingly emerging out of nowhere. Some scientists believe that the fish are carried to these locations in the beaks or talons of birds. ______ new research suggests that the fish eggs enter a state of hibernation and are actually eaten by birds and excreted out into the bodies of water.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `For instance,`,
+      `Next,`,
+      `Likewise,`,
+      `Alternatively,`,
+    ],
+    correctAnswer: "D",
+    explanation: `The new research offers a different explanation for how fish reach the water. "Alternatively" properly introduces this competing possibility.`,
+  },
+  {
+    module: 2,
+    passage: `The maturation of the prefrontal cortex (PFC) is linked to the development of declarative memory, but its exact role is unclear. A study on seventeen subjects aged 6.2 to 19.4 years found that earlier PFC activity predicted better memory, and the flow of activity between certain PFC subregions was crucial for memory formation, refining during adolescence. ______ middle frontal activity consistently influenced memory regardless of age.`,
+    questionText: `Which choice completes the text with the most logical transition?`,
+    choices: [
+      `However,`,
+      `Moreover,`,
+      `In contrast,`,
+      `Thus,`,
+    ],
+    correctAnswer: "C",
+    explanation: `The previous sentence describes activity patterns that change or refine with age. The next sentence presents a contrasting finding: middle frontal activity influenced memory consistently regardless of age.
+
+Exam 9 M2 Expression of Ideas`,
+  },
+  {
+    module: 2,
+    passage: `While researching a topic, a student has taken the following notes:
+• To restore oyster reefs in Australia, limestone boulders are submerged to provide habitats, but baby oysters need help finding the boulders.
+• A team from University of Adelaide looked into using sound as a way to encourage the baby oysters to attach to the boulders.
+• The research team recorded sounds at the healthy Port Noarlunga Reef to play near the submerged boulders.
+• Boulders in the area with the soundscape attracted around 17,000 more oysters per square meter compared to boulders without the soundscape.
+• Soundscapes can indicate a healthy place for baby oysters to grow and can be a cost-effective way to restore oyster reefs.`,
+    questionText: `The student wants to emphasize the aim of the research study. Which choice most effectively uses relevant information from the notes to accomplish this goal?`,
+    choices: [
+      `Researchers obtained a soundscape at Port Noarlunga Reef to help in the restoration of oyster reefs in Australia.`,
+      `Researchers now know that the soundscape of a healthy marine ecosystem can attract baby oysters to attach to submerged limestone boulders.`,
+      `After they measured the number of oysters attracted to boulders in the soundscape area compared to no soundscape, researchers determined that the soundscape attracted more baby oysters.`,
+      `Researchers wanted to know whether a soundscape of a healthy marine ecosystem could encourage baby oysters to attach to submerged limestone boulders.`,
+    ],
+    correctAnswer: "D",
+    explanation: `Choice D directly states what the researchers wanted to determine, which is the study's aim. The other choices emphasize the method or findings instead.
+
+Exam 9 M2`,
+  },
+  {
+    module: 2,
+    passage: `While researching a topic, a student has taken the following notes:
+• Neanderthals are an extinct species of humans who died out about 40,000 years ago and are the closest evolutionary relatives of present-day humans.
+• Studying the genomes of Neanderthals provides insight into human evolution.
+• Professor Svante Pääbo is a Swedish geneticist and the director of the Department of Genetics at the Max Planck Institute for Evolutionary Anthropology.
+• His landmark study presented the first draft sequence of the Neanderthal genome.
+• Laurits Skov of the Max Planck Institute for Evolutionary Anthropology has a doctorate in bioinformatics and studied evolutionary anthropology.
+• One of his recent studies revealed the genomes of a family of Neanderthals.`,
+    questionText: `The student wants to emphasize the affiliation and purpose of Pääbo's and Skov's work. Which choice most effectively uses relevant information from the notes to accomplish this goal?`,
+    choices: [
+      `The closest evolutionary relatives of present-day humans, Neanderthals went extinct about 40,000 years ago.`,
+      `By studying the genomes of Neanderthals, Svante Pääbo and Laurits Skov of the Max Planck Institute for Evolutionary Anthropology provide insight into human evolution.`,
+      `Svante Pääbo and Laurits Skov study the genome of Neanderthals, an extinct species of humans.`,
+      `Studies by Svante Pääbo and Laurits Skov reveal information about Neanderthals, who died out about 40,000 years ago.`,
+    ],
+    correctAnswer: "B",
+    explanation: `Choice B includes both researchers' shared affiliation with the Max Planck Institute and the purpose of their genomic research: providing insight into human evolution.`,
   },
 ];
 
@@ -364,9 +796,11 @@ export const SAT_EXAM_1_QUESTIONS: SatQuestion[] = EXAM_1_DRAFTS.map(
   (draft, index) => ({
     id: `exam-1-q-${index + 1}`,
     examId: 1,
+    module: draft.module,
     section: SECTION,
     passage: draft.passage,
     passageImageUrl: draft.passageImageUrl,
+    chartId: draft.chartId,
     questionText: draft.questionText,
     choices: draft.choices.map((text, choiceIndex) => ({
       label: LABELS[choiceIndex],

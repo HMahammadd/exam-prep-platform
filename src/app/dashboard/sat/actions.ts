@@ -132,6 +132,9 @@ export async function submitSatExam(
     return {
       success: true,
       attemptId,
+      score,
+      totalQuestions,
+      percentage,
       local: true,
       localAttempt: {
         id: attemptId,
@@ -204,7 +207,13 @@ export async function submitSatExam(
     return { success: false, error: "Failed to save exam answers." };
   }
 
-  return { success: true, attemptId: attempt.id };
+  return {
+    success: true,
+    attemptId: attempt.id,
+    score,
+    totalQuestions,
+    percentage,
+  };
 }
 
 export async function getSatExamAttempt(attemptId: string) {

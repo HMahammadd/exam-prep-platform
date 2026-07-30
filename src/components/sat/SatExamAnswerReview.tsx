@@ -4,7 +4,9 @@ import {
   CircleDashed,
   XCircle,
 } from "lucide-react";
-import { getQuestionById } from "@/lib/sat-questions";
+import { getExamQuestions, getQuestionById } from "@/lib/sat-questions";
+import { SatChart } from "@/components/sat/SatChart";
+import { SatPassage } from "@/components/sat/SatPassage";
 
 export type SatReviewAnswer = {
   id: string;
@@ -111,9 +113,17 @@ export function SatExamAnswerReview({ answers }: SatExamAnswerReviewProps) {
             <div className="mt-4 space-y-4">
               {items.map((answer) => {
                 const question = getQuestionById(answer.question_id);
-                const questionNumber =
+                const globalNumber =
                   answers.findIndex((item) => item.id === answer.id) + 1;
+                const moduleQuestionNumber = question
+                  ? getExamQuestions(question.examId)
+                      .filter((item) => item.module === question.module)
+                      .findIndex((item) => item.id === question.id) + 1
+                  : globalNumber;
                 const StatusIcon = style.Icon;
+                const label = question
+                  ? `Module ${question.module} · Question ${moduleQuestionNumber}`
+                  : `Question ${globalNumber}`;
 
                 return (
                   <div
@@ -121,9 +131,7 @@ export function SatExamAnswerReview({ answers }: SatExamAnswerReviewProps) {
                     className={`rounded-xl border p-4 ${style.card}`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-medium text-foreground">
-                        Question {questionNumber}
-                      </p>
+                      <p className="font-medium text-foreground">{label}</p>
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${style.badge}`}
                       >
@@ -134,14 +142,20 @@ export function SatExamAnswerReview({ answers }: SatExamAnswerReviewProps) {
 
                     {question && (
                       <>
-                        <p className="mt-2 whitespace-pre-line text-sm text-muted">
-                          {question.passage}
-                        </p>
+                        <div className="mt-2">
+                          <SatPassage
+                            passage={question.passage}
+                            variant="review"
+                          />
+                        </div>
+                        {question.chartId && (
+                          <SatChart chartId={question.chartId} />
+                        )}
                         {question.passageImageUrl && (
                           <div className="relative mt-3 w-full max-w-md overflow-hidden rounded-lg border border-card-border bg-white">
                             <Image
                               src={question.passageImageUrl}
-                              alt={`Figure for question ${questionNumber}`}
+                              alt={`Figure for ${label}`}
                               width={960}
                               height={640}
                               className="h-auto w-full"

@@ -18,12 +18,15 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import type { SatChoiceLabel, SatClientQuestion } from "@/types/sat-exam";
+import { SatChart } from "@/components/sat/SatChart";
+import { SatPassage } from "@/components/sat/SatPassage";
 import { SatQuestionNavPopover } from "./SatQuestionNavPopover";
 
 type SatQuestionScreenProps = {
   question: SatClientQuestion;
   questionIndex: number;
   totalQuestions: number;
+  moduleNumber?: number;
   selectedAnswer: SatChoiceLabel | null;
   marked: boolean;
   eliminated: SatChoiceLabel[];
@@ -49,6 +52,7 @@ export function SatQuestionScreen({
   question,
   questionIndex,
   totalQuestions,
+  moduleNumber = 1,
   selectedAnswer,
   marked,
   eliminated,
@@ -119,12 +123,8 @@ export function SatQuestionScreen({
             className="min-h-0 overflow-auto p-5 sm:p-6"
             style={{ width: `${leftPercent}%` }}
           >
-            <p
-              className="whitespace-pre-line text-[17px] leading-8 text-[#202124]"
-              style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-            >
-              {question.passage}
-            </p>
+            <SatPassage passage={question.passage} />
+            {question.chartId && <SatChart chartId={question.chartId} />}
             {question.passageImageUrl && (
               <div className="relative mt-4 w-full max-w-lg overflow-hidden rounded border border-[#e5e7eb] bg-white">
                 <Image
@@ -303,6 +303,7 @@ export function SatQuestionScreen({
         open={navOpen}
         onClose={() => setNavOpen(false)}
         items={navItems}
+        moduleNumber={moduleNumber}
         onSelect={onGoToQuestion}
         onGoToReview={onGoToReview}
       />

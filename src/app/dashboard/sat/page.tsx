@@ -3,7 +3,7 @@ import { BookOpen, ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { SatExamRow } from "@/components/sat/SatExamRow";
+import { SatExamList } from "@/components/sat/SatExamList";
 import { SAT_PRACTICE_EXAMS } from "@/lib/sat-exams";
 import { getSatExamSummaries } from "./actions";
 
@@ -46,7 +46,10 @@ export default async function SatDashboardPage() {
           >
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-950/60">
-                <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden />
+                <BookOpen
+                  className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                  aria-hidden
+                />
               </span>
               <div>
                 <p className="font-semibold text-foreground">SAT Lessons</p>
@@ -62,15 +65,7 @@ export default async function SatDashboardPage() {
           </Link>
         </div>
 
-        <div className="space-y-3">
-          {SAT_PRACTICE_EXAMS.map((exam) => (
-            <SatExamRow
-              key={exam.id}
-              exam={exam}
-              summary={summaries[String(exam.id)]}
-            />
-          ))}
-        </div>
+        <SatExamList exams={SAT_PRACTICE_EXAMS} serverSummaries={summaries} />
       </main>
     </div>
   );

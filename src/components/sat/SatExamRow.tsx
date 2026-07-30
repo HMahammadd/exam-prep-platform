@@ -7,13 +7,19 @@ type SatExamRowProps = {
   summary?: SatExamAttemptSummary;
 };
 
+function formatScore(score: number | null | undefined, total: number | null | undefined) {
+  if (score === null || score === undefined || total === null || total === undefined) {
+    return "—";
+  }
+  return `${score}/${total}`;
+}
+
 export function SatExamRow({ exam, summary }: SatExamRowProps) {
   const isAvailable = exam.status === "available";
   const hasAttempt =
     summary?.lastScore !== null && summary?.lastScore !== undefined;
-  const lastScoreText = hasAttempt
-    ? `${summary.lastScore}/${summary.lastTotal}`
-    : "—";
+  const lastScoreText = formatScore(summary?.lastScore, summary?.lastTotal);
+  const bestScoreText = formatScore(summary?.bestScore, summary?.bestTotal);
 
   return (
     <div
@@ -35,15 +41,29 @@ export function SatExamRow({ exam, summary }: SatExamRowProps) {
 
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
         {isAvailable && (
-          <p className="text-sm text-muted">
-            Last Score:{" "}
-            <span className="font-semibold text-foreground">{lastScoreText}</span>
-          </p>
+          <>
+            <p className="text-sm text-muted">
+              Last Score:{" "}
+              <span className="font-semibold text-foreground">
+                {lastScoreText}
+              </span>
+            </p>
+            <p className="text-sm text-muted">
+              Best Score:{" "}
+              <span className="font-semibold text-foreground">
+                {bestScoreText}
+              </span>
+            </p>
+          </>
         )}
 
         {isAvailable && hasAttempt && summary?.lastAttemptId && (
           <Link
-            href={`/dashboard/sat/exam/${exam.id}/details`}
+            href={
+              summary.lastAttemptId.startsWith("local-")
+                ? `/dashboard/sat/exam/${exam.id}/results?attemptId=${summary.lastAttemptId}`
+                : `/dashboard/sat/exam/${exam.id}/details`
+            }
             className="inline-flex items-center gap-1.5 rounded-lg border border-card-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent-soft"
           >
             <FileText className="h-4 w-4 text-accent" aria-hidden />
