@@ -43,6 +43,44 @@ function storageKey(examId: number) {
   return `sat-exam-${examId}`;
 }
 
+function emptyAnswers(
+  questions: SatClientQuestion[]
+): Record<string, SatChoiceLabel | null> {
+  return Object.fromEntries(questions.map((q) => [q.id, null]));
+}
+
+function emptyEliminated(
+  questions: SatClientQuestion[]
+): Record<string, SatChoiceLabel[]> {
+  return Object.fromEntries(questions.map((q) => [q.id, []]));
+}
+
+/** Fill missing question keys with null so unanswered never looks answered. */
+function mergeAnswerKeys(
+  existing: Record<string, SatChoiceLabel | null> | undefined,
+  questions: SatClientQuestion[]
+): Record<string, SatChoiceLabel | null> {
+  const merged = emptyAnswers(questions);
+  if (!existing) {
+    return merged;
+  }
+  for (const question of questions) {
+    const value = existing[question.id];
+    if (value !== undefined) {
+      merged[question.id] = value;
+    }
+  }
+  return merged;
+}
+
+function hasSelectedAnswer(
+  answers: Record<string, SatChoiceLabel | null>,
+  questionId: string
+): boolean {
+  const value = answers[questionId];
+  return value === "A" || value === "B" || value === "C" || value === "D";
+}
+
 export function ExamInterface({
   exam,
   questions,
@@ -56,12 +94,12 @@ export function ExamInterface({
   const [currentModule, setCurrentModule] = useState<SatModuleNumber>(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, SatChoiceLabel | null>>(
-    () => Object.fromEntries(questions.map((q) => [q.id, null]))
+    () => emptyAnswers(questions)
   );
   const [marked, setMarked] = useState<Record<string, boolean>>({});
   const [eliminated, setEliminated] = useState<
     Record<string, SatChoiceLabel[]>
-  >(() => Object.fromEntries(questions.map((q) => [q.id, []])));
+  >(() => emptyEliminated(questions));
   const [remainingSeconds, setRemainingSeconds] = useState(moduleSeconds);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [timerVisible, setTimerVisible] = useState(true);
@@ -92,12 +130,12 @@ export function ExamInterface({
           setPhase(stored.phase ?? "instructions");
           setCurrentModule(stored.currentModule ?? 1);
           setCurrentIndex(stored.currentIndex);
-          setAnswers(stored.answers);
-          setMarked(stored.marked);
-          setEliminated(
-            stored.eliminated ??
-              Object.fromEntries(questions.map((q) => [q.id, []]))
-          );
+          setAnswers(mergeAnswerKeys(stored.answers, questions));
+          setMarked(stored.marked ?? {});
+          setEliminated({
+            ...emptyEliminated(questions),
+            ...(stored.eliminated ?? {}),
+          });
           setRemainingSeconds(stored.remainingSeconds);
           setElapsedSeconds(stored.elapsedSeconds ?? 0);
           setHydrated(true);
@@ -150,9 +188,16 @@ export function ExamInterface({
       setRemainingSeconds(moduleSeconds);
       setDirectionsOpen(false);
       setShowConfirm(false);
+      // Ensure every question in this exam has an answer slot (fixes Module 2
+      // looking "answered" when keys were missing after Module 1).
+      setAnswers((prev) => mergeAnswerKeys(prev, questions));
+      setEliminated((prev) => ({
+        ...emptyEliminated(questions),
+        ...prev,
+      }));
       setPhase("questions");
     },
-    [moduleSeconds]
+    [moduleSeconds, questions]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -273,7 +318,7 @@ export function ExamInterface({
     () =>
       moduleQuestions.map((question, index) => ({
         index,
-        answered: answers[question.id] !== null,
+        answered: hasSelectedAnswer(answers, question.id),
         marked: marked[question.id] ?? false,
         current: index === currentIndex,
       })),
