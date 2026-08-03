@@ -84,9 +84,15 @@ export default function Page() {
                 }
               },
             );
-            throw new SentryExampleFrontendError(
-              "This error is raised on the frontend of the example page.",
+            // captureException + flush is more reliable than `throw` in an
+            // async click handler (those become unhandled rejections and can be missed).
+            Sentry.captureException(
+              new SentryExampleFrontendError(
+                "This error is raised on the frontend of the example page.",
+              ),
             );
+            await Sentry.flush(2000);
+            setHasSentError(true);
           }}
           disabled={!isConnected}
         >
