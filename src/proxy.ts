@@ -57,6 +57,6 @@ export const config = {
     /*
      * Match all request paths except static assets and image optimization.
      */
-    "/((?!_next/static|_next/image|favicon.ico|brand/|avatars/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|brand/|avatars/|monitoring|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -1,9 +1,10 @@
-import * as Sentry from "@sentry/nextjs";
-import posthog from "posthog-js";
-import { shouldEnablePostHog } from "@/lib/analytics";
-
-// --- Sentry (client) ---
+// This file configures the initialization of Sentry for edge features (middleware, edge routes, and so on).
+// The config you add here will be used whenever one of the edge features is loaded.
+// Note that this config is unrelated to the Vercel Edge Runtime and is also required when running locally.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
+
+import * as Sentry from "@sentry/nextjs";
+
 Sentry.init({
   dsn: "https://3128508f9cfb241aea69658d28b67117@o4511843047309312.ingest.us.sentry.io/4511843056943104",
 
@@ -20,18 +21,3 @@ Sentry.init({
     // httpBodies: [],
   },
 });
-
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
-
-// --- PostHog ---
-const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN;
-const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
-
-if (token && shouldEnablePostHog()) {
-  posthog.init(token, {
-    api_host: host,
-    defaults: "2026-05-30",
-    // Keep off until we intentionally enable it with exam-route masking.
-    disable_session_recording: true,
-  });
-}
