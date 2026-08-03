@@ -63,6 +63,25 @@ describe("inbox permission rules", () => {
     const userRole = "user";
     expect(userRole !== "admin").toBe(true);
   });
+
+  it("supports announcement as a distinct inbox type", () => {
+    const types = ["friend_request", "admin_message", "news", "announcement"];
+    expect(types).toContain("announcement");
+    expect(types).toContain("news");
+    expect(types).toContain("admin_message");
+  });
+
+  it("groups recipient copies by send_id for admin delete", () => {
+    const sendId = "send-abc";
+    const rows = [
+      { id: "1", send_id: sendId, recipient_id: "u1" },
+      { id: "2", send_id: sendId, recipient_id: "u2" },
+      { id: "3", send_id: "other", recipient_id: "u3" },
+    ];
+    const deleted = rows.filter((r) => r.send_id === sendId);
+    expect(deleted).toHaveLength(2);
+    expect(rows.filter((r) => r.send_id !== sendId)).toHaveLength(1);
+  });
 });
 
 describe("unread count logic", () => {

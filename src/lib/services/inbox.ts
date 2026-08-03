@@ -2,14 +2,21 @@
 
 import { createClient } from "@/lib/supabaseServer";
 
+export type InboxItemType =
+  | "friend_request"
+  | "admin_message"
+  | "news"
+  | "announcement";
+
 export type InboxItem = {
   id: string;
   recipient_id: string;
-  type: "friend_request" | "admin_message" | "news";
+  type: InboxItemType;
   title: string;
   content: string | null;
   related_request_id: string | null;
   sender_profile_id: string | null;
+  send_id: string | null;
   is_read: boolean;
   created_at: string;
   sender_profile?: {
@@ -23,8 +30,10 @@ export type InboxItem = {
   } | null;
 };
 
+export type InboxFilter = Exclude<InboxItemType, never>;
+
 export async function getInboxItems(
-  filter?: "friend_request" | "admin_message" | "news"
+  filter?: InboxFilter
 ): Promise<InboxItem[]> {
   try {
     const supabase = await createClient();
@@ -38,7 +47,7 @@ export async function getInboxItems(
       .select(
         `
         id, recipient_id, type, title, content, related_request_id,
-        sender_profile_id, is_read, created_at,
+        sender_profile_id, send_id, is_read, created_at,
         related_request:friend_requests!inbox_items_related_request_id_fkey(id, status)
       `
       )
@@ -87,6 +96,7 @@ export async function getInboxItems(
         content: row.content,
         related_request_id: row.related_request_id,
         sender_profile_id: row.sender_profile_id,
+        send_id: row.send_id ?? null,
         is_read: row.is_read,
         created_at: row.created_at,
         sender_profile: row.sender_profile_id

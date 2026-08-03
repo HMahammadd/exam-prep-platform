@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/admin", label: "Overview" },
+  { href: "/admin/inbox", label: "Inbox" },
   { href: "/admin/questions", label: "Questions" },
   { href: "/admin/questions/new", label: "New question" },
 ];
@@ -18,10 +19,11 @@ export function AdminNav() {
         const isActive =
           link.href === "/admin"
             ? pathname === "/admin"
-            : pathname === link.href ||
-              (link.href === "/admin/questions" &&
-                pathname.startsWith("/admin/questions") &&
-                pathname !== "/admin/questions/new");
+            : link.href === "/admin/questions"
+              ? pathname === "/admin/questions" ||
+                (pathname.startsWith("/admin/questions/") &&
+                  pathname !== "/admin/questions/new")
+              : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
         return (
           <Link
