@@ -1,11 +1,27 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { needsUsernameSetup } from "@/lib/username-setup";
+
+const PROTECTED_PREFIXES = ["/dashboard", "/practice", "/admin"];
+const ONBOARDING_PATH = "/onboarding/username";
+
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+function isOnboardingPath(pathname: string): boolean {
+  return (
+    pathname === ONBOARDING_PATH || pathname.startsWith(`${ONBOARDING_PATH}/`)
+  );
+}
 
 /**
  * Next.js 16 Proxy (formerly middleware).
- * - Forwards misplaced OAuth `code` params to /auth/callback (common when
- *   Supabase falls back to Site URL / home instead of the allowlisted callback).
- * - Refreshes the auth session cookies on each matched request.
+ * - Forwards misplaced OAuth `code` params to /auth/callback
+ * - Refreshes the auth session cookies
+ * - Blocks the app until the user has chosen a username
  */
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
@@ -46,8 +62,36 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Triggers refresh-token rotation when needed.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const shouldCheckUsername =
+    Boolean(user) && (isProtectedPath(pathname) || isOnboardingPath(pathname));
+
+  if (shouldCheckUsername && user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const needsSetup = needsUsernameSetup(profile?.username);
+
+    if (needsSetup && isProtectedPath(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = ONBOARDING_PATH;
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+
+    if (!needsSetup && isOnboardingPath(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+  }
 
   return supabaseResponse;
 }

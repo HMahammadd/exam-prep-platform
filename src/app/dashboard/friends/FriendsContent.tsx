@@ -121,7 +121,7 @@ export function FriendsContent() {
       );
       setMessage({
         type: "success",
-        text: `Removed ${removeTarget.friend.nickname} from friends.`,
+        text: `Removed ${removeTarget.friend.username} from friends.`,
       });
     } else {
       setMessage({
@@ -134,7 +134,7 @@ export function FriendsContent() {
   }
 
   const filteredFriends = friends.filter((f) =>
-    f.friend.nickname.toLowerCase().includes(filter.toLowerCase())
+    f.friend.username.toLowerCase().includes(filter.toLowerCase())
   );
 
   const tabClass = (t: Tab) =>
@@ -225,11 +225,11 @@ export function FriendsContent() {
                     <Avatar
                       avatarId={f.friend.avatar_id}
                       size={40}
-                      alt={f.friend.nickname}
+                      alt={f.friend.username}
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">
-                        {f.friend.nickname}
+                        {f.friend.username}
                       </p>
                       <p className="text-xs text-muted">
                         Friends since{" "}
@@ -240,7 +240,7 @@ export function FriendsContent() {
                       type="button"
                       onClick={() => setRemoveTarget(f)}
                       className="rounded-lg p-2 text-muted transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
-                      aria-label={`Remove ${f.friend.nickname}`}
+                      aria-label={`Remove ${f.friend.username}`}
                     >
                       <UserMinus className="h-4 w-4" aria-hidden />
                     </button>
@@ -260,7 +260,7 @@ export function FriendsContent() {
               />
               <input
                 type="text"
-                placeholder="Search by nickname…"
+                placeholder="Search by username…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-lg border border-card-border bg-card py-2.5 pl-10 pr-3.5 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
@@ -285,7 +285,7 @@ export function FriendsContent() {
                     No users found
                   </p>
                   <p className="mt-1 text-xs text-muted">
-                    Try a different nickname.
+                    Try a different username.
                   </p>
                 </div>
               )}
@@ -300,10 +300,10 @@ export function FriendsContent() {
                     <Avatar
                       avatarId={user.avatar_id}
                       size={40}
-                      alt={user.nickname}
+                      alt={user.username}
                     />
                     <p className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
-                      {user.nickname}
+                      {user.username}
                     </p>
 
                     {user.friendship_status === "friends" && (
@@ -363,7 +363,7 @@ export function FriendsContent() {
       <ConfirmDialog
         open={removeTarget !== null}
         title="Remove friend"
-        message={`Are you sure you want to remove ${removeTarget?.friend.nickname ?? "this friend"}? You can always add them again later.`}
+        message={`Are you sure you want to remove ${removeTarget?.friend.username ?? "this friend"}? You can always add them again later.`}
         confirmLabel="Remove"
         destructive
         loading={removing}

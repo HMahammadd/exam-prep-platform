@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabaseServer";
 import { getSatExamById, isSatExamAvailable } from "@/lib/sat-exams";
 import { getExamQuestions } from "@/lib/sat-questions";
 import type { SatClientQuestion } from "@/types/sat-exam";
+import { getMyProfile } from "@/lib/services/profile";
 import { ExamInterface } from "./ExamInterface";
 
 type ExamPageProps = {
@@ -56,15 +57,8 @@ export default async function SatExamPage({ params }: ExamPageProps) {
     choices: question.choices,
   }));
 
-  const studentName =
-    (typeof user.user_metadata?.username === "string" &&
-      user.user_metadata.username) ||
-    (typeof user.user_metadata?.full_name === "string" &&
-      user.user_metadata.full_name) ||
-    (typeof user.user_metadata?.name === "string" &&
-      user.user_metadata.name) ||
-    user.email?.split("@")[0] ||
-    "Student";
+  const profile = await getMyProfile();
+  const studentName = profile?.username || "Student";
 
   return (
     <ExamInterface

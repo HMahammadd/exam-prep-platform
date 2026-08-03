@@ -225,7 +225,7 @@ export function InboxContent() {
                       <Avatar
                         avatarId={item.sender_profile.avatar_id}
                         size={40}
-                        alt={item.sender_profile.nickname}
+                        alt={item.sender_profile.username}
                       />
                     ) : (
                       <span

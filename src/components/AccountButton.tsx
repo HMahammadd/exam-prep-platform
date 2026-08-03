@@ -15,7 +15,7 @@ export async function AccountButton() {
 
     return (
       <AccountDropdown
-        nickname={profile.nickname || "User"}
+        username={profile.username || "User"}
         avatarId={profile.avatar_id || "default"}
         unreadCount={unreadCount}
       />
@@ -23,7 +23,7 @@ export async function AccountButton() {
   } catch {
     // Never blank the header if profile/inbox queries fail.
     return (
-      <AccountDropdown nickname="User" avatarId="default" unreadCount={0} />
+      <AccountDropdown username="User" avatarId="default" unreadCount={0} />
     );
   }
 }

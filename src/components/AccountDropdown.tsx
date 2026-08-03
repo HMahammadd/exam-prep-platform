@@ -16,12 +16,12 @@ import { Avatar } from "./Avatar";
 import { UnreadBadge } from "./UnreadBadge";
 
 type AccountDropdownProps = {
-  nickname: string;
+  username: string;
   avatarId: string;
   unreadCount: number;
 };
 
-export function AccountDropdown({ nickname, avatarId, unreadCount }: AccountDropdownProps) {
+export function AccountDropdown({ username, avatarId, unreadCount }: AccountDropdownProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -104,7 +104,7 @@ export function AccountDropdown({ nickname, avatarId, unreadCount }: AccountDrop
         className="inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-accent-soft disabled:opacity-60"
       >
         <Avatar avatarId={avatarId} size={24} />
-        <span className="hidden max-w-[120px] truncate sm:inline">{nickname}</span>
+        <span className="hidden max-w-[120px] truncate sm:inline">{username}</span>
         {unreadCount > 0 && <UnreadBadge count={unreadCount} className="sm:hidden" />}
         <ChevronDown className={`h-4 w-4 text-muted transition ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
@@ -121,7 +121,7 @@ export function AccountDropdown({ nickname, avatarId, unreadCount }: AccountDrop
             <div className="flex items-center gap-3">
               <Avatar avatarId={avatarId} size={36} />
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">{nickname}</p>
+                <p className="truncate text-sm font-semibold text-foreground">{username}</p>
                 <p className="text-xs text-muted">Manage your account</p>
               </div>
             </div>

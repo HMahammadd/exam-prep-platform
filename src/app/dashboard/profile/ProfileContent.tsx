@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { Loader2, Save, User } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { AvatarSelector } from "@/components/AvatarSelector";
-import { NicknameEditor } from "@/components/NicknameEditor";
+import { UsernameEditor } from "@/components/UsernameEditor";
 import { getMyProfile, updateProfile } from "@/lib/services/profile";
-import { validateNickname } from "@/lib/username";
+import { validateUsername } from "@/lib/username";
 
 export function ProfileContent() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [nickname, setNickname] = useState("");
-  const [originalNickname, setOriginalNickname] = useState("");
+  const [username, setUsername] = useState("");
+  const [originalUsername, setOriginalUsername] = useState("");
   const [avatarId, setAvatarId] = useState("default");
   const [originalAvatarId, setOriginalAvatarId] = useState("default");
   const [message, setMessage] = useState<{
@@ -24,8 +24,8 @@ export function ProfileContent() {
     async function load() {
       const profile = await getMyProfile();
       if (profile) {
-        setNickname(profile.nickname ?? "");
-        setOriginalNickname(profile.nickname ?? "");
+        setUsername(profile.username ?? "");
+        setOriginalUsername(profile.username ?? "");
         setAvatarId(profile.avatar_id ?? "default");
         setOriginalAvatarId(profile.avatar_id ?? "default");
       }
@@ -35,24 +35,24 @@ export function ProfileContent() {
   }, []);
 
   const hasChanges =
-    nickname.trim() !== originalNickname || avatarId !== originalAvatarId;
-  const nicknameError =
-    nickname.trim() && nickname.trim() !== originalNickname
-      ? validateNickname(nickname.trim())
+    username.trim() !== originalUsername || avatarId !== originalAvatarId;
+  const usernameError =
+    username.trim() && username.trim() !== originalUsername
+      ? validateUsername(username.trim())
       : null;
 
   async function handleSave() {
     setMessage(null);
     setSaving(true);
 
-    const updates: { nickname?: string; avatar_id?: string } = {};
-    if (nickname.trim() !== originalNickname) updates.nickname = nickname.trim();
+    const updates: { username?: string; avatar_id?: string } = {};
+    if (username.trim() !== originalUsername) updates.username = username.trim();
     if (avatarId !== originalAvatarId) updates.avatar_id = avatarId;
 
     const result = await updateProfile(updates);
 
     if (result.success) {
-      setOriginalNickname(nickname.trim());
+      setOriginalUsername(username.trim());
       setOriginalAvatarId(avatarId);
       setMessage({ type: "success", text: "Profile updated successfully!" });
     } else {
@@ -90,14 +90,14 @@ export function ProfileContent() {
       </div>
 
       <div className="rounded-2xl border border-card-border bg-card p-6 shadow-card">
-        <h2 className="mb-4 text-lg font-semibold text-foreground">Nickname</h2>
-        <NicknameEditor
-          currentNickname={originalNickname}
-          value={nickname}
-          onChange={setNickname}
+        <h2 className="mb-4 text-lg font-semibold text-foreground">Username</h2>
+        <UsernameEditor
+          currentUsername={originalUsername}
+          value={username}
+          onChange={setUsername}
         />
         <p className="mt-2 text-xs text-muted">
-          3–24 characters: letters, numbers, underscores, and periods
+          3–20 characters: letters, numbers, and underscores
         </p>
       </div>
 
@@ -116,7 +116,7 @@ export function ProfileContent() {
       <button
         type="button"
         onClick={handleSave}
-        disabled={!hasChanges || saving || !!nicknameError}
+        disabled={!hasChanges || saving || !!usernameError}
         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {saving ? (

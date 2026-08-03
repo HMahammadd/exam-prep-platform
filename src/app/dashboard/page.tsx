@@ -13,6 +13,7 @@ import { getSatExamSummaries } from "@/app/dashboard/sat/actions";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { ExamSelectionCard } from "@/components/ExamSelectionCard";
 import { EXAMS } from "@/lib/exams";
+import { getMyProfile } from "@/lib/services/profile";
 
 function StatCard({
   label,
@@ -57,13 +58,8 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const displayName =
-    (typeof user.user_metadata?.username === "string" &&
-      user.user_metadata.username) ||
-    (typeof user.user_metadata?.full_name === "string" &&
-      user.user_metadata.full_name.split(" ")[0]) ||
-    user.email?.split("@")[0] ||
-    "there";
+  const profile = await getMyProfile();
+  const displayName = profile?.username || "there";
 
   const hour = new Date().getHours();
   const greeting = greetingForHour(hour);

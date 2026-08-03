@@ -115,7 +115,6 @@ export default function SignupPage() {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           username: usernameCheck.username,
-          full_name: usernameCheck.username,
         },
       },
     });

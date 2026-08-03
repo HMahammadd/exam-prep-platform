@@ -14,7 +14,7 @@ export type InboxItem = {
   created_at: string;
   sender_profile?: {
     id: string;
-    nickname: string;
+    username: string;
     avatar_id: string;
   } | null;
   related_request?: {
@@ -58,7 +58,7 @@ export async function getInboxItems(
 
     const profileMap = new Map<
       string,
-      { id: string; nickname: string; avatar_id: string }
+      { id: string; username: string; avatar_id: string }
     >();
 
     if (senderIds.length > 0) {
@@ -68,7 +68,7 @@ export async function getInboxItems(
       for (const p of profiles ?? []) {
         profileMap.set(p.id, {
           id: p.id,
-          nickname: p.nickname ?? "user",
+          username: p.username ?? "user",
           avatar_id: p.avatar_id ?? "default",
         });
       }

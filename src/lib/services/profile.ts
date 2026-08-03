@@ -2,11 +2,11 @@
 
 import { createClient } from "@/lib/supabaseServer";
 import { isValidAvatarId, DEFAULT_AVATAR_ID } from "@/lib/avatars";
-import { validateNickname } from "@/lib/username";
+import { validateUsername } from "@/lib/username";
 
 export type Profile = {
   id: string;
-  nickname: string;
+  username: string | null;
   avatar_id: string;
   email: string | null;
   role: string;
@@ -14,23 +14,10 @@ export type Profile = {
   updated_at: string | null;
 };
 
-function fallbackNickname(user: {
-  id: string;
-  email?: string | null;
-  user_metadata?: Record<string, unknown>;
-}): string {
-  const meta = user.user_metadata ?? {};
-  if (typeof meta.username === "string" && meta.username.trim()) {
-    return meta.username.trim();
-  }
-  if (typeof meta.full_name === "string" && meta.full_name.trim()) {
-    return meta.full_name.trim().split(/\s+/)[0] ?? "user";
-  }
-  const emailLocal = user.email?.split("@")[0];
-  if (emailLocal) return emailLocal.slice(0, 24);
-  return `user_${user.id.slice(0, 8)}`;
-}
-
+/**
+ * Source of truth for display names is `profiles.username` only.
+ * Auth user_metadata is never used for display.
+ */
 export async function getMyProfile(): Promise<Profile | null> {
   const supabase = await createClient();
   const {
@@ -38,48 +25,28 @@ export async function getMyProfile(): Promise<Profile | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Prefer social-feature columns; fall back if migration 006 is not applied yet.
-  const withNickname = await supabase
+  const { data, error } = await supabase
     .from("profiles")
-    .select("id, nickname, avatar_id, email, role, created_at, updated_at")
+    .select("id, username, avatar_id, email, role, created_at, updated_at")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!withNickname.error && withNickname.data) {
+  if (!error && data) {
     return {
-      id: withNickname.data.id,
-      nickname: withNickname.data.nickname ?? fallbackNickname(user),
-      avatar_id: withNickname.data.avatar_id ?? DEFAULT_AVATAR_ID,
-      email: withNickname.data.email ?? user.email ?? null,
-      role: withNickname.data.role ?? "user",
-      created_at: withNickname.data.created_at ?? null,
-      updated_at: withNickname.data.updated_at ?? null,
+      id: data.id,
+      username: data.username ?? null,
+      avatar_id: data.avatar_id ?? DEFAULT_AVATAR_ID,
+      email: data.email ?? user.email ?? null,
+      role: data.role ?? "user",
+      created_at: data.created_at ?? null,
+      updated_at: data.updated_at ?? null,
     };
   }
 
-  // Column missing (PGRST204) or other schema mismatch — try legacy columns.
-  const legacy = await supabase
-    .from("profiles")
-    .select("id, username, email, full_name, role, created_at")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!legacy.error && legacy.data) {
-    return {
-      id: legacy.data.id,
-      nickname: legacy.data.username ?? fallbackNickname(user),
-      avatar_id: DEFAULT_AVATAR_ID,
-      email: legacy.data.email ?? user.email ?? null,
-      role: legacy.data.role ?? "user",
-      created_at: legacy.data.created_at ?? null,
-      updated_at: null,
-    };
-  }
-
-  // No profile row yet — still show account menu from auth metadata.
+  // No profile row yet — authenticated shell only (onboarding will create/fill).
   return {
     id: user.id,
-    nickname: fallbackNickname(user),
+    username: null,
     avatar_id: DEFAULT_AVATAR_ID,
     email: user.email ?? null,
     role: "user",
@@ -89,7 +56,7 @@ export async function getMyProfile(): Promise<Profile | null> {
 }
 
 export async function updateProfile(params: {
-  nickname?: string;
+  username?: string;
   avatar_id?: string;
 }): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
@@ -102,28 +69,30 @@ export async function updateProfile(params: {
     updated_at: new Date().toISOString(),
   };
 
-  if (params.nickname !== undefined) {
-    const nicknameError = validateNickname(params.nickname);
-    if (nicknameError) return { success: false, error: nicknameError };
+  if (params.username !== undefined) {
+    const usernameError = validateUsername(params.username);
+    if (usernameError) return { success: false, error: usernameError };
 
+    const trimmed = params.username.trim();
     const { data: available, error: rpcError } = await supabase.rpc(
-      "check_nickname_available",
-      { desired: params.nickname.trim() }
+      "is_username_available",
+      { desired: trimmed }
     );
 
     if (rpcError) {
       return {
         success: false,
-        error:
-          "Nickname checks are not available yet. Apply migration 006_social_features.sql in Supabase.",
+        error: "Could not verify username availability. Try again.",
       };
     }
 
     if (available === false) {
-      return { success: false, error: "Nickname is already taken." };
+      return { success: false, error: "Username is already taken." };
     }
 
-    updates.nickname = params.nickname.trim();
+    updates.username = trimmed;
+    // Keep full_name aligned with username (never Google given/family name).
+    updates.full_name = trimmed;
   }
 
   if (params.avatar_id !== undefined) {
@@ -140,14 +109,7 @@ export async function updateProfile(params: {
 
   if (error) {
     if (error.code === "23505" || error.message?.includes("unique")) {
-      return { success: false, error: "Nickname is already taken." };
-    }
-    if (error.message?.includes("nickname") || error.code === "PGRST204") {
-      return {
-        success: false,
-        error:
-          "Profile columns are missing. Apply migration 006_social_features.sql in Supabase.",
-      };
+      return { success: false, error: "Username is already taken." };
     }
     return { success: false, error: "Failed to update profile." };
   }
@@ -155,23 +117,22 @@ export async function updateProfile(params: {
   return { success: true };
 }
 
-export async function checkNicknameAvailability(
-  nickname: string
+export async function checkUsernameAvailabilityForEdit(
+  username: string
 ): Promise<{ available: boolean; error?: string }> {
-  const trimmed = nickname.trim();
-  const validationError = validateNickname(trimmed);
+  const trimmed = username.trim();
+  const validationError = validateUsername(trimmed);
   if (validationError) return { available: false, error: validationError };
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("check_nickname_available", {
+  const { data, error } = await supabase.rpc("is_username_available", {
     desired: trimmed,
   });
 
   if (error) {
     return {
       available: false,
-      error:
-        "Nickname checks are not available yet. Apply migration 006_social_features.sql in Supabase.",
+      error: "Could not verify username availability. Try again.",
     };
   }
 

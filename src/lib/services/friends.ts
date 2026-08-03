@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabaseServer";
 
 export type FriendProfile = {
   id: string;
-  nickname: string;
+  username: string;
   avatar_id: string;
 };
 
@@ -16,7 +16,7 @@ export type FriendWithProfile = {
 
 export type UserSearchResult = {
   id: string;
-  nickname: string;
+  username: string;
   avatar_id: string;
   friendship_status: "none" | "request_sent" | "request_received" | "friends";
   request_id?: string;
@@ -34,7 +34,7 @@ async function loadPublicProfiles(
   for (const row of data ?? []) {
     map.set(row.id, {
       id: row.id,
-      nickname: row.nickname ?? "user",
+      username: row.username ?? "user",
       avatar_id: row.avatar_id ?? "default",
     });
   }
@@ -94,7 +94,7 @@ export async function getMyFriends(): Promise<FriendWithProfile[]> {
   }
 
   return friends.sort((a, b) =>
-    a.friend.nickname.localeCompare(b.friend.nickname)
+    a.friend.username.localeCompare(b.friend.username)
   );
 }
 
@@ -120,7 +120,7 @@ export async function searchUsers(query: string): Promise<UserSearchResult[]> {
   const trimmed = query.trim();
   if (trimmed.length < 2) return [];
 
-  const { data: users } = await supabase.rpc("search_users_by_nickname", {
+  const { data: users } = await supabase.rpc("search_users_by_username", {
     query: trimmed,
     max_results: 20,
   });
@@ -172,7 +172,7 @@ export async function searchUsers(query: string): Promise<UserSearchResult[]> {
   );
 
   return users.map(
-    (u: { id: string; nickname: string; avatar_id: string }) => {
+    (u: { id: string; username: string; avatar_id: string }) => {
       let friendship_status: UserSearchResult["friendship_status"] = "none";
       let request_id: string | undefined;
 
@@ -188,7 +188,7 @@ export async function searchUsers(query: string): Promise<UserSearchResult[]> {
 
       return {
         id: u.id,
-        nickname: u.nickname,
+        username: u.username,
         avatar_id: u.avatar_id,
         friendship_status,
         request_id,
@@ -226,7 +226,7 @@ export async function sendFriendRequest(
 
   const { data: senderProfile } = await supabase
     .from("profiles")
-    .select("nickname")
+    .select("username")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -247,7 +247,7 @@ export async function sendFriendRequest(
     recipient_id: receiverId,
     type: "friend_request",
     title: "New friend request",
-    content: `${senderProfile?.nickname ?? "Someone"} wants to be your friend.`,
+    content: `${senderProfile?.username ?? "Someone"} wants to be your friend.`,
     related_request_id: request.id,
     sender_profile_id: user.id,
   });
