@@ -2,13 +2,17 @@
 
 import { useEffect } from "react";
 import posthog from "posthog-js";
+import { shouldEnablePostHog } from "@/lib/analytics";
 import { supabase } from "@/lib/supabaseClient";
 
 /**
  * Links PostHog events to the logged-in Supabase user, and resets on logout.
+ * No-ops on localhost where PostHog is not initialized.
  */
 export function PostHogIdentify() {
   useEffect(() => {
+    if (!shouldEnablePostHog()) return;
+
     let cancelled = false;
 
     void supabase.auth.getUser().then(({ data: { user } }) => {
