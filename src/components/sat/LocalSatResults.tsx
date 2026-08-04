@@ -64,7 +64,6 @@ export function LocalSatResults({
         examName={examName}
         score={attempt.score}
         totalQuestions={attempt.total_questions}
-        note="Saved on this device (Supabase tables not set up yet)."
       />
 
       <div className="mt-8 flex flex-wrap gap-3">

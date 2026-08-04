@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabaseServer";
-import { createGradingClient } from "@/lib/supabaseAdmin";
+import { createAdminClient } from "@/lib/supabaseAdmin";
 import { getExamQuestions } from "@/lib/sat-questions";
 import { calculatePercentage } from "@/lib/sat-utils";
 import { isSatExamAvailable } from "@/lib/sat-exams";
@@ -10,6 +10,19 @@ import type {
   SubmitSatExamInput,
   SubmitSatExamResult,
 } from "@/types/sat-exam";
+
+function isMissingSatTableError(message: string): boolean {
+  // Only treat genuine "table missing / schema cache" cases as local-fallback.
+  // Do NOT match mere mentions of the table name (e.g. "permission denied for table …").
+  return (
+    /Could not find the table/i.test(message) ||
+    (/schema cache/i.test(message) &&
+      /sat_exam_(attempts|answers)/i.test(message)) ||
+    /relation ["']?public\.sat_exam_(attempts|answers)["']? does not exist/i.test(
+      message
+    )
+  );
+}
 
 type AttemptRow = {
   id: string;
@@ -154,7 +167,17 @@ export async function submitSatExam(
 
   // Scores are written with the service role so that clients cannot forge
   // attempt rows directly against PostgREST (RLS blocks their inserts).
-  const db = await createGradingClient();
+  let db;
+  try {
+    db = createAdminClient();
+  } catch (error) {
+    console.error("SAT grading requires SUPABASE_SERVICE_ROLE_KEY:", error);
+    return {
+      success: false,
+      error:
+        "Server grading is not configured. Set SUPABASE_SERVICE_ROLE_KEY and retry.",
+    };
+  }
 
   const { data: attempt, error: attemptError } = await db
     .from("sat_exam_attempts")
@@ -171,12 +194,8 @@ export async function submitSatExam(
 
   if (attemptError || !attempt) {
     const message = attemptError?.message ?? "";
-    const missingTable =
-      /sat_exam_attempts|schema cache|does not exist|Could not find the table/i.test(
-        message
-      );
 
-    if (missingTable) {
+    if (isMissingSatTableError(message)) {
       return buildLocalResult(`local-${crypto.randomUUID()}`);
     }
 
@@ -194,12 +213,8 @@ export async function submitSatExam(
   if (answersError) {
     await db.from("sat_exam_attempts").delete().eq("id", attempt.id);
     const message = answersError.message ?? "";
-    const missingTable =
-      /sat_exam_answers|schema cache|does not exist|Could not find the table/i.test(
-        message
-      );
 
-    if (missingTable) {
+    if (isMissingSatTableError(message)) {
       return buildLocalResult(`local-${crypto.randomUUID()}`);
     }
 
