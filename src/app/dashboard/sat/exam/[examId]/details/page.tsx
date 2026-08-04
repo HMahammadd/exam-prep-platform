@@ -43,7 +43,7 @@ export default async function SatExamDetailsPage({ params }: DetailsPageProps) {
           backHref="/dashboard/sat"
           backLabel="SAT Practice"
         />
-        <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
           <div className="rounded-2xl border border-card-border bg-card p-8 text-center shadow-card">
             <p className="text-lg font-medium text-foreground">
               SAT EXAM {examId}
@@ -74,42 +74,33 @@ export default async function SatExamDetailsPage({ params }: DetailsPageProps) {
         backLabel="SAT Practice"
       />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
-        <div className="rounded-2xl border border-card-border bg-card p-8 shadow-card">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold tracking-wide text-foreground">
-                SAT EXAM {examId}
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                Last score:{" "}
-                <span className="font-semibold text-foreground">
-                  {attempt.score}/{attempt.total_questions}
-                </span>
-              </p>
-            </div>
-            <Link
-              href={`/dashboard/sat/exam/${examId}`}
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover"
-            >
-              <RotateCcw className="h-4 w-4" aria-hidden />
-              Retake
-            </Link>
-          </div>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+        <div className="mb-4 flex justify-end">
+          <Link
+            href={`/dashboard/sat/exam/${examId}`}
+            className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover"
+          >
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            Retake
+          </Link>
+        </div>
 
-          <div className="mt-8">
-            <SatExamAnswerReview answers={answers} />
-          </div>
+        <SatExamAnswerReview
+          answers={answers}
+          examId={examId}
+          examName={exam.name}
+          score={attempt.score}
+          totalQuestions={attempt.total_questions}
+        />
 
-          <div className="mt-8">
-            <Link
-              href="/dashboard/sat"
-              className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden />
-              Back to SAT Practice
-            </Link>
-          </div>
+        <div className="mt-8">
+          <Link
+            href="/dashboard/sat"
+            className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Back to SAT Practice
+          </Link>
         </div>
       </main>
     </div>

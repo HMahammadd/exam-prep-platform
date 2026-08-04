@@ -38,7 +38,7 @@ export function SatPassage({
   const isExam = variant === "exam";
   const textClass = isExam
     ? "text-[17px] leading-8 text-[#202124]"
-    : "text-sm leading-6 text-muted";
+    : "text-[15px] leading-7 text-foreground";
   const fontStyle: CSSProperties = isExam
     ? { fontFamily: "Georgia, 'Times New Roman', serif", ...style }
     : { ...style };
