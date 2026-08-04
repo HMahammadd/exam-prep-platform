@@ -53,7 +53,7 @@ export function DashboardHeader({
           <Suspense
             fallback={
               <div
-                className="h-10 w-28 animate-pulse rounded-lg bg-accent-soft"
+                className="h-10 w-28 animate-pulse rounded-lg bg-card-border/70"
                 aria-hidden
               />
             }
