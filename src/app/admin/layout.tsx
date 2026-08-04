@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { requireAdmin } from "@/lib/admin";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { PostHogIdentify } from "@/components/PostHogIdentify";
 
 export default async function AdminLayout({
   children,
@@ -12,6 +13,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex flex-1 flex-col bg-background">
+      <PostHogIdentify />
       <DashboardHeader
         title="Admin"
         backHref="/dashboard"

@@ -8,11 +8,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
 import { getSatExamSummaries } from "@/app/dashboard/sat/actions";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { ExamSelectionCard } from "@/components/ExamSelectionCard";
 import { EXAMS } from "@/lib/exams";
+import { getCachedUser } from "@/lib/cached-auth";
 import { getMyProfile } from "@/lib/services/profile";
 
 function StatCard({
@@ -49,10 +49,7 @@ function greetingForHour(hour: number) {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     redirect("/login");

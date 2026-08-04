@@ -1,31 +1,45 @@
 import type { SatModuleNumber, SatQuestion } from "@/types/sat-exam";
-import { SAT_EXAM_1_QUESTIONS } from "./sat-exam-1-questions";
-import { SAT_EXAM_2_QUESTIONS } from "./sat-exam-2-questions";
-import { SAT_EXAM_3_QUESTIONS } from "./sat-exam-3-questions";
 
-const EXAM_QUESTIONS: Record<number, SatQuestion[]> = {
-  1: SAT_EXAM_1_QUESTIONS,
-  2: SAT_EXAM_2_QUESTIONS,
-  3: SAT_EXAM_3_QUESTIONS,
+const EXAM_LOADERS: Record<number, () => Promise<SatQuestion[]>> = {
+  1: async () => {
+    const { SAT_EXAM_1_QUESTIONS } = await import("./sat-exam-1-questions");
+    return SAT_EXAM_1_QUESTIONS;
+  },
+  2: async () => {
+    const { SAT_EXAM_2_QUESTIONS } = await import("./sat-exam-2-questions");
+    return SAT_EXAM_2_QUESTIONS;
+  },
+  3: async () => {
+    const { SAT_EXAM_3_QUESTIONS } = await import("./sat-exam-3-questions");
+    return SAT_EXAM_3_QUESTIONS;
+  },
 };
 
-export function getExamQuestions(examId: number): SatQuestion[] {
-  return EXAM_QUESTIONS[examId] ?? [];
+export async function getExamQuestions(examId: number): Promise<SatQuestion[]> {
+  const loader = EXAM_LOADERS[examId];
+  if (!loader) {
+    return [];
+  }
+  return loader();
 }
 
-export function getExamModuleQuestions(
+export async function getExamModuleQuestions(
   examId: number,
   module: SatModuleNumber
-): SatQuestion[] {
-  return getExamQuestions(examId).filter((question) => question.module === module);
+): Promise<SatQuestion[]> {
+  const questions = await getExamQuestions(examId);
+  return questions.filter((question) => question.module === module);
 }
 
-export function getQuestionById(questionId: string): SatQuestion | undefined {
+export async function getQuestionById(
+  questionId: string
+): Promise<SatQuestion | undefined> {
   const match = questionId.match(/^exam-(\d+)-q-/);
   if (!match) {
     return undefined;
   }
 
   const examId = Number(match[1]);
-  return getExamQuestions(examId).find((question) => question.id === questionId);
+  const questions = await getExamQuestions(examId);
+  return questions.find((question) => question.id === questionId);
 }

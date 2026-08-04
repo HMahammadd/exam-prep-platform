@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 import { getSatExamById, isSatExamAvailable } from "@/lib/sat-exams";
 import { getExamQuestions } from "@/lib/sat-questions";
 import type { SatClientQuestion } from "@/types/sat-exam";
@@ -18,10 +18,7 @@ export default async function SatExamPage({ params }: ExamPageProps) {
     notFound();
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     redirect("/login");
@@ -37,7 +34,7 @@ export default async function SatExamPage({ params }: ExamPageProps) {
     redirect("/dashboard/sat");
   }
 
-  const questions = getExamQuestions(examId);
+  const questions = await getExamQuestions(examId);
 
   if (!questions.length) {
     notFound();

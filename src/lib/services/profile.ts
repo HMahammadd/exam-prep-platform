@@ -1,70 +1,27 @@
 "use server";
 
 import { createClient } from "@/lib/supabaseServer";
-import { isValidAvatarId, DEFAULT_AVATAR_ID } from "@/lib/avatars";
+import { getCachedProfile, getCachedUser } from "@/lib/cached-auth";
+import { isValidAvatarId } from "@/lib/avatars";
 import { validateUsername } from "@/lib/username";
-
-export type Profile = {
-  id: string;
-  username: string | null;
-  avatar_id: string;
-  email: string | null;
-  role: string;
-  created_at: string | null;
-  updated_at: string | null;
-};
+import type { Profile } from "@/lib/profile-types";
 
 /**
  * Source of truth for display names is `profiles.username` only.
  * Auth user_metadata is never used for display.
  */
 export async function getMyProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, username, avatar_id, email, role, created_at, updated_at")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!error && data) {
-    return {
-      id: data.id,
-      username: data.username ?? null,
-      avatar_id: data.avatar_id ?? DEFAULT_AVATAR_ID,
-      email: data.email ?? user.email ?? null,
-      role: data.role ?? "user",
-      created_at: data.created_at ?? null,
-      updated_at: data.updated_at ?? null,
-    };
-  }
-
-  // No profile row yet — authenticated shell only (onboarding will create/fill).
-  return {
-    id: user.id,
-    username: null,
-    avatar_id: DEFAULT_AVATAR_ID,
-    email: user.email ?? null,
-    role: "user",
-    created_at: null,
-    updated_at: null,
-  };
+  return getCachedProfile();
 }
 
 export async function updateProfile(params: {
   username?: string;
   avatar_id?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
   if (!user) return { success: false, error: "Not authenticated" };
 
+  const supabase = await createClient();
   const updates: Record<string, unknown> = {
     updated_at: new Date().toISOString(),
   };

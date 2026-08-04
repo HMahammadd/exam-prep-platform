@@ -5,6 +5,14 @@ import { needsUsernameSetup } from "@/lib/username-setup";
 const PROTECTED_PREFIXES = ["/dashboard", "/practice", "/admin"];
 const ONBOARDING_PATH = "/onboarding/username";
 
+/** Public marketing/auth UI — skip session refresh to keep TTFB low. */
+const PUBLIC_FAST_PATHS = new Set([
+  "/",
+  "/login",
+  "/signup",
+  "/forgot-password",
+]);
+
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -14,6 +22,17 @@ function isProtectedPath(pathname: string): boolean {
 function isOnboardingPath(pathname: string): boolean {
   return (
     pathname === ONBOARDING_PATH || pathname.startsWith(`${ONBOARDING_PATH}/`)
+  );
+}
+
+function needsAuthRefresh(pathname: string): boolean {
+  if (PUBLIC_FAST_PATHS.has(pathname)) {
+    return false;
+  }
+  return (
+    isProtectedPath(pathname) ||
+    isOnboardingPath(pathname) ||
+    pathname.startsWith("/auth")
   );
 }
 
@@ -35,6 +54,11 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set("next", "/dashboard");
     }
     return NextResponse.redirect(url);
+  }
+
+  // Skip auth cookie work on public pages — biggest proxy cost on cold loads.
+  if (!needsAuthRefresh(pathname)) {
+    return NextResponse.next({ request });
   }
 
   let supabaseResponse = NextResponse.next({ request });

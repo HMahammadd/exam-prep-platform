@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 
 export type InboxItemType =
   | "friend_request"
@@ -112,12 +113,10 @@ export async function getInboxItems(
 
 export async function getUnreadCount(): Promise<number> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getCachedUser();
     if (!user) return 0;
 
+    const supabase = await createClient();
     const { count, error } = await supabase
       .from("inbox_items")
       .select("id", { count: "exact", head: true })

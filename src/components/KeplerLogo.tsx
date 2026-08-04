@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -36,7 +34,7 @@ export function KeplerLogo({
       aria-label={`Kepler — ${destinationLabel}`}
       className={`group inline-flex shrink-0 items-center ${className}`}
     >
-      {/* Light mode: dark-blue mark on light UI */}
+      {/* Light mode: dark-blue mark on light UI. Sole priority image for LCP. */}
       <Image
         src="/brand/kepler-light.png"
         alt=""
@@ -45,13 +43,12 @@ export function KeplerLogo({
         priority
         className={`${sizeClass} object-contain transition-opacity duration-200 group-hover:opacity-90 dark:hidden`}
       />
-      {/* Dark mode: white mark on dark UI */}
+      {/* Dark mode: white mark on dark UI — no priority so we don't race LCP. */}
       <Image
         src="/brand/kepler-dark.png"
         alt=""
         width={274}
         height={320}
-        priority
         className={`${sizeClass} hidden object-contain transition-opacity duration-200 group-hover:opacity-90 dark:block`}
       />
     </Link>

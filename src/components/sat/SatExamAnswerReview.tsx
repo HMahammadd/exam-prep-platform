@@ -22,13 +22,14 @@ import {
   type ReviewSectionKey,
   type SatReviewAnswer,
 } from "@/lib/sat-review";
+import type { SatQuestion } from "@/types/sat-exam";
 
 export type { SatReviewAnswer };
 
 type SatExamAnswerReviewProps = {
   answers: SatReviewAnswer[];
-  examId: number;
   examName: string;
+  questions: SatQuestion[];
   score: number;
   totalQuestions: number;
   note?: string;
@@ -40,15 +41,15 @@ function moduleKey(section: ReviewSectionKey, module: number) {
 
 export function SatExamAnswerReview({
   answers,
-  examId,
   examName,
+  questions,
   score,
   totalQuestions,
   note,
 }: SatExamAnswerReviewProps) {
   const sections = useMemo(
-    () => buildReviewSections(answers, examId),
-    [answers, examId]
+    () => buildReviewSections(answers, questions),
+    [answers, questions]
   );
 
   const flatItems = useMemo(() => flattenReviewItems(sections), [sections]);

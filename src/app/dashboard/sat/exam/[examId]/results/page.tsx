@@ -9,6 +9,7 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { LocalSatResults } from "@/components/sat/LocalSatResults";
 import { SatExamAnswerReview } from "@/components/sat/SatExamAnswerReview";
 import { getSatExamById } from "@/lib/sat-exams";
+import { getExamQuestions } from "@/lib/sat-questions";
 import { getSatExamAttempt } from "../../../actions";
 
 type ResultsPageProps = {
@@ -43,6 +44,8 @@ export default async function SatExamResultsPage({
     notFound();
   }
 
+  const questions = await getExamQuestions(examId);
+
   if (attemptId.startsWith("local-")) {
     return (
       <div className="flex flex-1 flex-col bg-background">
@@ -56,6 +59,7 @@ export default async function SatExamResultsPage({
             examId={examId}
             examName={exam.name}
             attemptId={attemptId}
+            questions={questions}
           />
         </main>
       </div>
@@ -81,8 +85,8 @@ export default async function SatExamResultsPage({
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         <SatExamAnswerReview
           answers={answers}
-          examId={examId}
           examName={exam.name}
+          questions={questions}
           score={attempt.score}
           totalQuestions={attempt.total_questions}
         />

@@ -1,4 +1,3 @@
-import { getExamQuestions, getQuestionById } from "@/lib/sat-questions";
 import type { SatModuleNumber, SatQuestion } from "@/types/sat-exam";
 
 export type SatReviewAnswer = {
@@ -55,9 +54,8 @@ function emptyModules(): ReviewModuleGroup[] {
 
 export function buildReviewSections(
   answers: SatReviewAnswer[],
-  examId: number
+  examQuestions: SatQuestion[]
 ): ReviewSectionGroup[] {
-  const examQuestions = getExamQuestions(examId);
   const answerByQuestionId = new Map(
     answers.map((answer) => [answer.question_id, answer])
   );
@@ -68,14 +66,7 @@ export function buildReviewSections(
   };
 
   // Prefer exam bank order so module grids follow question numbers.
-  const orderedQuestions =
-    examQuestions.length > 0
-      ? examQuestions
-      : answers
-          .map((answer) => getQuestionById(answer.question_id))
-          .filter((question): question is SatQuestion => question != null);
-
-  for (const question of orderedQuestions) {
+  for (const question of examQuestions) {
     const answer = answerByQuestionId.get(question.id);
     if (!answer) {
       continue;

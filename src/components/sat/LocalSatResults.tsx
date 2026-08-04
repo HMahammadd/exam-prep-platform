@@ -9,17 +9,20 @@ import {
   loadLocalSatAttempt,
   type LocalSatAttempt,
 } from "@/lib/sat-local-attempt";
+import type { SatQuestion } from "@/types/sat-exam";
 
 type LocalSatResultsProps = {
   examId: number;
   examName: string;
   attemptId: string;
+  questions: SatQuestion[];
 };
 
 export function LocalSatResults({
   examId,
   examName,
   attemptId,
+  questions,
 }: LocalSatResultsProps) {
   const [attempt, setAttempt] = useState<LocalSatAttempt | null>(null);
   const [ready, setReady] = useState(false);
@@ -60,8 +63,8 @@ export function LocalSatResults({
     <div>
       <SatExamAnswerReview
         answers={attempt.answers}
-        examId={examId}
         examName={examName}
+        questions={questions}
         score={attempt.score}
         totalQuestions={attempt.total_questions}
       />

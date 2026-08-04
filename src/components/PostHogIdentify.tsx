@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabaseClient";
 
 /**
  * Links PostHog events to the logged-in Supabase user, and resets on logout.
+ * Mount only under signed-in shells (dashboard / admin / practice / onboarding).
+ * Anonymous pageviews still come from posthog.init in instrumentation-client.
  * No-ops on localhost where PostHog is not initialized.
  */
 export function PostHogIdentify() {

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabaseServer";
 import { createAdminClient } from "@/lib/supabaseAdmin";
+import { getCachedUser } from "@/lib/cached-auth";
 import { getExamQuestions } from "@/lib/sat-questions";
 import { calculatePercentage } from "@/lib/sat-utils";
 import { isSatExamAvailable } from "@/lib/sat-exams";
@@ -35,15 +36,13 @@ type AttemptRow = {
 export async function getSatExamSummaries(): Promise<
   Record<string, SatExamAttemptSummary>
 > {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     return {};
   }
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("sat_exam_attempts")
     .select("id, exam_id, score, total_questions, completed_at")
@@ -92,7 +91,7 @@ export async function submitSatExam(
     return { success: false, error: "This exam is not available yet." };
   }
 
-  const questions = getExamQuestions(examId);
+  const questions = await getExamQuestions(examId);
 
   if (!questions.length) {
     return { success: false, error: "No questions found for this exam." };

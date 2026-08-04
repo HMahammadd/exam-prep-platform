@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { PostHogIdentify } from "@/components/PostHogIdentify";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
@@ -47,7 +46,6 @@ export default function RootLayout({
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <ThemeProvider>
-          <PostHogIdentify />
           {children}
         </ThemeProvider>
       </body>

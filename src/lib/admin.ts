@@ -1,5 +1,7 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 
 export type AdminProfile = {
   id: string;
@@ -20,11 +22,8 @@ function allowlistedEmails(): string[] {
     .filter(Boolean);
 }
 
-export async function getAdminProfile(): Promise<AdminProfile | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const getAdminProfile = cache(async (): Promise<AdminProfile | null> => {
+  const user = await getCachedUser();
 
   if (!user) {
     return null;
@@ -34,6 +33,7 @@ export async function getAdminProfile(): Promise<AdminProfile | null> {
   const isAllowlisted =
     email !== null && allowlistedEmails().includes(email.toLowerCase());
 
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
     .select("id, email, username, full_name, role")
@@ -50,7 +50,7 @@ export async function getAdminProfile(): Promise<AdminProfile | null> {
     fullName: profile?.username ?? profile?.full_name ?? null,
     role,
   };
-}
+});
 
 export async function isCurrentUserAdmin(): Promise<boolean> {
   const profile = await getAdminProfile();

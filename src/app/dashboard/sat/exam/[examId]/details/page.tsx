@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabaseServer";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { SatExamAnswerReview } from "@/components/sat/SatExamAnswerReview";
 import { getSatExamById } from "@/lib/sat-exams";
+import { getExamQuestions } from "@/lib/sat-questions";
 import { getLatestSatExamAttempt } from "../../../actions";
 
 type DetailsPageProps = {
@@ -65,6 +66,7 @@ export default async function SatExamDetailsPage({ params }: DetailsPageProps) {
   }
 
   const { attempt, answers } = result;
+  const questions = await getExamQuestions(examId);
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -87,8 +89,8 @@ export default async function SatExamDetailsPage({ params }: DetailsPageProps) {
 
         <SatExamAnswerReview
           answers={answers}
-          examId={examId}
           examName={exam.name}
+          questions={questions}
           score={attempt.score}
           totalQuestions={attempt.total_questions}
         />
