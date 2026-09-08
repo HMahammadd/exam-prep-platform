@@ -2,17 +2,47 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
-import { toGroupKey } from "@/lib/question-bank";
+import {
+  EXAM_SECTION_CONFIGS,
+  SAT_SKILL_CONFIGS,
+  toGroupKey,
+} from "@/lib/question-bank";
 import { createClient } from "@/lib/supabaseServer";
 import type {
   AdminActionResult,
+  ExamQuestionChoiceRow,
+  ExamQuestionRow,
+  QuestionBankItem,
   QuestionBankDifficulty,
   QuestionBankStatus,
   QuestionBankType,
 } from "@/types/question-bank";
+import { mapQuestionRow } from "@/types/question-bank";
 
 const BUCKET = "question-images";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const QUESTION_PAGE_SIZE = 20;
+
+export type QuestionListFilters = {
+  exam: string;
+  section?: string;
+  skill?: string;
+  difficulty?: QuestionBankDifficulty;
+  search?: string;
+};
+
+export type QuestionPageResult =
+  | {
+      success: true;
+      questions: QuestionBankItem[];
+      hasMore: boolean;
+      total: number;
+    }
+  | { success: false; error: string };
+
+type QuestionRowWithChoices = ExamQuestionRow & {
+  exam_question_choices: ExamQuestionChoiceRow[] | null;
+};
 
 export type QuestionFormState = {
   status: "idle" | "success" | "error";
@@ -24,6 +54,88 @@ type SubmittedChoice = {
   label: string;
   choiceText: string;
 };
+
+export async function loadQuestionPage(
+  filters: QuestionListFilters,
+  offset = 0
+): Promise<QuestionPageResult> {
+  await requireAdmin();
+
+  const exam = filters.exam.trim().toLowerCase();
+  const validExam = EXAM_SECTION_CONFIGS.some(
+    (config) => config.slug === exam
+  );
+
+  if (!validExam) {
+    return { success: false, error: "Choose a valid exam." };
+  }
+
+  if (
+    filters.skill &&
+    !SAT_SKILL_CONFIGS.some((skill) => skill.name === filters.skill)
+  ) {
+    return { success: false, error: "Choose a valid question type." };
+  }
+
+  if (
+    filters.difficulty &&
+    !["easy", "medium", "hard"].includes(filters.difficulty)
+  ) {
+    return { success: false, error: "Choose a valid difficulty." };
+  }
+
+  const safeOffset =
+    Number.isInteger(offset) && offset >= 0 ? Math.min(offset, 100_000) : 0;
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("exam_questions")
+    .select("*, exam_question_choices(*)", { count: "exact" })
+    .eq("exam_type", exam)
+    .order("section", { ascending: true })
+    .order("group_key", { ascending: true })
+    .order("question_number", { ascending: true })
+    .order("id", { ascending: true })
+    .range(safeOffset, safeOffset + QUESTION_PAGE_SIZE - 1);
+
+  if (filters.section) {
+    query = query.eq("section", filters.section.slice(0, 200));
+  }
+
+  if (filters.skill) {
+    query = query.eq("skill", filters.skill);
+  }
+
+  if (filters.difficulty) {
+    query = query.eq("difficulty", filters.difficulty);
+  }
+
+  const search = filters.search?.replace(/[^a-zA-Z0-9-]/g, "").slice(0, 40);
+  if (search) {
+    query = query.or(
+      `question_code.ilike.${search}%,source_id.ilike.${search}%`
+    );
+  }
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    return { success: false, error: describeDbError(error.message) };
+  }
+
+  const rows = (data ?? []) as unknown as QuestionRowWithChoices[];
+  const questions = rows.map((row) =>
+    mapQuestionRow(row, row.exam_question_choices ?? [])
+  );
+  const total = count ?? safeOffset + questions.length;
+
+  return {
+    success: true,
+    questions,
+    hasMore: safeOffset + questions.length < total,
+    total,
+  };
+}
 
 function parseChoices(raw: FormDataEntryValue | null): SubmittedChoice[] {
   if (typeof raw !== "string" || !raw.trim()) {
@@ -105,6 +217,8 @@ export async function saveQuestion(
 
   const questionId = text(formData, "questionId");
   const examType = text(formData, "examType");
+  const questionCode = text(formData, "questionCode").toUpperCase();
+  const skill = text(formData, "skill");
   const section = text(formData, "section");
   const groupLabel = text(formData, "groupLabel");
   const groupKeyInput = text(formData, "groupKey");
@@ -123,6 +237,33 @@ export async function saveQuestion(
 
   if (!examType) {
     return { status: "error", message: "Exam is required." };
+  }
+
+  if (!questionCode) {
+    return { status: "error", message: "Question code is required." };
+  }
+
+  if (!/^[A-Z]{3}\d{5}[A-Z]$/.test(questionCode)) {
+    return {
+      status: "error",
+      message:
+        "Question code must use 3 letters, 5 digits, and a source letter (for example SVW00001C).",
+    };
+  }
+
+  if (!skill) {
+    return { status: "error", message: "Question type is required." };
+  }
+
+  if (
+    examType === "sat" &&
+    !SAT_SKILL_CONFIGS.some((config) => config.name === skill)
+  ) {
+    return { status: "error", message: "Choose a valid SAT question type." };
+  }
+
+  if (!["easy", "medium", "hard"].includes(difficultyInput)) {
+    return { status: "error", message: "Difficulty is required." };
   }
 
   if (!questionText) {
@@ -172,6 +313,19 @@ export async function saveQuestion(
   }
 
   const supabase = await createClient();
+  const { data: duplicateCode } = await supabase
+    .from("exam_questions")
+    .select("id")
+    .eq("question_code", questionCode)
+    .maybeSingle();
+
+  if (duplicateCode && duplicateCode.id !== questionId) {
+    return {
+      status: "error",
+      message: `Question code ${questionCode} is already in use.`,
+    };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -199,6 +353,8 @@ export async function saveQuestion(
 
   const payload = {
     exam_type: examType,
+    question_code: questionCode,
+    skill,
     section: section || null,
     group_key: groupKey,
     group_label: groupLabel || null,
@@ -316,6 +472,18 @@ export async function deleteQuestion(
 }
 
 function describeDbError(message: string): string {
+  if (
+    /duplicate key.*question_code|exam_questions_question_code_unique_idx/i.test(
+      message
+    )
+  ) {
+    return "That question code is already in use.";
+  }
+
+  if (/skill|question_code|source_name|source_id/i.test(message)) {
+    return `${message} — run supabase/migrations/013_sat_question_codes.sql in the Supabase SQL Editor.`;
+  }
+
   if (/exam_questions|exam_question_choices|schema cache|does not exist/i.test(message)) {
     return `${message} — run supabase/migrations/003_admin_question_bank.sql in the Supabase SQL Editor.`;
   }

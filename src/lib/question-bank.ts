@@ -22,6 +22,19 @@ export type ExamSectionConfig = {
 export const SAT_CHOICE_LABELS = ["A", "B", "C", "D"];
 export const DIM_CHOICE_LABELS = ["A", "B", "C", "D", "E"];
 
+export const SAT_SKILL_CONFIGS = [
+  { name: "Words in Context", prefix: "SVW" },
+  { name: "Transitions", prefix: "SVT" },
+  { name: "Inferences", prefix: "SVI" },
+  { name: "Cross-Text Connections", prefix: "SVC" },
+  { name: "Command of Evidence", prefix: "SVE" },
+  { name: "Boundaries", prefix: "SVB" },
+  { name: "Central Ideas and Details", prefix: "SVM" },
+  { name: "Form, Structure, and Sense", prefix: "SVS" },
+  { name: "Text Structure and Purpose", prefix: "SVP" },
+  { name: "Rhetorical Synthesis", prefix: "SVN" },
+] as const;
+
 export const EXAM_SECTION_CONFIGS: ExamSectionConfig[] = [
   {
     slug: "sat",

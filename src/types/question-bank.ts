@@ -13,6 +13,10 @@ export type QuestionBankChoice = {
 export type QuestionBankItem = {
   id: string;
   examType: string;
+  skill: string | null;
+  questionCode: string | null;
+  sourceName: string | null;
+  sourceId: string | null;
   section: string | null;
   groupKey: string;
   groupLabel: string | null;
@@ -39,6 +43,10 @@ export type AdminActionResult =
 export type ExamQuestionRow = {
   id: string;
   exam_type: string;
+  skill: string | null;
+  question_code: string | null;
+  source_name: string | null;
+  source_id: string | null;
   section: string | null;
   group_key: string;
   group_label: string | null;
@@ -72,6 +80,10 @@ export function mapQuestionRow(
   return {
     id: row.id,
     examType: row.exam_type,
+    skill: row.skill ?? null,
+    questionCode: row.question_code ?? null,
+    sourceName: row.source_name ?? null,
+    sourceId: row.source_id ?? null,
     section: row.section,
     groupKey: row.group_key,
     groupLabel: row.group_label,

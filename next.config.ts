@@ -2,7 +2,20 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/question-images/**",
+      },
+    ],
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*.app.github.dev", "localhost:3000"],
+    },
+  },
 };
 
 export default withSentryConfig(nextConfig, {

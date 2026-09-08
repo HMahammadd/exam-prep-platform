@@ -2,7 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useActionState, useMemo, useState } from "react";
+import {
+  useActionState,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type TextareaHTMLAttributes,
+} from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
   saveQuestion,
@@ -10,6 +17,7 @@ import {
 } from "@/app/admin/questions/actions";
 import {
   EXAM_SECTION_CONFIGS,
+  SAT_SKILL_CONFIGS,
   getChoiceLabels,
   getExamConfig,
 } from "@/lib/question-bank";
@@ -26,6 +34,35 @@ type EditableChoice = {
   label: string;
   choiceText: string;
 };
+
+function AutoResizeTextarea(
+  props: TextareaHTMLAttributes<HTMLTextAreaElement>
+) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  function resize(element: HTMLTextAreaElement) {
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
+  }
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      resize(ref.current);
+    }
+  }, []);
+
+  return (
+    <textarea
+      {...props}
+      ref={ref}
+      onInput={(event) => {
+        resize(event.currentTarget);
+        props.onInput?.(event);
+      }}
+      className={`${props.className ?? ""} resize-none overflow-hidden`}
+    />
+  );
+}
 
 type QuestionBankFormProps = {
   /** Existing question when editing; omit when creating. */
@@ -51,6 +88,7 @@ export function QuestionBankForm({
   const [questionType, setQuestionType] = useState<QuestionBankType>(
     question?.questionType ?? "multiple-choice"
   );
+  const [skill, setSkill] = useState(question?.skill ?? "");
   const [choices, setChoices] = useState<EditableChoice[]>(() => {
     if (question && question.choices.length > 0) {
       return question.choices.map((choice) => ({
@@ -71,9 +109,13 @@ export function QuestionBankForm({
 
   const examConfig = getExamConfig(examType);
   const allLabels = useMemo(() => getChoiceLabels(examType), [examType]);
+  const isImported = Boolean(question?.sourceName && question?.sourceId);
 
   function handleExamChange(nextExam: string) {
     setExamType(nextExam);
+    if (nextExam !== "sat") {
+      setSkill("");
+    }
 
     const nextLabels = getChoiceLabels(nextExam);
     setChoices((prev) =>
@@ -137,7 +179,10 @@ export function QuestionBankForm({
     question?.imageUrl && !imagePreview && !removeImage;
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form
+      action={formAction}
+      className="grid items-start gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]"
+    >
       {question && (
         <input type="hidden" name="questionId" value={question.id} />
       )}
@@ -154,8 +199,14 @@ export function QuestionBankForm({
         <input type="hidden" name="correctAnswer" value={correctAnswer} />
       )}
 
-      {/* --- Placement ------------------------------------------------- */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <aside className="space-y-5 rounded-2xl border border-card-border bg-card p-5 shadow-card lg:sticky lg:top-6">
+        <div>
+          <h2 className="font-semibold text-foreground">Question details</h2>
+          <p className="mt-1 text-xs text-muted">
+            Choose where this question belongs.
+          </p>
+        </div>
+
         <div>
           <label htmlFor="examType" className={labelClassName}>
             Exam
@@ -195,6 +246,83 @@ export function QuestionBankForm({
         </div>
 
         <div>
+          <label htmlFor="skill" className={labelClassName}>
+            Question type
+          </label>
+          {examType === "sat" ? (
+            <>
+              <select
+                id="skill"
+                name={isImported ? undefined : "skill"}
+                value={skill}
+                onChange={(event) => setSkill(event.target.value)}
+                required
+                disabled={isImported}
+                className={inputClassName}
+              >
+                <option value="">Choose a type</option>
+                {SAT_SKILL_CONFIGS.map((config) => (
+                  <option key={config.prefix} value={config.name}>
+                    {config.name}
+                  </option>
+                ))}
+              </select>
+              {isImported && <input type="hidden" name="skill" value={skill} />}
+            </>
+          ) : (
+            <input
+              id="skill"
+              name="skill"
+              value={skill}
+              onChange={(event) => setSkill(event.target.value)}
+              placeholder="Enter question type"
+              required
+              className={inputClassName}
+            />
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="questionCode" className={labelClassName}>
+            Question code
+          </label>
+          <input
+            id="questionCode"
+            name="questionCode"
+            defaultValue={question?.questionCode ?? ""}
+            placeholder="e.g. SVW00001C"
+            pattern="[A-Za-z]{3}[0-9]{5}[A-Za-z]"
+            title="3 letters, 5 digits, and a source letter"
+            required
+            className={`${inputClassName} font-mono uppercase`}
+          />
+          {isImported && question?.sourceId && (
+            <p className="mt-1.5 text-xs text-muted">
+              Imported source ID:{" "}
+              <span className="font-mono">{question.sourceId}</span>
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="difficulty" className={labelClassName}>
+            Difficulty
+          </label>
+          <select
+            id="difficulty"
+            name="difficulty"
+            defaultValue={question?.difficulty ?? ""}
+            required
+            className={inputClassName}
+          >
+            <option value="">Choose difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div>
           <label htmlFor="groupLabel" className={labelClassName}>
             Question set
           </label>
@@ -224,17 +352,44 @@ export function QuestionBankForm({
             type="number"
             min={1}
             defaultValue={question?.questionNumber ?? 1}
+            required
             className={inputClassName}
           />
         </div>
-      </div>
+
+        <div>
+          <label htmlFor="status" className={labelClassName}>
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            defaultValue={question?.status ?? "published"}
+            className={inputClassName}
+          >
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+      </aside>
+
+      <div className="space-y-8 rounded-2xl border border-card-border bg-card p-5 shadow-card sm:p-8">
+        {question?.questionCode && (
+          <div className="flex flex-wrap items-center gap-2 border-b border-card-border pb-5 text-sm">
+            <span className="font-mono font-semibold text-foreground">
+              {question.questionCode}
+            </span>
+            <span className="text-muted">·</span>
+            <span className="text-muted">{question.skill ?? "No type"}</span>
+          </div>
+        )}
 
       {/* --- Content ---------------------------------------------------- */}
       <div>
         <label htmlFor="passage" className={labelClassName}>
           Passage <span className="font-normal text-muted">(optional)</span>
         </label>
-        <textarea
+        <AutoResizeTextarea
           id="passage"
           name="passage"
           rows={4}
@@ -248,7 +403,7 @@ export function QuestionBankForm({
         <label htmlFor="questionText" className={labelClassName}>
           Question text
         </label>
-        <textarea
+        <AutoResizeTextarea
           id="questionText"
           name="questionText"
           rows={4}
@@ -328,7 +483,7 @@ export function QuestionBankForm({
 
       {/* --- Answers -------------------------------------------------------- */}
       <div>
-        <span className={labelClassName}>Question type</span>
+        <span className={labelClassName}>Answer format</span>
         <div className="flex gap-2">
           {(
             [
@@ -377,11 +532,11 @@ export function QuestionBankForm({
                 <span className="w-5 text-sm font-semibold text-muted">
                   {choice.label}
                 </span>
-                <input
-                  type="text"
+                <AutoResizeTextarea
                   value={choice.choiceText}
                   onChange={(event) => updateChoice(index, event.target.value)}
                   placeholder={`Answer choice ${choice.label}`}
+                  rows={1}
                   className={inputClassName}
                 />
                 {choices.length > 2 && (
@@ -443,7 +598,7 @@ export function QuestionBankForm({
         <label htmlFor="explanation" className={labelClassName}>
           Explanation <span className="font-normal text-muted">(optional)</span>
         </label>
-        <textarea
+        <AutoResizeTextarea
           id="explanation"
           name="explanation"
           rows={3}
@@ -451,41 +606,6 @@ export function QuestionBankForm({
           placeholder="Explain why the correct answer is right…"
           className={inputClassName}
         />
-      </div>
-
-      {/* --- Meta -------------------------------------------------------- */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="difficulty" className={labelClassName}>
-            Difficulty <span className="font-normal text-muted">(optional)</span>
-          </label>
-          <select
-            id="difficulty"
-            name="difficulty"
-            defaultValue={question?.difficulty ?? ""}
-            className={inputClassName}
-          >
-            <option value="">Not set</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="status" className={labelClassName}>
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={question?.status ?? "published"}
-            className={inputClassName}
-          >
-            <option value="published">Published (visible to students)</option>
-            <option value="draft">Draft (admins only)</option>
-          </select>
-        </div>
       </div>
 
       {state.status === "error" && (
@@ -526,6 +646,7 @@ export function QuestionBankForm({
         >
           Back to questions
         </Link>
+      </div>
       </div>
     </form>
   );

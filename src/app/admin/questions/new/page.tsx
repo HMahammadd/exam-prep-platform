@@ -17,7 +17,7 @@ export default async function NewQuestionPage({
         one.
       </p>
 
-      <div className="mt-8 rounded-2xl border border-card-border bg-card p-8 shadow-card">
+      <div className="mt-8">
         <QuestionBankForm defaultExamType={exam} />
       </div>
     </div>

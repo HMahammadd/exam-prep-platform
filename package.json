@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "questions:setup:official": "python3 -m pip install --target .question-import/python-deps -r scripts/requirements-import.txt",
+    "questions:extract:official": "PYTHONPATH=.question-import/python-deps python3 scripts/extract-official-sat.py",
+    "questions:import:official": "node scripts/import-official-sat.mjs",
+    "questions:import:official:execute": "node scripts/import-official-sat.mjs --execute",
+    "questions:verify:official": "node scripts/verify-official-sat.mjs"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.3",

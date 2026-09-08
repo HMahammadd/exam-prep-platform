@@ -9,12 +9,14 @@ type DeleteQuestionButtonProps = {
   questionId: string;
   questionNumber: number;
   redirectTo?: string;
+  onDeleted?: () => void;
 };
 
 export function DeleteQuestionButton({
   questionId,
   questionNumber,
   redirectTo,
+  onDeleted,
 }: DeleteQuestionButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -41,6 +43,8 @@ export function DeleteQuestionButton({
 
       if (redirectTo) {
         router.push(redirectTo);
+      } else if (onDeleted) {
+        onDeleted();
       } else {
         router.refresh();
       }

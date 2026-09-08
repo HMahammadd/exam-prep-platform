@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+__pycache__/
+*.py[cod]
 
 # next.js
 /.next/
@@ -19,6 +21,7 @@
 
 # production
 /build
+/.question-import
 
 # misc
 .DS_Store

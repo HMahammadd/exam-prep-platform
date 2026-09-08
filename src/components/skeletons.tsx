@@ -720,34 +720,26 @@ export function AdminQuestionsSkeleton() {
         <Skeleton className="h-10 w-36 rounded-lg" />
       </div>
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-10 w-full rounded-lg" />
-        <Skeleton className="h-10 w-full rounded-lg" />
-        <Skeleton className="h-10 w-full rounded-lg" />
-        <Skeleton className="h-10 w-full rounded-lg" />
-      </div>
-
-      <div className="space-y-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex flex-col gap-4 rounded-2xl border border-card-border bg-card p-5 shadow-card sm:flex-row"
-          >
-            <Skeleton className="h-[4.5rem] w-full shrink-0 rounded-lg sm:w-24" />
-            <div className="min-w-0 flex-1 space-y-2">
-              <div className="flex flex-wrap gap-2">
-                <Skeleton className="h-5 w-14 rounded-full" />
-                <Skeleton className="h-5 w-16 rounded-full" />
-              </div>
-              <Skeleton className="h-4 w-full max-w-md" />
-              <Skeleton className="h-3 w-40" />
-            </div>
-            <div className="flex gap-2 sm:flex-col">
-              <Skeleton className="h-8 w-16 rounded-lg" />
-              <Skeleton className="h-8 w-16 rounded-lg" />
-            </div>
+      <div className="grid items-start gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+        <div className="rounded-2xl border border-card-border bg-card p-5 shadow-card">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="mt-2 h-3 w-44" />
+          <div className="mt-4 grid grid-cols-3 gap-2 lg:grid-cols-1">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton key={index} className="h-10 rounded-lg" />
+            ))}
           </div>
-        ))}
+          <div className="my-5 border-t border-card-border" />
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index}>
+                <Skeleton className="mb-2 h-3 w-20" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="min-h-96 rounded-2xl border border-dashed border-card-border bg-card/50" />
       </div>
       <span className="sr-only">Loading…</span>
     </div>
@@ -765,31 +757,39 @@ export function AdminQuestionFormSkeleton() {
         <Skeleton className="h-9 w-24 rounded-lg" />
       </div>
 
-      <div className="rounded-2xl border border-card-border bg-card p-8 shadow-card">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-3.5 w-16" />
-              <Skeleton className="h-10 w-full rounded-lg" />
-            </div>
-          ))}
+      <div className="grid items-start gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
+        <div className="rounded-2xl border border-card-border bg-card p-5 shadow-card">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="mt-2 h-3 w-48" />
+          <div className="mt-6 space-y-5">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-3.5 w-20" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-8 space-y-2">
-          <Skeleton className="h-3.5 w-24" />
-          <Skeleton className="h-28 w-full rounded-lg" />
-        </div>
-
-        <div className="mt-8 space-y-3">
-          <Skeleton className="h-3.5 w-20" />
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 w-full rounded-lg" />
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-end gap-3">
-          <Skeleton className="h-10 w-24 rounded-lg" />
-          <Skeleton className="h-10 w-28 rounded-lg" />
+        <div className="rounded-2xl border border-card-border bg-card p-5 shadow-card sm:p-8">
+          <div className="space-y-2">
+            <Skeleton className="h-3.5 w-20" />
+            <Skeleton className="h-28 w-full rounded-lg" />
+          </div>
+          <div className="mt-8 space-y-2">
+            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-28 w-full rounded-lg" />
+          </div>
+          <div className="mt-8 space-y-3">
+            <Skeleton className="h-3.5 w-24" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-lg" />
+            ))}
+          </div>
+          <div className="mt-8 flex gap-3">
+            <Skeleton className="h-10 w-32 rounded-lg" />
+            <Skeleton className="h-10 w-28 rounded-lg" />
+          </div>
         </div>
       </div>
       <span className="sr-only">Loading…</span>

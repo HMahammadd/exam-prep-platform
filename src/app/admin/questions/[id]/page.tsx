@@ -58,7 +58,7 @@ export default async function EditQuestionPage({
         />
       </div>
 
-      <div className="mt-8 rounded-2xl border border-card-border bg-card p-8 shadow-card">
+      <div className="mt-8">
         <QuestionBankForm question={question} />
       </div>
     </div>
