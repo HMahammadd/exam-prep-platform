@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "fd0ce6d7-ec70-4462-c794-b6643662ebe0",
+  "sections": [
+    {"offset": {"line": 71, "column": 0}, "map": {"version":3,"sources":["file:///Users/mehemmed/Desktop/exam-prep-platform/src/lib/username-setup.ts"],"sourcesContent":["/** Auto-generated usernames from the old signup fallback (user_<8 hex chars>). */\nconst AUTO_USERNAME_PATTERN = /^user_[0-9a-f]{8}$/i;\n\n/**\n * True when the user must complete the username onboarding step\n * before accessing the rest of the app.\n */\nexport function needsUsernameSetup(\n  username: string | null | undefined\n): boolean {\n  if (!username || !username.trim()) return true;\n  return AUTO_USERNAME_PATTERN.test(username.trim());\n}\n"],"names":["AUTO_USERNAME_PATTERN","needsUsernameSetup","username","trim","test"],"mappings":";;;;AAAA,gFAAgF,GAChF,MAAMA,wBAAwB;AAMvB,SAASC,mBACdC,QAAmC;IAEnC,IAAI,CAACA,YAAY,CAACA,SAASC,IAAI,IAAI,OAAO;IAC1C,OAAOH,sBAAsBI,IAAI,CAACF,SAASC,IAAI;AACjD"}}]
+}

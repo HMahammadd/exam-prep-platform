@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "debugId": "8c615cc0-aec7-bf2c-636f-563c58828f62",
+  "sections": [
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":["file:///Users/mehemmed/Desktop/exam-prep-platform/sentry.server.config.ts"],"sourcesContent":["// This file configures the initialization of Sentry on the server.\n// The config you add here will be used whenever the server handles a request.\n// https://docs.sentry.io/platforms/javascript/guides/nextjs/\n\nimport * as Sentry from \"@sentry/nextjs\";\n\nSentry.init({\n  dsn: \"https://3128508f9cfb241aea69658d28b67117@o4511843047309312.ingest.us.sentry.io/4511843056943104\",\n\n  // Keep full tracing in development; sample in production to cut server overhead.\n  tracesSampleRate: process.env.NODE_ENV === \"production\" ? 0.1 : 1,\n\n  // Enable logs to be sent to Sentry\n  enableLogs: true,\n\n  dataCollection: {\n    // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:\n    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#dataCollection\n    // userInfo: false,\n    // httpBodies: [],\n  },\n});\n"],"names":["dsn","tracesSampleRate","enableLogs","dataCollection"],"mappings":";AAAA,mEAAmE;AACnE,8EAA8E;AAC9E,6DAA6D;AAE7D;;AAEA,kLAAW,CAAC;IACVA,KAAK;IAEL,iFAAiF;IACjFC,kBAAkB,sCAAwC,0BAAM;IAEhE,mCAAmC;IACnCC,YAAY;IAEZC,gBAAgB;IAKhB;AACF"}}]
+}
