@@ -16,6 +16,10 @@ import {
   type QuestionFormState,
 } from "@/app/admin/questions/actions";
 import {
+  QuestionVisual,
+  hasQuestionVisual,
+} from "@/components/sat/QuestionVisual";
+import {
   EXAM_SECTION_CONFIGS,
   SAT_SKILL_CONFIGS,
   getChoiceLabels,
@@ -417,6 +421,13 @@ export function QuestionBankForm({
       {/* --- Image -------------------------------------------------------- */}
       <div>
         <span className={labelClassName}>Picture</span>
+        {!showExistingImage &&
+          !imagePreview &&
+          hasQuestionVisual(question?.questionCode) && (
+            <div className="mb-4">
+              <QuestionVisual questionCode={question?.questionCode} />
+            </div>
+          )}
         <div className="flex flex-wrap items-start gap-4">
           {showExistingImage && (
             <div className="relative">

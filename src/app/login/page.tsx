@@ -9,6 +9,7 @@ import {
   AuthDivider,
   GoogleSignInButton,
 } from "@/components/GoogleSignInButton";
+import { LogInIcon } from "@/components/LogInIcon";
 import { supabase } from "@/lib/supabaseClient";
 
 const inputClassName =
@@ -147,7 +148,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
+          className="group/login inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <>
@@ -156,7 +157,7 @@ function LoginForm() {
             </>
           ) : (
             <>
-              <LogIn className="h-4 w-4" aria-hidden />
+              <LogInIcon className="h-4 w-4" />
               Sign in
             </>
           )}

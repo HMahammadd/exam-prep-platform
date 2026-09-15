@@ -22,6 +22,10 @@ import {
   type QuestionListFilters,
 } from "@/app/admin/questions/actions";
 import { DeleteQuestionButton } from "@/components/admin/DeleteQuestionButton";
+import {
+  QuestionVisual,
+  hasQuestionVisual,
+} from "@/components/sat/QuestionVisual";
 import { getExamName } from "@/lib/question-bank";
 import type {
   QuestionBankDifficulty,
@@ -311,7 +315,7 @@ function QuestionCard({
           </div>
         )}
 
-        {question.imageUrl && (
+        {question.imageUrl ? (
           <Image
             src={question.imageUrl}
             alt=""
@@ -319,10 +323,14 @@ function QuestionCard({
             height={500}
             className="max-h-96 w-auto rounded-xl border border-card-border object-contain"
           />
+        ) : (
+          hasQuestionVisual(question.questionCode) && (
+            <QuestionVisual questionCode={question.questionCode} />
+          )
         )}
 
         <div className="flex gap-3">
-          {!question.imageUrl && (
+          {!question.imageUrl && !hasQuestionVisual(question.questionCode) && (
             <div className="mt-0.5 hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-dashed border-card-border text-muted sm:flex">
               <ImageIcon className="h-4 w-4" aria-hidden />
             </div>

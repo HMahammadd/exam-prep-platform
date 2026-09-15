@@ -3,16 +3,11 @@ import {
   Award,
   BarChart3,
   Bookmark,
-  BookOpen,
-  CheckCircle2,
   ClipboardList,
   Clock,
-  GraduationCap,
   Lightbulb,
   ListChecks,
-  LogIn,
   PenLine,
-  Sparkles,
   Target,
   TrendingUp,
   UserPlus,
@@ -20,7 +15,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { GraduationCapIcon } from "@/components/GraduationCapIcon";
+import { LogInIcon } from "@/components/LogInIcon";
 import { Navbar } from "@/components/Navbar";
+import { ParticleWaveField } from "@/components/ParticleWaveField";
+import { SampleQuestionCarousel } from "@/components/SampleQuestionCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { EXAMS } from "@/lib/exams";
 import { getExamIcon } from "@/lib/exam-icons";
@@ -142,143 +141,55 @@ const FAQS: { question: string; answer: string }[] = [
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="home-entrance flex flex-1 flex-col">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-card-border bg-card">
-        <div
-          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent-soft blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-accent-soft blur-3xl"
-          aria-hidden
-        />
+      <section className="home-hero relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+        <ParticleWaveField />
 
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-2 lg:items-center lg:py-24">
-          <div>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-card-border bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Kepler Exam Prep
-            </p>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-              Practice smarter for{" "}
-              <span className="text-accent">SAT, TOEFL, and DIM</span> exams.
+        <div className="home-hero-inner relative z-10 mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
+          <div className="hero-copy">
+            <h1 className="hero-copy-title text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+              <span className="hero-copy-line home-reveal home-reveal-title-a">
+                Practice smarter for
+              </span>
+              <span className="hero-copy-line home-reveal home-reveal-title-b">
+                <span className="hero-copy-exams">SAT, TOEFL, and DIM</span>{" "}
+                exams.
+              </span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
-              Kepler gives you realistic exam-style questions, detailed
-              explanations, and progress tracking — so you walk into test day
-              knowing exactly what to expect.
-            </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="hero-copy-actions home-reveal home-reveal-actions">
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-accent-hover"
+                className="group/practice inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-accent-hover"
               >
-                <GraduationCap className="h-4 w-4" aria-hidden />
+                <GraduationCapIcon className="h-4 w-4 shrink-0" />
                 Start Practicing
               </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg border border-card-border bg-background px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-accent-soft"
-              >
-                <LogIn className="h-4 w-4" aria-hidden />
-                Log In
-              </Link>
             </div>
-
-            <p className="mt-5 flex items-center gap-2 text-sm text-muted">
-              <CheckCircle2 className="h-4 w-4 text-accent" aria-hidden />
-              No credit card required — start practicing right away.
-            </p>
           </div>
 
-          {/* Product preview */}
-          <div className="rounded-2xl border border-card-border bg-background p-6 shadow-card sm:p-8">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-accent">
-                <BookOpen className="h-4 w-4" aria-hidden />
-                Sample question
-              </p>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent">
-                <Clock className="h-3.5 w-3.5" aria-hidden />
-                12:04
-              </span>
-            </div>
-
-            <p className="text-sm leading-relaxed text-foreground">
-              Which choice best completes the sentence with the most logical and
-              precise word?
-            </p>
-
-            <div className="mt-4 space-y-2">
-              {[
-                { label: "A", text: "elaborate", state: "default" },
-                { label: "B", text: "concise", state: "correct" },
-                { label: "C", text: "ambiguous", state: "eliminated" },
-                { label: "D", text: "trivial", state: "default" },
-              ].map((choice) => (
-                <div
-                  key={choice.label}
-                  className={`flex items-center gap-3 rounded-lg border px-4 py-2.5 text-sm transition ${
-                    choice.state === "correct"
-                      ? "border-accent bg-accent-soft font-medium text-foreground"
-                      : choice.state === "eliminated"
-                        ? "border-card-border bg-card text-muted line-through opacity-60"
-                        : "border-card-border bg-card text-foreground"
-                  }`}
-                >
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${
-                      choice.state === "correct"
-                        ? "border-accent bg-accent text-white"
-                        : "border-card-border text-muted"
-                    }`}
-                  >
-                    {choice.label}
-                  </span>
-                  {choice.text}
-                  {choice.state === "correct" && (
-                    <CheckCircle2
-                      className="ml-auto h-4 w-4 text-accent"
-                      aria-hidden
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 rounded-lg border border-card-border bg-card p-3">
-              <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
-                <Lightbulb className="h-3.5 w-3.5" aria-hidden />
-                Explanation
-              </p>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                &ldquo;Concise&rdquo; means expressing much in few words, which
-                matches the sentence&apos;s emphasis on precision.
-              </p>
-            </div>
+          <div className="home-reveal home-reveal-card">
+            <SampleQuestionCarousel />
           </div>
         </div>
       </section>
 
       {/* Highlights strip */}
-      <section className="border-b border-card-border bg-background">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-6 py-10 lg:grid-cols-4">
+      <section className="home-feature-strip">
+        <div className="home-feature-strip-inner">
           {HIGHLIGHTS.map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.label} className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft">
-                  <Icon className="h-5 w-5 text-accent" aria-hidden />
+              <div key={item.label} className="home-feature-item">
+                <span className="home-feature-icon">
+                  <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xl font-bold text-foreground">
-                    {item.value}
-                  </p>
-                  <p className="truncate text-xs text-muted">{item.label}</p>
+                  <p className="home-feature-value">{item.value}</p>
+                  <p className="home-feature-label">{item.label}</p>
                 </div>
               </div>
             );
@@ -516,9 +427,9 @@ export default function Home() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-background"
+              className="group/login inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-background"
             >
-              <LogIn className="h-4 w-4" aria-hidden />
+              <LogInIcon className="h-4 w-4 shrink-0" />
               Log In
             </Link>
           </div>

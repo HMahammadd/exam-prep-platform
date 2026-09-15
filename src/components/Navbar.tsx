@@ -1,6 +1,7 @@
-import { Home, Library, LogIn, UserPlus } from "lucide-react";
+import { Home, Library, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { KeplerLogo } from "./KeplerLogo";
+import { LogInIcon } from "./LogInIcon";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
@@ -30,9 +31,9 @@ export function Navbar() {
           <ThemeToggle />
           <Link
             href="/login"
-            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition hover:bg-accent-soft sm:inline-flex"
+            className="group/login hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition hover:bg-accent-soft sm:inline-flex"
           >
-            <LogIn className="h-4 w-4" aria-hidden />
+            <LogInIcon className="h-4 w-4 shrink-0" />
             Log In
           </Link>
           <Link
