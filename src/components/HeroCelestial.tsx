@@ -109,9 +109,9 @@ function MoonArtwork() {
           fill="currentColor"
           mask="url(#hero-moon-crescent)"
         />
-        <Spark cx="142" cy="70" size="34" className="hero-moon-star hero-moon-star-a" />
-        <Spark cx="178" cy="52" size="22" className="hero-moon-star hero-moon-star-b" />
-        <Spark cx="186" cy="102" size="18" className="hero-moon-star hero-moon-star-c" />
+        <Spark cx={142} cy={70} size={34} className="hero-moon-star hero-moon-star-a" />
+        <Spark cx={178} cy={52} size={22} className="hero-moon-star hero-moon-star-b" />
+        <Spark cx={186} cy={102} size={18} className="hero-moon-star hero-moon-star-c" />
         <circle className="hero-moon-dot" cx="114" cy="90" r="6.5" fill="currentColor" />
         <circle className="hero-moon-dot hero-moon-dot-b" cx="136" cy="128" r="4" fill="currentColor" />
       </g>

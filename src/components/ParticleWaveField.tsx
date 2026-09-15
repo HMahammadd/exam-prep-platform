@@ -61,11 +61,13 @@ export function ParticleWaveField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const node = canvasRef.current;
+    if (!node) return;
+    const canvas: HTMLCanvasElement = node;
 
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) return;
+    const ctx: CanvasRenderingContext2D = context;
 
     const hero = canvas.closest("section");
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -199,14 +201,16 @@ export function ParticleWaveField() {
             continue;
           }
 
-          const shade = dark ? 255 - depth * 48 : 10 + depth * 32;
+          const shadeR = dark ? 186 + near * 28 : 30;
+          const shadeG = dark ? 208 + near * 18 : 58;
+          const shadeB = dark ? 232 : 95;
           const alpha =
             (dark
-              ? (0.28 + near * 0.56) * (0.8 + jitter * 0.2)
-              : (0.24 + near * 0.4) * (0.8 + jitter * 0.2)) *
-            (1 - flatten * 0.92);
+              ? (0.16 + near * 0.4) * (0.78 + jitter * 0.18)
+              : (0.14 + near * 0.3) * (0.78 + jitter * 0.18)) *
+            (1 - flatten * 0.94);
 
-          ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade}, ${alpha})`;
+          ctx.fillStyle = `rgba(${shadeR}, ${shadeG}, ${shadeB}, ${alpha})`;
 
           if (size < 1.5) {
             ctx.fillRect(px, py, size, size);
@@ -220,7 +224,6 @@ export function ParticleWaveField() {
     }
 
     function drawStars(time: number) {
-      const tone = dark ? 248 : 17;
       const gatherR = 150;
       const partR = 52;
       const panX = (cursorX / Math.max(width, 1) - 0.5) * pointer;
@@ -265,19 +268,22 @@ export function ParticleWaveField() {
           !reducedMotion && pointer > 0.04
             ? Math.max(0, 1 - Math.hypot(x - cursorX, y - cursorY) / 140)
             : 0;
+        const toneR = dark ? 214 : 30;
+        const toneG = dark ? 226 : 58;
+        const toneB = dark ? 245 : 95;
         const r = star.size * (0.94 + twinkle * 0.08 + nearCursor * 0.08);
 
         if (star.glow) {
-          ctx.globalAlpha = ((dark ? 0.2 : 0.14) + nearCursor * 0.1) * twinkle;
-          ctx.fillStyle = `rgb(${tone}, ${tone}, ${tone})`;
-          drawSparkle(ctx, x, y, r * 2.4, r * 0.5);
+          ctx.globalAlpha = ((dark ? 0.14 : 0.08) + nearCursor * 0.08) * twinkle;
+          ctx.fillStyle = `rgb(${toneR}, ${toneG}, ${toneB})`;
+          drawSparkle(ctx, x, y, r * 2.2, r * 0.5);
           ctx.fill();
         }
 
         ctx.globalAlpha =
-          (dark ? 0.58 : 0.5) + twinkle * 0.32 + nearCursor * 0.18;
-        ctx.fillStyle = `rgb(${tone}, ${tone}, ${tone})`;
-        ctx.strokeStyle = `rgba(${tone}, ${tone}, ${tone}, 0.92)`;
+          (dark ? 0.4 : 0.28) + twinkle * 0.22 + nearCursor * 0.12;
+        ctx.fillStyle = `rgb(${toneR}, ${toneG}, ${toneB})`;
+        ctx.strokeStyle = `rgba(${toneR}, ${toneG}, ${toneB}, 0.78)`;
         ctx.lineWidth = 1;
         drawSparkle(ctx, x, y, r);
         if (star.outline) ctx.stroke();
@@ -289,7 +295,9 @@ export function ParticleWaveField() {
     function drawShootingStar() {
       if (!shooting) return;
 
-      const tone = dark ? 250 : 20;
+      const toneR = dark ? 214 : 30;
+      const toneG = dark ? 226 : 58;
+      const toneB = dark ? 245 : 95;
       const fade = shooting.fade;
       const trail = shooting.trail;
       if (trail.length > 1) {
@@ -299,13 +307,13 @@ export function ParticleWaveField() {
           const p1 = trail[i];
           if (!p0 || !p1) continue;
           const along = i / trail.length;
-          ctx.strokeStyle = `rgba(${tone}, ${tone}, ${tone}, ${along * fade * (dark ? 0.18 : 0.14)})`;
+          ctx.strokeStyle = `rgba(${toneR}, ${toneG}, ${toneB}, ${along * fade * (dark ? 0.14 : 0.1)})`;
           ctx.lineWidth = 3 + along * 1.2;
           ctx.beginPath();
           ctx.moveTo(p0.x, p0.y);
           ctx.lineTo(p1.x, p1.y);
           ctx.stroke();
-          ctx.strokeStyle = `rgba(${tone}, ${tone}, ${tone}, ${along * fade * (dark ? 0.58 : 0.42)})`;
+          ctx.strokeStyle = `rgba(${toneR}, ${toneG}, ${toneB}, ${along * fade * (dark ? 0.42 : 0.28)})`;
           ctx.lineWidth = 1.1 + along * 0.6;
           ctx.beginPath();
           ctx.moveTo(p0.x, p0.y);
@@ -314,15 +322,15 @@ export function ParticleWaveField() {
         }
       }
 
-      ctx.globalAlpha = (0.5 + 0.45 * fade) * fade;
-      ctx.fillStyle = `rgb(${tone}, ${tone}, ${tone})`;
+      ctx.globalAlpha = (0.42 + 0.4 * fade) * fade;
+      ctx.fillStyle = `rgb(${toneR}, ${toneG}, ${toneB})`;
       drawSparkle(ctx, shooting.x, shooting.y, 3.4 * fade + 1.2);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
 
     function paint(time: number) {
-      ctx.fillStyle = dark ? "#09090b" : "#ececee";
+      ctx.fillStyle = dark ? "#0d1524" : "#f3f6fb";
       ctx.fillRect(0, 0, width, height);
 
       drawStars(time);
@@ -481,8 +489,8 @@ export function ParticleWaveField() {
       aria-hidden
     >
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      <div className="absolute inset-0 bg-linear-to-r from-neutral-100/62 via-neutral-100/20 to-transparent dark:from-neutral-950/62 dark:via-neutral-950/18 dark:to-transparent" />
-      <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-neutral-100/25 dark:to-neutral-950/22" />
+      <div className="home-atmosphere-veil-x" />
+      <div className="home-atmosphere-veil-y" />
       <HeroCelestial />
       <div className="home-hero-wave-fade" />
     </div>

@@ -143,7 +143,7 @@ export function SampleQuestionCarousel() {
 
   return (
     <div
-      className="hero-slide-carousel overflow-hidden rounded-2xl border border-card-border bg-white/92 shadow-card backdrop-blur-[2px] dark:bg-neutral-900/90"
+      className="hero-slide-carousel overflow-hidden rounded-2xl border border-card-border bg-card"
       data-exam={slide.exam}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}

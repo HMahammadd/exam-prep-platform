@@ -145,7 +145,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero */}
-      <section className="home-hero relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+      <section className="home-hero relative overflow-hidden">
         <ParticleWaveField />
 
         <div className="home-hero-inner relative z-10 mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
@@ -163,7 +163,7 @@ export default function Home() {
             <div className="hero-copy-actions home-reveal home-reveal-actions">
               <Link
                 href="/signup"
-                className="group/practice inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-accent-hover"
+                className="home-hero-cta group/practice inline-flex items-center gap-2 rounded-[0.85rem] bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
               >
                 <GraduationCapIcon className="h-4 w-4 shrink-0" />
                 Start Practicing
