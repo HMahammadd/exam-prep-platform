@@ -660,8 +660,8 @@ p.text-2xl.font-bold {
   --celestial-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --celestial-duration: 720ms;
   position: absolute;
-  top: -3.1rem;
-  right: -2.55rem;
+  top: 0.7rem;
+  right: -1.35rem;
   z-index: 1;
   width: 8.5rem;
   height: 8.5rem;
@@ -688,7 +688,7 @@ p.text-2xl.font-bold {
 .hero-celestial-face--sun {
   opacity: 1;
   visibility: visible;
-  transform: scale(1) translate3d(14%, -18%, 0);
+  transform: scale(1) translate3d(8%, -2%, 0);
   filter: drop-shadow(0 0 14px rgba(255, 196, 40, 0.22));
   transition:
     opacity var(--celestial-duration) var(--celestial-ease),
@@ -718,7 +718,7 @@ html.dark .hero-celestial-face--sun {
 html.dark .hero-celestial-face--moon {
   opacity: 1;
   visibility: visible;
-  transform: scale(1.02) translate3d(16%, -20%, 0);
+  transform: scale(1.02) translate3d(10%, -4%, 0);
   transition:
     opacity var(--celestial-duration) var(--celestial-ease),
     transform var(--celestial-duration) var(--celestial-ease),
@@ -741,8 +741,8 @@ html.dark .hero-celestial-face--moon {
 
 @media (min-width: 640px) {
   .hero-celestial {
-    top: -3.4rem;
-    right: -3rem;
+    top: 0.85rem;
+    right: -1.5rem;
     width: 10.75rem;
     height: 10.75rem;
     opacity: 0.66;
@@ -751,8 +751,8 @@ html.dark .hero-celestial-face--moon {
 
 @media (min-width: 1024px) {
   .hero-celestial {
-    top: -3.15rem;
-    right: -3.65rem;
+    top: 1rem;
+    right: -1.75rem;
     width: 14rem;
     height: 14rem;
     opacity: 0.74;
@@ -761,8 +761,8 @@ html.dark .hero-celestial-face--moon {
 
 @media (min-width: 1280px) {
   .hero-celestial {
-    top: -3.35rem;
-    right: -3.25rem;
+    top: 1.1rem;
+    right: -1.4rem;
     width: 14.75rem;
     height: 14.75rem;
   }
