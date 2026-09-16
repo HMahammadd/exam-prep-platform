@@ -20,10 +20,15 @@
     "home": "Home",
     "exams": "Exams",
     "practice": "Practice",
+    "about": "About",
     "login": "Log In",
     "signup": "Sign Up",
     "logoHome": "Kepler — go to home page",
-    "logoDashboard": "Kepler — go to dashboard"
+    "logoDashboard": "Kepler — go to dashboard",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "theme": "Theme"
   },
   "hero": {
     "line1": "Practice smarter for",

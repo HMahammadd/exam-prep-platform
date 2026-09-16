@@ -20,10 +20,15 @@
     "home": "Ana səhifə",
     "exams": "İmtahanlar",
     "practice": "Məşq",
+    "about": "Haqqımızda",
     "login": "Daxil ol",
     "signup": "Qeydiyyatdan keç",
     "logoHome": "Kepler — ana səhifəyə keç",
-    "logoDashboard": "Kepler — paneldə keç"
+    "logoDashboard": "Kepler — paneldə keç",
+    "menu": "Menyu",
+    "closeMenu": "Menyunu bağla",
+    "language": "Dil",
+    "theme": "Tema"
   },
   "hero": {
     "line1": "",

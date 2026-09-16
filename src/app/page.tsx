@@ -149,10 +149,10 @@ export default function Home() {
       <Navbar />
 
       <div className="home-screen">
-        <section className="home-hero relative overflow-hidden">
+        <section id="home" className="home-hero relative overflow-hidden">
           <ParticleWaveField />
 
-          <div className="home-hero-inner relative z-10 mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
+          <div className="home-hero-inner relative z-10 mx-auto grid grid-cols-1 max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
             <div className="hero-copy w-fit max-w-full justify-self-start">
               <h1 className="hero-copy-title text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
                 {line1 ? (
@@ -191,7 +191,10 @@ export default function Home() {
 
         <ExamConditionsSection />
 
-        <section className="site-section mx-auto max-w-6xl px-6 py-16">
+        <section
+          id="about"
+          className="site-section mx-auto max-w-6xl px-6 py-16"
+        >
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-bold text-foreground">
               {t("home.whyTitle")}

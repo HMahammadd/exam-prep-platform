@@ -20,10 +20,15 @@
     "home": "Главная",
     "exams": "Экзамены",
     "practice": "Практика",
+    "about": "О нас",
     "login": "Войти",
     "signup": "Регистрация",
     "logoHome": "Kepler — на главную",
-    "logoDashboard": "Kepler — в кабинет"
+    "logoDashboard": "Kepler — в кабинет",
+    "menu": "Меню",
+    "closeMenu": "Закрыть меню",
+    "language": "Язык",
+    "theme": "Тема"
   },
   "hero": {
     "line1": "Готовьтесь эффективнее к",

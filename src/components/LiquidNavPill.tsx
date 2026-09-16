@@ -1,7 +1,5 @@
 "use client";
 
-import { GraduationCap, Home, Library, type LucideIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -13,47 +11,17 @@ import {
 } from "react";
 import { useI18n } from "@/components/I18nProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { parseLocalePath, withLocale } from "@/lib/i18n/config";
-
-type NavItem = {
-  id: string;
-  href: string;
-  labelKey: string;
-  icon: LucideIcon;
-  match: (barePath: string, hash: string) => boolean;
-};
-
-/** Destinations that already exist in the app. */
-const NAV_ITEMS: NavItem[] = [
-  {
-    id: "home",
-    href: "/",
-    labelKey: "nav.home",
-    icon: Home,
-    match: (path, hash) =>
-      (path === "/" || path === "") && hash !== "#exams" && hash !== "#practice",
-  },
-  {
-    id: "exams",
-    href: "/#exams",
-    labelKey: "nav.exams",
-    icon: Library,
-    match: (path, hash) =>
-      (path === "/" || path === "") && hash === "#exams",
-  },
-  {
-    id: "practice",
-    href: "/#practice",
-    labelKey: "nav.practice",
-    icon: GraduationCap,
-    match: (path, hash) =>
-      (path === "/" || path === "") && hash === "#practice",
-  },
-];
+import { NAV_ITEMS } from "@/components/navItems";
+import { useSectionNav } from "@/components/useSectionNav";
+import { withLocale } from "@/lib/i18n/config";
 
 const LEAD_K = 280;
 const TRAIL_K = 118;
 const DAMPING = 26;
+// Calmer spring for passive scrollspy-driven moves (item 4: less snap than a click).
+const SCROLL_LEAD_K = 150;
+const SCROLL_TRAIL_K = 90;
+const SCROLL_DAMPING = 30;
 const SETTLE_EPS = 0.35;
 const SETTLE_VEL = 0.12;
 
@@ -62,6 +30,7 @@ type Edge = {
   vel: number;
   target: number;
   k: number;
+  damping: number;
 };
 
 type BeadBox = {
@@ -77,14 +46,9 @@ function prefersReducedMotion() {
 }
 
 function stepEdge(edge: Edge, dt: number) {
-  const force = -edge.k * (edge.pos - edge.target) - DAMPING * edge.vel;
+  const force = -edge.k * (edge.pos - edge.target) - edge.damping * edge.vel;
   edge.vel += force * dt;
   edge.pos += edge.vel * dt;
-}
-
-function resolveActiveId(barePath: string, hash: string): string | null {
-  const hit = NAV_ITEMS.find((item) => item.match(barePath, hash));
-  return hit?.id ?? null;
 }
 
 type LiquidNavPillProps = {
@@ -98,48 +62,22 @@ export function LiquidNavPill({
   density = "default",
 }: LiquidNavPillProps) {
   const { locale, t } = useI18n();
-  const pathname = usePathname() || "/";
-  const router = useRouter();
-  const barePath = parseLocalePath(pathname).pathname;
+  const { activeId, activeSource, navigateToSection } = useSectionNav();
 
   const trackRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const beadElRef = useRef<HTMLSpanElement>(null);
   const rafRef = useRef<number | null>(null);
-  const leftEdge = useRef<Edge>({ pos: 0, vel: 0, target: 0, k: LEAD_K });
-  const rightEdge = useRef<Edge>({ pos: 0, vel: 0, target: 0, k: LEAD_K });
+  const leftEdge = useRef<Edge>({ pos: 0, vel: 0, target: 0, k: LEAD_K, damping: DAMPING });
+  const rightEdge = useRef<Edge>({ pos: 0, vel: 0, target: 0, k: LEAD_K, damping: DAMPING });
   const beadTop = useRef(0);
   const beadHeight = useRef(36);
   const settledId = useRef<string | null>(null);
   const hasPlaced = useRef(false);
 
-  const [hash, setHash] = useState(() =>
-    typeof window !== "undefined" ? window.location.hash : ""
-  );
-  const [optimisticId, setOptimisticId] = useState<string | null>(null);
   const [bead, setBead] = useState<BeadBox | null>(null);
   const [visible, setVisible] = useState(false);
   const [pointerGlow, setPointerGlow] = useState({ x: 50, y: 50 });
-
-  const routeActiveId = resolveActiveId(barePath, hash);
-  const activeId = optimisticId ?? routeActiveId;
-
-  useEffect(() => {
-    const syncHash = () => setHash(window.location.hash);
-    syncHash();
-    window.addEventListener("hashchange", syncHash);
-    window.addEventListener("popstate", syncHash);
-    return () => {
-      window.removeEventListener("hashchange", syncHash);
-      window.removeEventListener("popstate", syncHash);
-    };
-  }, [pathname]);
-
-  useEffect(() => {
-    if (optimisticId && routeActiveId === optimisticId) {
-      setOptimisticId(null);
-    }
-  }, [optimisticId, routeActiveId]);
 
   const measureItem = useCallback((id: string): BeadBox | null => {
     const track = trackRef.current;
@@ -238,7 +176,7 @@ export function LiquidNavPill({
   }, [paintBead]);
 
   const moveTo = useCallback(
-    (id: string | null, instant = false) => {
+    (id: string | null, instant = false, calm = false) => {
       if (!id) {
         setVisible(false);
         settledId.current = null;
@@ -255,6 +193,9 @@ export function LiquidNavPill({
       beadHeight.current = box.height;
 
       const reduced = prefersReducedMotion() || instant || !hasPlaced.current;
+      const leadK = calm ? SCROLL_LEAD_K : LEAD_K;
+      const trailK = calm ? SCROLL_TRAIL_K : TRAIL_K;
+      const damping = calm ? SCROLL_DAMPING : DAMPING;
 
       if (reduced) {
         stopLoop();
@@ -262,13 +203,15 @@ export function LiquidNavPill({
           pos: nextLeft,
           vel: 0,
           target: nextLeft,
-          k: LEAD_K,
+          k: leadK,
+          damping,
         };
         rightEdge.current = {
           pos: nextRight,
           vel: 0,
           target: nextRight,
-          k: LEAD_K,
+          k: leadK,
+          damping,
         };
         const next = {
           left: nextLeft,
@@ -291,8 +234,10 @@ export function LiquidNavPill({
 
       leftEdge.current.target = nextLeft;
       rightEdge.current.target = nextRight;
-      leftEdge.current.k = goingRight ? TRAIL_K : LEAD_K;
-      rightEdge.current.k = goingRight ? LEAD_K : TRAIL_K;
+      leftEdge.current.k = goingRight ? trailK : leadK;
+      leftEdge.current.damping = damping;
+      rightEdge.current.k = goingRight ? leadK : trailK;
+      rightEdge.current.damping = damping;
 
       setVisible(true);
       settledId.current = id;
@@ -303,8 +248,8 @@ export function LiquidNavPill({
   );
 
   useLayoutEffect(() => {
-    moveTo(activeId, !hasPlaced.current);
-  }, [activeId, locale, density, moveTo]);
+    moveTo(activeId, !hasPlaced.current, activeSource === "scroll");
+  }, [activeId, activeSource, locale, density, moveTo]);
 
   useEffect(() => {
     const onResize = () => moveTo(activeId, true);
@@ -313,39 +258,6 @@ export function LiquidNavPill({
   }, [activeId, moveTo]);
 
   useEffect(() => () => stopLoop(), [stopLoop]);
-
-  const navigateTo = (item: NavItem) => {
-    setOptimisticId(item.id);
-    moveTo(item.id, false);
-
-    if (item.id === "exams" || item.id === "practice") {
-      const hash = item.id === "exams" ? "exams" : "practice";
-      const target = `${withLocale("/", locale)}#${hash}`;
-      if (barePath === "/" || barePath === "") {
-        window.history.pushState(null, "", target);
-        setHash(`#${hash}`);
-        document.getElementById(hash)?.scrollIntoView({
-          behavior: prefersReducedMotion() ? "auto" : "smooth",
-          block: "start",
-        });
-      } else {
-        router.push(target);
-      }
-      return;
-    }
-
-    const home = withLocale("/", locale);
-    if (barePath === "/" || barePath === "") {
-      if (window.location.hash) {
-        window.history.pushState(null, "", home);
-        setHash("");
-      }
-      // Instant scroll avoids mid-scroll layout thrash; liquid bead already animates.
-      window.scrollTo({ top: 0, behavior: "auto" });
-    } else {
-      router.push(home);
-    }
-  };
 
   const onTrackPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const track = trackRef.current;
@@ -399,10 +311,11 @@ export function LiquidNavPill({
               }
               role="tab"
               aria-selected={isActive}
+              aria-current={isActive ? "true" : undefined}
               className={`liquid-nav-item${isActive ? " is-active" : ""}`}
               onClick={(event) => {
                 event.preventDefault();
-                navigateTo(item);
+                navigateToSection(item.id);
               }}
             >
               <Icon className="liquid-nav-icon" aria-hidden />
