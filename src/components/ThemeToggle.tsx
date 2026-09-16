@@ -25,10 +25,16 @@ function MoonIcon() {
   );
 }
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  /** `nav` = icon-only control inside the liquid-glass pill */
+  variant?: "chip" | "nav";
+};
+
+export function ThemeToggle({ variant = "chip" }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
   const t = useTranslations();
   const isDark = theme === "dark";
+  const isNav = variant === "nav";
 
   return (
     <button
@@ -36,9 +42,17 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isDark ? t("theme.toDay") : t("theme.toDark")}
       title={isDark ? t("theme.day") : t("theme.dark")}
-      className="theme-toggle inline-flex h-9 items-center gap-1.5 rounded-lg border border-card-border bg-card px-2.5 text-sm font-medium text-foreground shadow-sm"
+      className={
+        isNav
+          ? "liquid-nav-theme theme-toggle"
+          : "theme-toggle glass-chip inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-foreground"
+      }
     >
-      <span className="theme-toggle-icon relative grid h-4 w-4 place-items-center overflow-visible text-accent">
+      <span
+        className={`theme-toggle-icon relative grid h-4 w-4 place-items-center overflow-visible ${
+          isNav ? "text-foreground" : "text-accent"
+        }`}
+      >
         <span
           className={`theme-toggle-face theme-toggle-face--sun col-start-1 row-start-1 ${
             isDark ? "is-hidden" : "is-active"
@@ -54,9 +68,11 @@ export function ThemeToggle() {
           <MoonIcon />
         </span>
       </span>
-      <span className="hidden sm:inline">
-        {isDark ? t("theme.day") : t("theme.dark")}
-      </span>
+      {!isNav ? (
+        <span className="hidden sm:inline">
+          {isDark ? t("theme.day") : t("theme.dark")}
+        </span>
+      ) : null}
     </button>
   );
 }

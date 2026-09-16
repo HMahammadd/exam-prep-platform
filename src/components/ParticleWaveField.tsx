@@ -103,6 +103,11 @@ export function ParticleWaveField() {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+      // alpha:false canvases clear to black on buffer reset — paint theme
+      // fill immediately so route/scroll resizes never flash black.
+      ctx.fillStyle = dark ? "#0d1524" : "#f3f6fb";
+      ctx.fillRect(0, 0, width, height);
+
       const compact = width < 640;
       rows = compact ? 36 : 60;
 
@@ -491,15 +496,19 @@ export function ParticleWaveField() {
 
     const ro = new ResizeObserver(() => {
       resize();
-      if (reducedMotion) paint(1.15);
+      const time = start === null ? 1.15 : (performance.now() - start) / 1000;
+      paint(time);
     });
     if (canvas.parentElement) ro.observe(canvas.parentElement);
 
     const io = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        if (visible) startLoop();
-        else stopLoop();
+        if (visible) {
+          const time = start === null ? 1.15 : (performance.now() - start) / 1000;
+          paint(time);
+          startLoop();
+        } else stopLoop();
       },
       { threshold: 0.05 }
     );

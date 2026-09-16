@@ -12,14 +12,16 @@ import {
 } from "react";
 import {
   BookOpen,
-  Clock,
+  Headphones,
   History,
   LayoutGrid,
+  Play,
+  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "@/components/I18nProvider";
 
-type FeatureId = "timer" | "mistakes" | "vocab" | "navigator";
+type FeatureId = "mistakes" | "vocab" | "navigator" | "listening" | "dim";
 
 type FeatureDef = {
   id: FeatureId;
@@ -30,13 +32,6 @@ type FeatureDef = {
 };
 
 const FEATURES: FeatureDef[] = [
-  {
-    id: "timer",
-    titleKey: "home.countdownTimer",
-    bodyKey: "home.countdownTimerBody",
-    icon: Clock,
-    accent: "#3b82f6",
-  },
   {
     id: "mistakes",
     titleKey: "home.reviewMistakes",
@@ -58,41 +53,33 @@ const FEATURES: FeatureDef[] = [
     icon: LayoutGrid,
     accent: "#22a6c7",
   },
+  {
+    id: "listening",
+    titleKey: "home.toeflListening",
+    bodyKey: "home.toeflListeningBody",
+    icon: Headphones,
+    accent: "#d94f8a",
+  },
+  {
+    id: "dim",
+    titleKey: "home.dimPractice",
+    bodyKey: "home.dimPracticeBody",
+    icon: GraduationCap,
+    accent: "#18a58b",
+  },
 ];
 
 const N = FEATURES.length;
-const AUTOPLAY_MS = 4200;
+const AUTOPLAY_MS = 4500;
 const RESUME_MS = 2200;
+const CLICK_RESUME_MS = 4800;
+const DRAG_THRESHOLD_PX = 8;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
-const MISTAKE_DEMOS = [
-  {
-    q: "18",
-    skillKey: "home.deckDemo.mistakeSkillA",
-    yoursKey: "home.deckDemo.mistakeYoursA",
-    correctKey: "home.deckDemo.mistakeCorrectA",
-  },
-  {
-    q: "23",
-    skillKey: "home.deckDemo.mistakeSkillB",
-    yoursKey: "home.deckDemo.mistakeYoursB",
-    correctKey: "home.deckDemo.mistakeCorrectB",
-  },
-] as const;
-
-const VOCAB_DEMOS = [
-  {
-    word: "Meticulous",
-    posKey: "home.deckDemo.vocabPosAdj",
-    meaningKey: "home.deckDemo.vocabMeaningA",
-    exampleKey: "home.deckDemo.vocabExampleA",
-  },
-  {
-    word: "Pragmatic",
-    posKey: "home.deckDemo.vocabPosAdj",
-    meaningKey: "home.deckDemo.vocabMeaningB",
-    exampleKey: "home.deckDemo.vocabExampleB",
-  },
+const MISTAKE_ROWS = [
+  { q: "18", skillKey: "home.deckDemo.mistakeSkillA" },
+  { q: "24", skillKey: "home.deckDemo.mistakeSkillC" },
+  { q: "31", skillKey: "home.deckDemo.mistakeSkillD" },
 ] as const;
 
 function prefersReducedMotion() {
@@ -113,88 +100,63 @@ function clampIndex(i: number) {
   return ((i % N) + N) % N;
 }
 
-function formatTime(totalSeconds: number) {
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
+/** Shortest carousel path so goTo animates smoothly instead of jumping. */
+function nearestPosition(current: number, targetIndex: number) {
+  const rounded = Math.round(current);
+  const currentIndex = clampIndex(rounded);
+  let delta = targetIndex - currentIndex;
+  if (delta > N / 2) delta -= N;
+  if (delta < -N / 2) delta += N;
+  return rounded + delta;
 }
 
-function TimerPreview({ active }: { active: boolean }) {
-  const t = useTranslations();
-  const [seconds, setSeconds] = useState(27 * 60 + 34);
-
-  useEffect(() => {
-    if (!active || prefersReducedMotion()) return;
-    const id = window.setInterval(() => {
-      setSeconds((s) => (s > 0 ? s - 1 : 27 * 60 + 34));
-    }, 1400);
-    return () => window.clearInterval(id);
-  }, [active]);
-
-  return (
-    <div className="exam-deck-preview exam-deck-preview--timer">
-      <div className="exam-deck-preview-bar">
-        <span>{t("home.deckDemo.moduleLabel")}</span>
-        <span className="exam-deck-preview-pill">
-          <Clock className="h-3 w-3" aria-hidden />
-          {formatTime(seconds)}
-        </span>
-      </div>
-      <p className="exam-deck-preview-kicker">{t("home.deckDemo.moduleName")}</p>
-      <p className="exam-deck-preview-timer">{formatTime(seconds)}</p>
-      <div className="exam-deck-preview-progress">
-        <span>{t("home.deckDemo.questionsProgress")}</span>
-        <div className="exam-deck-preview-track">
-          <div className="exam-deck-preview-fill" style={{ width: "44%" }} />
-        </div>
-      </div>
-    </div>
-  );
+function cardIndexAtPoint(x: number, y: number, activeIdx: number) {
+  const stack = document.elementsFromPoint(x, y);
+  const seen: number[] = [];
+  for (const node of stack) {
+    const card = (node as Element).closest?.(
+      "[data-deck-index]"
+    ) as HTMLElement | null;
+    if (!card) continue;
+    const idx = Number(card.dataset.deckIndex);
+    if (Number.isNaN(idx) || seen.includes(idx)) continue;
+    seen.push(idx);
+  }
+  const side = seen.find((idx) => idx !== activeIdx);
+  if (side !== undefined) return side;
+  return seen[0] ?? null;
 }
 
-function MistakesPreview({ active }: { active: boolean }) {
-  const t = useTranslations();
-  const [demoIndex, setDemoIndex] = useState(0);
+function useActivePhase(
+  active: boolean,
+  delaysCsv: string,
+  reducedFinal = 3
+) {
   const [phase, setPhase] = useState(0);
-  const demoIndexRef = useRef(0);
-  const demo = MISTAKE_DEMOS[demoIndex] ?? MISTAKE_DEMOS[0];
-
-  useEffect(() => {
-    demoIndexRef.current = demoIndex;
-  }, [demoIndex]);
 
   useEffect(() => {
     if (!active) {
-      setDemoIndex(0);
       setPhase(0);
       return;
     }
     if (prefersReducedMotion()) {
-      setPhase(3);
+      setPhase(reducedFinal);
       return;
     }
+    const steps = delaysCsv.split(",").map((v) => Number(v.trim()));
+    setPhase(0);
+    const timers = steps.map((ms, i) =>
+      window.setTimeout(() => setPhase(i + 1), ms)
+    );
+    return () => timers.forEach((id) => window.clearTimeout(id));
+  }, [active, delaysCsv, reducedFinal]);
 
-    const timers: number[] = [];
-    const runCycle = (startIndex: number) => {
-      setDemoIndex(startIndex);
-      setPhase(0);
-      timers.push(window.setTimeout(() => setPhase(1), 450));
-      timers.push(window.setTimeout(() => setPhase(2), 1100));
-      timers.push(window.setTimeout(() => setPhase(3), 1750));
-    };
+  return phase;
+}
 
-    runCycle(0);
-    const loop = window.setInterval(() => {
-      const next = (demoIndexRef.current + 1) % MISTAKE_DEMOS.length;
-      demoIndexRef.current = next;
-      runCycle(next);
-    }, 4000);
-
-    return () => {
-      timers.forEach((id) => window.clearTimeout(id));
-      window.clearInterval(loop);
-    };
-  }, [active]);
+function MistakesPreview({ active }: { active: boolean }) {
+  const t = useTranslations();
+  const phase = useActivePhase(active, "280,620,980,1400", 4);
 
   return (
     <div
@@ -202,28 +164,24 @@ function MistakesPreview({ active }: { active: boolean }) {
     >
       <div className="exam-deck-preview-bar">
         <span>{t("home.deckDemo.mistakesLabel")}</span>
-        <History className="h-3.5 w-3.5 opacity-60" aria-hidden />
-      </div>
-      <p className="exam-deck-preview-kicker">
-        {t("home.deckDemo.questionLabel", { n: demo.q })}
-        <span className="exam-deck-preview-skill">{t(demo.skillKey)}</span>
-      </p>
-      <div className="exam-deck-mistake-row is-yours">
-        <span>{t("home.deckDemo.yourAnswer")}</span>
-        <strong>{t(demo.yoursKey)}</strong>
-      </div>
-      <div className="exam-deck-mistake-row is-correct">
-        <span>{t("home.deckDemo.correctAnswer")}</span>
-        <strong>{t(demo.correctKey)}</strong>
-      </div>
-      <div className="exam-deck-mistake-footer">
         <span className="exam-deck-preview-badge is-on">
-          {t("home.deckDemo.reviewCta")}
-        </span>
-        <span className="exam-deck-mistake-progress">
-          {t("home.deckDemo.mistakesProgress")}
+          {t("home.deckDemo.reviewAgainChip")}
         </span>
       </div>
+      <ul className="exam-deck-mistake-list">
+        {MISTAKE_ROWS.map((row, i) => (
+          <li
+            key={row.q}
+            className={`exam-deck-mistake-item${i === 0 ? " is-pulse" : ""}`}
+            style={{ "--i": i } as CSSProperties}
+          >
+            <span className="exam-deck-mistake-q">
+              {t("home.deckDemo.questionLabel", { n: row.q })}
+            </span>
+            <span className="exam-deck-mistake-skill">{t(row.skillKey)}</span>
+          </li>
+        ))}
+      </ul>
       <p className="exam-deck-mistake-tagline">
         {t("home.deckDemo.mistakesTagline")}
       </p>
@@ -233,46 +191,28 @@ function MistakesPreview({ active }: { active: boolean }) {
 
 function VocabPreview({ active }: { active: boolean }) {
   const t = useTranslations();
-  const [demoIndex, setDemoIndex] = useState(0);
-  const [phase, setPhase] = useState(0);
-  const demo = VOCAB_DEMOS[demoIndex] ?? VOCAB_DEMOS[0];
-  const demoIndexRef = useRef(0);
-
-  useEffect(() => {
-    demoIndexRef.current = demoIndex;
-  }, [demoIndex]);
+  const phase = useActivePhase(active, "300,700,1100,1500", 4);
+  const [count, setCount] = useState(110);
 
   useEffect(() => {
     if (!active) {
-      setDemoIndex(0);
-      setPhase(0);
+      setCount(110);
       return;
     }
     if (prefersReducedMotion()) {
-      setPhase(3);
+      setCount(127);
       return;
     }
-
-    const timers: number[] = [];
-    const runCycle = (startIndex: number) => {
-      setDemoIndex(startIndex);
-      setPhase(0);
-      timers.push(window.setTimeout(() => setPhase(1), 500));
-      timers.push(window.setTimeout(() => setPhase(2), 1200));
-      timers.push(window.setTimeout(() => setPhase(3), 1900));
+    setCount(110);
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / 1100);
+      setCount(Math.round(110 + (127 - 110) * (1 - Math.pow(1 - p, 2.4))));
+      if (p < 1) frame = requestAnimationFrame(tick);
     };
-
-    runCycle(0);
-    const loop = window.setInterval(() => {
-      const next = (demoIndexRef.current + 1) % VOCAB_DEMOS.length;
-      demoIndexRef.current = next;
-      runCycle(next);
-    }, 4000);
-
-    return () => {
-      timers.forEach((id) => window.clearTimeout(id));
-      window.clearInterval(loop);
-    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [active]);
 
   return (
@@ -282,43 +222,55 @@ function VocabPreview({ active }: { active: boolean }) {
       <div className="exam-deck-preview-bar">
         <span>{t("home.deckDemo.vocabLabel")}</span>
         <span className="exam-deck-preview-pill">
-          {t("home.deckDemo.vocabSaved")}
+          {t("home.deckDemo.vocabSavedCount", { n: count })}
         </span>
       </div>
-      <p className="exam-deck-vocab-word">{demo.word}</p>
-      <p className="exam-deck-vocab-pos">{t(demo.posKey)}</p>
+      <p className="exam-deck-vocab-word">Meticulous</p>
+      <p className="exam-deck-vocab-pos">{t("home.deckDemo.vocabPosAdj")}</p>
       <div className="exam-deck-vocab-meaning">
         <span>{t("home.deckDemo.vocabMeaningLabel")}</span>
-        <p>{t(demo.meaningKey)}</p>
+        <p>{t("home.deckDemo.vocabMeaningA")}</p>
       </div>
-      <p className="exam-deck-vocab-example">{t(demo.exampleKey)}</p>
-      <div className="exam-deck-vocab-actions">
-        <span className="is-know">{t("home.deckDemo.vocabKnow")}</span>
-        <span className="is-again">{t("home.deckDemo.vocabAgain")}</span>
-      </div>
+      <span className="exam-deck-vocab-tag">
+        {t("home.deckDemo.vocabSavedTag")}
+      </span>
     </div>
   );
 }
 
 function NavigatorPreview({ active }: { active: boolean }) {
   const t = useTranslations();
-  const [current, setCurrent] = useState(7);
+  const [phase, setPhase] = useState(0);
+  const [visible, setVisible] = useState(0);
   const completed = new Set([1, 2, 3, 5, 6, 9, 11]);
   const marked = new Set([4, 10, 14]);
 
   useEffect(() => {
-    if (!active || prefersReducedMotion()) return;
-    const path = [7, 8, 10, 12, 7];
-    let step = 0;
-    const id = window.setInterval(() => {
-      step = (step + 1) % path.length;
-      setCurrent(path[step] ?? 7);
-    }, 1100);
-    return () => window.clearInterval(id);
+    if (!active) {
+      setPhase(0);
+      setVisible(0);
+      return;
+    }
+    if (prefersReducedMotion()) {
+      setPhase(2);
+      setVisible(15);
+      return;
+    }
+    setPhase(0);
+    setVisible(0);
+    const timers: number[] = [];
+    for (let i = 1; i <= 15; i += 1) {
+      timers.push(window.setTimeout(() => setVisible(i), 80 + i * 55));
+    }
+    timers.push(window.setTimeout(() => setPhase(1), 1000));
+    timers.push(window.setTimeout(() => setPhase(2), 1450));
+    return () => timers.forEach((id) => window.clearTimeout(id));
   }, [active]);
 
   return (
-    <div className="exam-deck-preview exam-deck-preview--nav">
+    <div
+      className={`exam-deck-preview exam-deck-preview--nav is-phase-${phase}`}
+    >
       <div className="exam-deck-preview-bar">
         <span>{t("home.deckDemo.navigatorLabel")}</span>
         <LayoutGrid className="h-3.5 w-3.5 opacity-60" aria-hidden />
@@ -326,17 +278,23 @@ function NavigatorPreview({ active }: { active: boolean }) {
       <div className="exam-deck-preview-grid" role="list">
         {Array.from({ length: 15 }, (_, i) => {
           const n = i + 1;
+          const shown = n <= visible;
           const state = [
+            shown ? "is-shown" : "",
             completed.has(n) ? "is-done" : "",
             marked.has(n) ? "is-flagged" : "",
-            n === current ? "is-current" : "",
+            n === 7 && phase >= 1 ? "is-current" : "",
           ]
             .filter(Boolean)
             .join(" ");
           return (
-            <span key={n} className={`exam-deck-preview-cell ${state}`} role="listitem">
+            <span
+              key={n}
+              className={`exam-deck-preview-cell ${state}`}
+              role="listitem"
+            >
               {n}
-              {marked.has(n) ? <i aria-hidden /> : null}
+              {marked.has(n) && phase >= 2 ? <i aria-hidden /> : null}
             </span>
           );
         })}
@@ -345,16 +303,142 @@ function NavigatorPreview({ active }: { active: boolean }) {
   );
 }
 
+function ListeningPreview({ active }: { active: boolean }) {
+  const t = useTranslations();
+  const phase = useActivePhase(active, "250,550,900,1250,1600", 5);
+  const bars = [28, 46, 34, 62, 40, 72, 38, 58, 44, 66, 36, 52];
+
+  return (
+    <div
+      className={`exam-deck-preview exam-deck-preview--listening is-phase-${phase}`}
+    >
+      <div className="exam-deck-preview-bar">
+        <span className="exam-deck-listen-mode">
+          <span className="is-active">{t("home.deckDemo.listenLecture")}</span>
+          <span>{t("home.deckDemo.listenConversation")}</span>
+        </span>
+        <span className="exam-deck-preview-pill">03:42</span>
+      </div>
+
+      <div className="exam-deck-listen-player">
+        <span className="exam-deck-listen-play" aria-hidden>
+          <Play className="h-3 w-3" />
+        </span>
+        <div className="exam-deck-listen-wave" aria-hidden>
+          {bars.map((h, i) => (
+            <i
+              key={i}
+              style={{ "--h": `${h}%`, "--i": i } as CSSProperties}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="exam-deck-preview-track exam-deck-listen-progress">
+        <div className="exam-deck-preview-fill" />
+      </div>
+
+      <p className="exam-deck-listen-prompt">
+        {t("home.deckDemo.listenPrompt")}
+      </p>
+      <div className="exam-deck-listen-tags">
+        <span>{t("home.deckDemo.listenTagMain")}</span>
+        <span>{t("home.deckDemo.listenTagDetail")}</span>
+        <span>{t("home.deckDemo.listenTagInference")}</span>
+      </div>
+    </div>
+  );
+}
+
+function DimPreview({ active }: { active: boolean }) {
+  const t = useTranslations();
+  const phase = useActivePhase(active, "280,700,1100,1550", 4);
+  const [az, setAz] = useState(1200);
+  const [math, setMath] = useState(1500);
+  const [topics, setTopics] = useState(900);
+
+  useEffect(() => {
+    if (!active) {
+      setAz(1200);
+      setMath(1500);
+      setTopics(900);
+      return;
+    }
+    if (prefersReducedMotion()) {
+      setAz(2000);
+      setMath(2500);
+      setTopics(1500);
+      return;
+    }
+    const start = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / 1200);
+      const e = 1 - Math.pow(1 - p, 2.5);
+      setAz(Math.round(1200 + 800 * e));
+      setMath(Math.round(1500 + 1000 * e));
+      setTopics(Math.round(900 + 600 * e));
+      if (p < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [active]);
+
+  return (
+    <div
+      className={`exam-deck-preview exam-deck-preview--dim is-phase-${phase}`}
+    >
+      <div className="exam-deck-preview-bar">
+        <span>{t("home.deckDemo.dimLabel")}</span>
+        <GraduationCap className="h-3.5 w-3.5 opacity-60" aria-hidden />
+      </div>
+      <div className="exam-deck-dim-chips">
+        <span>{t("home.deckDemo.dimChipAz")}</span>
+        <span>{t("home.deckDemo.dimChipMath")}</span>
+        <span>{t("home.deckDemo.dimChipMock")}</span>
+      </div>
+      <div className="exam-deck-dim-stats">
+        <div className="is-focus">
+          <strong>{az.toLocaleString()}+</strong>
+          <span>{t("home.deckDemo.dimStatAz")}</span>
+        </div>
+        <div>
+          <strong>{math.toLocaleString()}+</strong>
+          <span>{t("home.deckDemo.dimStatMath")}</span>
+        </div>
+        <div>
+          <strong>{topics.toLocaleString()}+</strong>
+          <span>{t("home.deckDemo.dimStatTopics")}</span>
+        </div>
+      </div>
+      <div className="exam-deck-dim-panel">
+        <span>Riyaziyyat — funksiyalar</span>
+        <p className="exam-deck-dim-q">
+          f(x) = 2x − 1, g(x) = x² + 3 olduqda (f ∘ g)(2) ifadəsi neçəyə
+          bərabərdir?
+        </p>
+        <ul className="exam-deck-dim-choices">
+          <li>A) 5</li>
+          <li>B) 9</li>
+          <li className="is-correct">C) 13</li>
+          <li>D) 11</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 function PreviewFor({ id, active }: { id: FeatureId; active: boolean }) {
   switch (id) {
-    case "timer":
-      return <TimerPreview active={active} />;
     case "mistakes":
       return <MistakesPreview active={active} />;
     case "vocab":
       return <VocabPreview active={active} />;
     case "navigator":
       return <NavigatorPreview active={active} />;
+    case "listening":
+      return <ListeningPreview active={active} />;
+    case "dim":
+      return <DimPreview active={active} />;
   }
 }
 
@@ -374,12 +458,13 @@ function cardStyle(
   }
 
   const spacing =
-    layout === "mobile" ? 52 : layout === "tablet" ? 78 : 104;
-  const depth = layout === "mobile" ? 75 : layout === "tablet" ? 110 : 145;
-  const rot = layout === "mobile" ? 12 : layout === "tablet" ? 22 : 28;
-  const scaleFalloff = layout === "mobile" ? 0.09 : layout === "tablet" ? 0.11 : 0.125;
-  const scale = Math.max(0.74, 1 - abs * scaleFalloff);
-  const opacity = Math.max(0.3, 1 - abs * 0.3);
+    layout === "mobile" ? 48 : layout === "tablet" ? 70 : 92;
+  const depth = layout === "mobile" ? 70 : layout === "tablet" ? 105 : 135;
+  const rot = layout === "mobile" ? 11 : layout === "tablet" ? 20 : 26;
+  const scaleFalloff =
+    layout === "mobile" ? 0.085 : layout === "tablet" ? 0.1 : 0.11;
+  const scale = Math.max(0.7, 1 - abs * scaleFalloff);
+  const opacity = Math.max(0.22, 1 - abs * 0.28);
   const x = d * spacing;
   const z = -abs * depth;
   const ry = -d * rot;
@@ -389,7 +474,8 @@ function cardStyle(
     transform: `translate3d(${x}%, -50%, ${z}px) rotateY(${ry}deg) scale(${scale})`,
     zIndex: Math.round(40 - abs * 12),
     filter: abs > 0.55 ? "brightness(0.96)" : "none",
-    pointerEvents: abs < 1.15 ? "auto" : "none",
+    // Keep all nearby cards clickable (including ±2 in a 5-card deck)
+    pointerEvents: abs < 2.45 ? "auto" : "none",
   };
 }
 
@@ -406,14 +492,20 @@ export function ExamFeatureDeck() {
   );
   const [reduced, setReduced] = useState(false);
   const dragRef = useRef<{
+    pointerId: number;
     startX: number;
+    startY: number;
     startPos: number;
-    moved: boolean;
+    dragging: boolean;
   } | null>(null);
-  const didDragRef = useRef(false);
   const resumeTimer = useRef(0);
+  const positionRef = useRef(position);
   const activeIndex = clampIndex(Math.round(position));
   const mobile = layout === "mobile";
+
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
 
   useEffect(() => {
     setReduced(prefersReducedMotion());
@@ -453,18 +545,25 @@ export function ExamFeatureDeck() {
     return () => observer.disconnect();
   }, []);
 
-  const goTo = useCallback((index: number, softPause = true) => {
-    setPosition(clampIndex(index));
-    if (softPause) {
-      setPaused(true);
-      window.clearTimeout(resumeTimer.current);
-      resumeTimer.current = window.setTimeout(() => setPaused(false), RESUME_MS);
-    }
+  const scheduleResume = useCallback((ms: number) => {
+    window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => setPaused(false), ms);
   }, []);
+
+  const goTo = useCallback(
+    (index: number, resumeMs = CLICK_RESUME_MS) => {
+      const target = clampIndex(index);
+      setPaused(true);
+      setDragging(false);
+      setPosition((current) => nearestPosition(current, target));
+      scheduleResume(resumeMs);
+    },
+    [scheduleResume]
+  );
 
   const step = useCallback(
     (dir: 1 | -1) => {
-      goTo(activeIndex + dir);
+      goTo(activeIndex + dir, CLICK_RESUME_MS);
     },
     [activeIndex, goTo]
   );
@@ -472,15 +571,11 @@ export function ExamFeatureDeck() {
   useEffect(() => {
     if (!entered || paused || dragging || reduced) return;
     const id = window.setInterval(() => {
-      setPosition((p) => {
-        const next = Math.round(p) + 1;
-        return next;
-      });
+      setPosition((p) => Math.round(p) + 1);
     }, AUTOPLAY_MS);
     return () => window.clearInterval(id);
   }, [entered, paused, dragging, reduced]);
 
-  // Keep position in a manageable range without visual jump
   useEffect(() => {
     if (dragging) return;
     if (position > N * 4 || position < -N) {
@@ -490,44 +585,66 @@ export function ExamFeatureDeck() {
 
   const onPointerDown = (e: ReactPointerEvent) => {
     if (e.button !== 0) return;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    didDragRef.current = false;
+    // Delay capture until drag threshold so clicks reach the correct card
     dragRef.current = {
+      pointerId: e.pointerId,
       startX: e.clientX,
-      startPos: position,
-      moved: false,
+      startY: e.clientY,
+      startPos: positionRef.current,
+      dragging: false,
     };
-    setDragging(true);
     setPaused(true);
   };
 
   const onPointerMove = (e: ReactPointerEvent) => {
     const drag = dragRef.current;
-    if (!drag) return;
+    if (!drag || e.pointerId !== drag.pointerId) return;
     const dx = e.clientX - drag.startX;
-    if (Math.abs(dx) > 6) {
-      drag.moved = true;
-      didDragRef.current = true;
+    const dy = e.clientY - drag.startY;
+    if (
+      !drag.dragging &&
+      Math.hypot(dx, dy) >= DRAG_THRESHOLD_PX
+    ) {
+      drag.dragging = true;
+      setDragging(true);
+      try {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
     }
+    if (!drag.dragging) return;
     const width = rootRef.current?.clientWidth || 360;
     const delta = -(dx / width) * (mobile ? 1.35 : 1.1);
     setPosition(drag.startPos + delta);
   };
 
-  const endDrag = (e: ReactPointerEvent) => {
+  const endPointer = (e: ReactPointerEvent) => {
     const drag = dragRef.current;
-    if (!drag) return;
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    const wasDrag = drag.dragging;
+    const { clientX, clientY } = e;
     dragRef.current = null;
-    setDragging(false);
-    const snapped = Math.round(position);
-    setPosition(snapped);
-    window.clearTimeout(resumeTimer.current);
-    resumeTimer.current = window.setTimeout(() => setPaused(false), RESUME_MS);
-    try {
-      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {
-      /* already released */
+
+    if (wasDrag) {
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {
+        /* already released */
+      }
+      setDragging(false);
+      setPosition((pos) => Math.round(pos));
+      scheduleResume(CLICK_RESUME_MS);
+      return;
     }
+
+    // Click: prefer the side card under the cursor (active card often overlaps)
+    const idx = cardIndexAtPoint(clientX, clientY, activeIndex);
+    if (idx !== null) {
+      goTo(idx, CLICK_RESUME_MS);
+      return;
+    }
+    scheduleResume(RESUME_MS);
   };
 
   const onKeyDown = (e: ReactKeyboardEvent) => {
@@ -570,13 +687,12 @@ export function ExamFeatureDeck() {
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
+        onPointerUp={endPointer}
+        onPointerCancel={endPointer}
         onPointerEnter={() => setPaused(true)}
         onPointerLeave={() => {
-          if (!dragging) {
-            window.clearTimeout(resumeTimer.current);
-            resumeTimer.current = window.setTimeout(() => setPaused(false), 600);
+          if (!dragging && !dragRef.current) {
+            scheduleResume(600);
           }
         }}
       >
@@ -600,8 +716,9 @@ export function ExamFeatureDeck() {
             return (
               <article
                 key={feature.id}
-                className={`exam-deck-card exam-deck-card--${feature.id}${isActive ? " is-active" : ""}`}
+                className={`exam-deck-card exam-deck-card--${feature.id}${isActive ? " is-active" : " is-side"}`}
                 data-feature={feature.id}
+                data-deck-index={i}
                 style={
                   {
                     ...base,
@@ -611,10 +728,6 @@ export function ExamFeatureDeck() {
                     "--card-accent": feature.accent,
                   } as CSSProperties
                 }
-                onClick={() => {
-                  if (didDragRef.current) return;
-                  if (!isActive) goTo(i);
-                }}
                 aria-hidden={!isActive}
               >
                 <div className="exam-deck-card-face">
@@ -639,7 +752,11 @@ export function ExamFeatureDeck() {
         </div>
       </div>
 
-      <div className="exam-deck-dots" role="tablist" aria-label={t("home.realConditionsTitle")}>
+      <div
+        className="exam-deck-dots"
+        role="tablist"
+        aria-label={t("home.realConditionsTitle")}
+      >
         {FEATURES.map((feature, i) => (
           <button
             key={feature.id}

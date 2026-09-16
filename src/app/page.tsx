@@ -48,6 +48,7 @@ function ExamConditionsSection() {
   return (
     <section
       ref={ref}
+      id="practice"
       className={`site-section site-section--surface exam-conditions${inView ? " is-inview" : ""}`}
     >
       <div className="exam-conditions-shell mx-auto px-5 sm:px-6 py-12 md:py-14">
@@ -145,9 +146,9 @@ export default function Home() {
 
   return (
     <div className="home-entrance flex flex-1 flex-col">
-      <div className="home-screen">
-        <Navbar />
+      <Navbar />
 
+      <div className="home-screen">
         <section className="home-hero relative overflow-hidden">
           <ParticleWaveField />
 
