@@ -149,14 +149,14 @@ export default function Home() {
         <ParticleWaveField />
 
         <div className="home-hero-inner relative z-10 mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
-          <div className="hero-copy">
+          <div className="hero-copy w-fit max-w-full justify-self-start">
             <h1 className="hero-copy-title text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               <span className="hero-copy-line home-reveal home-reveal-title-a">
                 Practice smarter for
               </span>
               <span className="hero-copy-line home-reveal home-reveal-title-b">
-                <span className="hero-copy-exams">SAT, TOEFL, and DIM</span>{" "}
-                exams.
+                <span className="hero-copy-exams">SAT, TOEFL,</span> and{" "}
+                <span className="hero-copy-exams">DIM</span> exams.
               </span>
             </h1>
 

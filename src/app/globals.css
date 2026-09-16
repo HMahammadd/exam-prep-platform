@@ -82,6 +82,10 @@ h1.hero-copy-title {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+  justify-self: start;
+  gap: 2rem;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .hero-copy-line {
@@ -99,10 +103,18 @@ h1.hero-copy-title {
 }
 
 .hero-copy-actions {
-  margin-top: 1.4rem;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
+  align-self: flex-start;
   gap: 0.9rem;
+}
+
+@media (max-width: 639px) {
+  .hero-copy {
+    gap: 1.75rem;
+  }
 }
 
 .home-hero-cta {

@@ -8,22 +8,31 @@ type KeplerLogoProps = {
   className?: string;
 };
 
-const SIZE_CLASS = {
-  sm: "h-9 w-auto",
-  md: "h-11 w-auto",
-  lg: "h-14 w-auto",
+/** Shared icon box — identical in light and dark so both planets match. */
+const MARK_CLASS = {
+  sm: "h-9 w-9 sm:h-10 sm:w-10",
+  md: "h-11 w-11 sm:h-12 sm:w-12",
+  lg: "h-12 w-12 sm:h-14 sm:w-14",
+} as const;
+
+const WORDMARK_CLASS = {
+  sm: "text-lg sm:text-xl",
+  md: "text-xl sm:text-2xl",
+  lg: "text-2xl sm:text-[1.75rem]",
 } as const;
 
 /**
- * Official Kepler mark — swaps light/dark assets with the document theme
- * (via the `dark` class on <html>), so the correct logo shows before JS hydrates.
+ * Official Keplerly logo — one shared layout for both themes.
+ * Only the planet asset switches; the wordmark stays visible and uses
+ * `text-foreground` so it follows the existing light/dark theme.
  */
 export function KeplerLogo({
   href = "/",
   size = "md",
   className = "",
 }: KeplerLogoProps) {
-  const sizeClass = SIZE_CLASS[size];
+  const markClass = MARK_CLASS[size];
+  const wordmarkClass = WORDMARK_CLASS[size];
 
   const destinationLabel =
     href === "/dashboard" ? "go to dashboard" : "go to home page";
@@ -31,26 +40,29 @@ export function KeplerLogo({
   return (
     <Link
       href={href}
-      aria-label={`Kepler — ${destinationLabel}`}
-      className={`group inline-flex shrink-0 items-center ${className}`}
+      aria-label={`Keplerly — ${destinationLabel}`}
+      className={`group inline-flex shrink-0 items-center gap-2 transition-opacity duration-200 hover:opacity-90 sm:gap-2.5 ${className}`}
     >
-      {/* Light mode: dark-blue mark on light UI. Sole priority image for LCP. */}
       <Image
-        src="/brand/kepler-light.png"
+        src="/brand/kepler-mark.png"
         alt=""
-        width={274}
-        height={320}
+        width={432}
+        height={432}
         priority
-        className={`${sizeClass} object-contain transition-opacity duration-200 group-hover:opacity-90 dark:hidden`}
+        className={`${markClass} object-contain dark:hidden`}
       />
-      {/* Dark mode: white mark on dark UI — no priority so we don't race LCP. */}
       <Image
-        src="/brand/kepler-dark.png"
+        src="/brand/keplerly-dark-logo.png"
         alt=""
-        width={274}
-        height={320}
-        className={`${sizeClass} hidden object-contain transition-opacity duration-200 group-hover:opacity-90 dark:block`}
+        width={279}
+        height={279}
+        className={`${markClass} hidden object-contain dark:block`}
       />
+      <span
+        className={`font-heading ${wordmarkClass} font-semibold leading-none tracking-tight text-foreground`}
+      >
+        Keplerly
+      </span>
     </Link>
   );
 }
