@@ -1,7 +1,3 @@
-"use client";
-
-"use client";
-
 import { ArrowLeft } from "lucide-react";
 import { Suspense } from "react";
 import { AccountButton } from "./AccountButton";
@@ -17,6 +13,7 @@ type DashboardHeaderProps = {
   backLabel?: string;
 };
 
+/** Server header — keeps AdminHeaderLink server-only (supabase/cookies). */
 export function DashboardHeader({
   title = "Dashboard",
   backHref,
