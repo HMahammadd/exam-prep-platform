@@ -222,7 +222,9 @@ function ExamSlide({
       data-exam={slide.id}
       aria-hidden={mode === "leaving"}
     >
-      <p className="exam-frame-title">{t(slide.nameKey)}</p>
+      <div className="exam-frame-title-slot">
+        <p className="exam-frame-title">{t(slide.nameKey)}</p>
+      </div>
       <ul className="exam-frame-metrics">
         {slide.metrics.map((metric, metricIndex) => (
           <li

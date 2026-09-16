@@ -1,20 +1,19 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
-  Bookmark,
   ClipboardList,
-  Clock,
   Lightbulb,
   ListChecks,
   PenLine,
   Target,
   TrendingUp,
   UserPlus,
-  XCircle,
   type LucideIcon,
 } from "lucide-react";
+import { ExamFeatureDeck } from "@/components/ExamFeatureDeck";
 import { ExamSpotlightSection } from "@/components/ExamSpotlightSection";
 import { GraduationCapIcon } from "@/components/GraduationCapIcon";
 import { useTranslations } from "@/components/I18nProvider";
@@ -25,35 +24,63 @@ import { ParticleWaveField } from "@/components/ParticleWaveField";
 import { SampleQuestionCarousel } from "@/components/SampleQuestionCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
 
+function ExamConditionsSection() {
+  const t = useTranslations();
+  const ref = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.22 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className={`site-section site-section--surface exam-conditions${inView ? " is-inview" : ""}`}
+    >
+      <div className="exam-conditions-shell mx-auto px-5 sm:px-6 py-12 md:py-14">
+        <div className="exam-conditions-layout">
+          <div className="exam-conditions-copy">
+            <p className="exam-conditions-eyebrow">
+              <Target className="h-4 w-4" aria-hidden />
+              {t("home.builtFor")}
+            </p>
+            <h2 className="exam-conditions-title">
+              {t("home.realConditionsTitle")}
+            </h2>
+          </div>
+
+          <ExamFeatureDeck />
+
+          <div className="exam-conditions-cta">
+            <LocaleLink
+              href="/signup"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover"
+            >
+              {t("home.tryExam")}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </LocaleLink>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const t = useTranslations();
-
-  const examRoomFeatures: {
-    title: string;
-    description: string;
-    icon: LucideIcon;
-  }[] = [
-    {
-      title: t("home.countdownTimer"),
-      description: t("home.countdownTimerBody"),
-      icon: Clock,
-    },
-    {
-      title: t("home.markForReview"),
-      description: t("home.markForReviewBody"),
-      icon: Bookmark,
-    },
-    {
-      title: t("home.eliminateChoices"),
-      description: t("home.eliminateChoicesBody"),
-      icon: XCircle,
-    },
-    {
-      title: t("home.questionNavigator"),
-      description: t("home.questionNavigatorBody"),
-      icon: ListChecks,
-    },
-  ];
 
   const benefits: {
     title: string;
@@ -158,178 +185,134 @@ export default function Home() {
         </section>
       </div>
 
-      <ExamSpotlightSection />
+      <div className="home-below">
+        <ExamSpotlightSection />
 
-      <section className="site-section site-section--surface">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div>
-              <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-accent">
-                <Target className="h-4 w-4" aria-hidden />
-                {t("home.builtFor")}
-              </p>
-              <h2 className="text-3xl font-bold text-foreground">
-                {t("home.realConditionsTitle")}
-              </h2>
-              <p className="mt-4 max-w-lg leading-relaxed text-muted">
-                {t("home.realConditionsBody")}
-              </p>
-              <LocaleLink
-                href="/signup"
-                className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover"
-              >
-                {t("home.tryExam")}
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              </LocaleLink>
-            </div>
+        <ExamConditionsSection />
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {examRoomFeatures.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <div
-                    key={feature.title}
-                    className="rounded-2xl border border-card-border bg-background p-5"
-                  >
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-soft">
-                      <Icon className="h-4 w-4 text-accent" aria-hidden />
-                    </span>
-                    <h3 className="mt-3 text-sm font-semibold text-foreground">
-                      {feature.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted">
-                      {feature.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="site-section mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold text-foreground">
-            {t("home.whyTitle")}
-          </h2>
-          <p className="mt-2 text-muted">{t("home.whySubtitle")}</p>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((benefit) => {
-            const Icon = benefit.icon;
-            return (
-              <div
-                key={benefit.title}
-                className="rounded-2xl border border-card-border bg-card p-6 shadow-card transition hover:-translate-y-1"
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
-                  <Icon className="h-5 w-5 text-accent" aria-hidden />
-                </span>
-                <h3 className="mt-4 font-semibold text-foreground">
-                  {benefit.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {benefit.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="site-section site-section--surface">
-        <div className="mx-auto max-w-6xl px-6 py-16">
+        <section className="site-section mx-auto max-w-6xl px-6 py-16">
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-bold text-foreground">
-              {t("home.howTitle")}
+              {t("home.whyTitle")}
             </h2>
-            <p className="mt-2 text-muted">{t("home.howSubtitle")}</p>
+            <p className="mt-2 text-muted">{t("home.whySubtitle")}</p>
           </div>
-          <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {benefits.map((benefit) => {
+              const Icon = benefit.icon;
               return (
-                <li
-                  key={step.text}
-                  className="relative rounded-2xl border border-card-border bg-background p-6"
+                <div
+                  key={benefit.title}
+                  className="rounded-2xl border border-card-border bg-card p-6 shadow-card transition hover:-translate-y-1"
                 >
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
-                    {index + 1}
-                  </span>
-                  <span className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
                     <Icon className="h-5 w-5 text-accent" aria-hidden />
                   </span>
-                  <p className="mt-3 font-semibold text-foreground">
-                    {step.text}
+                  <h3 className="mt-4 font-semibold text-foreground">
+                    {benefit.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {benefit.description}
                   </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                    {step.detail}
-                  </p>
-                </li>
+                </div>
               );
             })}
-          </ol>
-        </div>
-      </section>
-
-      <section className="site-section mx-auto max-w-3xl px-6 py-16">
-        <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold text-foreground">
-            {t("home.faqTitle")}
-          </h2>
-        </div>
-        <div className="space-y-4">
-          {faqs.map((faq) => (
-            <details
-              key={faq.question}
-              className="group rounded-2xl border border-card-border bg-card p-5 shadow-card"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-foreground">
-                {faq.question}
-                <span
-                  className="text-accent transition group-open:rotate-45"
-                  aria-hidden
-                >
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-muted">
-                {faq.answer}
-              </p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      <section className="site-section site-section--accent">
-        <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold text-foreground">
-            {t("home.finalTitle")}
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-muted">
-            {t("home.finalBody")}
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <LocaleLink
-              href="/signup"
-              className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
-            >
-              <UserPlus className="h-4 w-4" aria-hidden />
-              {t("home.createAccount")}
-            </LocaleLink>
-            <LocaleLink
-              href="/login"
-              className="group/login inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-background"
-            >
-              <LogInIcon className="h-4 w-4 shrink-0" />
-              {t("nav.login")}
-            </LocaleLink>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <SiteFooter />
+        <section className="site-section site-section--surface">
+          <div className="mx-auto max-w-6xl px-6 py-16">
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl font-bold text-foreground">
+                {t("home.howTitle")}
+              </h2>
+              <p className="mt-2 text-muted">{t("home.howSubtitle")}</p>
+            </div>
+            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <li
+                    key={step.text}
+                    className="relative rounded-2xl border border-card-border bg-background p-6"
+                  >
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+                      {index + 1}
+                    </span>
+                    <span className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
+                      <Icon className="h-5 w-5 text-accent" aria-hidden />
+                    </span>
+                    <p className="mt-3 font-semibold text-foreground">
+                      {step.text}
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                      {step.detail}
+                    </p>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </section>
+
+        <section className="site-section mx-auto max-w-3xl px-6 py-16">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-foreground">
+              {t("home.faqTitle")}
+            </h2>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq) => (
+              <details
+                key={faq.question}
+                className="group rounded-2xl border border-card-border bg-card p-5 shadow-card"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-foreground">
+                  {faq.question}
+                  <span
+                    className="text-accent transition group-open:rotate-45"
+                    aria-hidden
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-muted">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="site-section site-section--accent">
+          <div className="mx-auto max-w-6xl px-6 py-16 text-center">
+            <h2 className="text-3xl font-bold text-foreground">
+              {t("home.finalTitle")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-muted">
+              {t("home.finalBody")}
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <LocaleLink
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
+              >
+                <UserPlus className="h-4 w-4" aria-hidden />
+                {t("home.createAccount")}
+              </LocaleLink>
+              <LocaleLink
+                href="/login"
+                className="group/login inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-background"
+              >
+                <LogInIcon className="h-4 w-4 shrink-0" />
+                {t("nav.login")}
+              </LocaleLink>
+            </div>
+          </div>
+        </section>
+
+        <SiteFooter />
+      </div>
     </div>
   );
 }
