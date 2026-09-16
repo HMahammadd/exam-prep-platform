@@ -35,6 +35,10 @@ export const SAT_SKILL_CONFIGS = [
   { name: "Rhetorical Synthesis", prefix: "SVN" },
 ] as const;
 
+/** Trailing source letter on question codes (e.g. SVI00001C → C). */
+export const QUESTION_CODE_NAMES = ["E", "D", "C", "R"] as const;
+export type QuestionCodeName = (typeof QUESTION_CODE_NAMES)[number];
+
 export const EXAM_SECTION_CONFIGS: ExamSectionConfig[] = [
   {
     slug: "sat",

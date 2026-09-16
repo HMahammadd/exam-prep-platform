@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
+  QUESTION_CODE_NAMES,
   SAT_SKILL_CONFIGS,
   type ExamSectionConfig,
 } from "@/lib/question-bank";
@@ -37,6 +38,7 @@ export function QuestionFilters({ exams }: QuestionFiltersProps) {
       params.delete("section");
       params.delete("skill");
       params.delete("difficulty");
+      params.delete("codeName");
       params.delete("q");
       setSearch("");
     }
@@ -171,6 +173,25 @@ export function QuestionFilters({ exams }: QuestionFiltersProps) {
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-xs font-medium text-muted">
+            Code Name
+          </span>
+          <select
+            value={searchParams.get("codeName") ?? ""}
+            onChange={(event) => setParam("codeName", event.target.value)}
+            className={controlClassName}
+            disabled={!selectedConfig}
+          >
+            <option value="">All code names</option>
+            {QUESTION_CODE_NAMES.map((codeName) => (
+              <option key={codeName} value={codeName}>
+                {codeName}
+              </option>
+            ))}
           </select>
         </label>
       </div>

@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin";
 import {
   EXAM_SECTION_CONFIGS,
+  QUESTION_CODE_NAMES,
   SAT_SKILL_CONFIGS,
   toGroupKey,
+  type QuestionCodeName,
 } from "@/lib/question-bank";
 import { createClient } from "@/lib/supabaseServer";
 import type {
@@ -28,6 +30,7 @@ export type QuestionListFilters = {
   section?: string;
   skill?: string;
   difficulty?: QuestionBankDifficulty;
+  codeName?: QuestionCodeName;
   search?: string;
 };
 
@@ -84,6 +87,13 @@ export async function loadQuestionPage(
     return { success: false, error: "Choose a valid difficulty." };
   }
 
+  if (
+    filters.codeName &&
+    !QUESTION_CODE_NAMES.includes(filters.codeName)
+  ) {
+    return { success: false, error: "Choose a valid code name." };
+  }
+
   const safeOffset =
     Number.isInteger(offset) && offset >= 0 ? Math.min(offset, 100_000) : 0;
   const supabase = await createClient();
@@ -108,6 +118,10 @@ export async function loadQuestionPage(
 
   if (filters.difficulty) {
     query = query.eq("difficulty", filters.difficulty);
+  }
+
+  if (filters.codeName) {
+    query = query.ilike("question_code", `%${filters.codeName}`);
   }
 
   const search = filters.search?.replace(/[^a-zA-Z0-9-]/g, "").slice(0, 40);

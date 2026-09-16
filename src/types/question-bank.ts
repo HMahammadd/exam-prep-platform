@@ -1,3 +1,5 @@
+import { normalizeWrappedProse } from "@/lib/normalize-prose";
+
 export type QuestionBankType = "multiple-choice" | "open";
 export type QuestionBankStatus = "draft" | "published";
 export type QuestionBankDifficulty = "easy" | "medium" | "hard";
@@ -89,12 +91,14 @@ export function mapQuestionRow(
     groupLabel: row.group_label,
     questionNumber: row.question_number,
     questionType: row.question_type,
-    passage: row.passage,
-    questionText: row.question_text,
+    passage: row.passage ? normalizeWrappedProse(row.passage) : null,
+    questionText: normalizeWrappedProse(row.question_text),
     imageUrl: row.image_url,
     correctAnswer: row.correct_answer,
     acceptedAnswers: row.accepted_answers ?? [],
-    explanation: row.explanation,
+    explanation: row.explanation
+      ? normalizeWrappedProse(row.explanation)
+      : null,
     difficulty: row.difficulty,
     status: row.status,
     createdAt: row.created_at,
@@ -104,7 +108,7 @@ export function mapQuestionRow(
       .map((choice) => ({
         id: choice.id,
         label: choice.label,
-        choiceText: choice.choice_text,
+        choiceText: normalizeWrappedProse(choice.choice_text),
         isCorrect: choice.is_correct,
         displayOrder: choice.display_order,
       })),

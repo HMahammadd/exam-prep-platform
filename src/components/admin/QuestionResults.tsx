@@ -26,7 +26,11 @@ import {
   QuestionVisual,
   hasQuestionVisual,
 } from "@/components/sat/QuestionVisual";
-import { getExamName } from "@/lib/question-bank";
+import {
+  QUESTION_CODE_NAMES,
+  getExamName,
+  type QuestionCodeName,
+} from "@/lib/question-bank";
 import type {
   QuestionBankDifficulty,
   QuestionBankItem,
@@ -40,20 +44,28 @@ function readDifficulty(
     : undefined;
 }
 
+function readCodeName(value: string | null): QuestionCodeName | undefined {
+  return value &&
+    QUESTION_CODE_NAMES.includes(value as QuestionCodeName)
+    ? (value as QuestionCodeName)
+    : undefined;
+}
+
 export function QuestionResults() {
   const searchParams = useSearchParams();
   const exam = searchParams.get("exam") ?? "";
   const section = searchParams.get("section") ?? undefined;
   const skill = searchParams.get("skill") ?? undefined;
   const difficulty = readDifficulty(searchParams.get("difficulty"));
+  const codeName = readCodeName(searchParams.get("codeName"));
   const search = searchParams.get("q") ?? undefined;
   const filters = useMemo<QuestionListFilters>(
-    () => ({ exam, section, skill, difficulty, search }),
-    [difficulty, exam, search, section, skill]
+    () => ({ exam, section, skill, difficulty, codeName, search }),
+    [codeName, difficulty, exam, search, section, skill]
   );
   const filterKey = `${exam}|${section ?? ""}|${skill ?? ""}|${
     difficulty ?? ""
-  }|${search ?? ""}`;
+  }|${codeName ?? ""}|${search ?? ""}`;
 
   if (!exam) {
     return (
@@ -309,7 +321,7 @@ function QuestionCard({
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
               Passage
             </p>
-            <p className="whitespace-pre-wrap text-sm leading-6 text-foreground">
+            <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
               {question.passage}
             </p>
           </div>
@@ -335,7 +347,7 @@ function QuestionCard({
               <ImageIcon className="h-4 w-4" aria-hidden />
             </div>
           )}
-          <p className="whitespace-pre-wrap text-base leading-7 text-foreground">
+          <p className="min-w-0 flex-1 whitespace-pre-line text-base leading-relaxed text-foreground">
             {question.questionText}
           </p>
         </div>
@@ -378,7 +390,7 @@ function QuestionCard({
         {question.explanation && (
           <div className="rounded-xl border border-card-border bg-background p-4">
             <p className="text-sm font-semibold text-foreground">Explanation</p>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted">
+            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">
               {question.explanation}
             </p>
           </div>

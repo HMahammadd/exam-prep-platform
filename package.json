@@ -13,7 +13,10 @@
     "questions:extract:official": "PYTHONPATH=.question-import/python-deps python3 scripts/extract-official-sat.py",
     "questions:import:official": "node scripts/import-official-sat.mjs",
     "questions:import:official:execute": "node scripts/import-official-sat.mjs --execute",
-    "questions:verify:official": "node scripts/verify-official-sat.mjs"
+    "questions:verify:official": "node scripts/verify-official-sat.mjs",
+    "questions:extract:keplerly": "PYTHONPATH=.question-import/python-deps python3 scripts/extract-keplerly-exams.py",
+    "questions:import:keplerly": "node scripts/import-keplerly-exams.mjs",
+    "questions:import:keplerly:execute": "node scripts/import-keplerly-exams.mjs --execute"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.3",

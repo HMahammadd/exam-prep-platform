@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { normalizeWrappedProse } from "@/lib/normalize-prose";
 
 type CrossTextBlock = {
   label: string;
@@ -6,7 +7,7 @@ type CrossTextBlock = {
 };
 
 export function parseCrossTextPassage(passage: string): CrossTextBlock[] | null {
-  const trimmed = passage.trim();
+  const trimmed = normalizeWrappedProse(passage);
   const match = trimmed.match(
     /^Text\s*1\s*\n([\s\S]*?)\n+Text\s*2\s*\n([\s\S]*)$/i
   );
@@ -61,7 +62,7 @@ export function SatPassage({
 
   return (
     <p className={`whitespace-pre-line ${textClass} ${className}`} style={fontStyle}>
-      {passage}
+      {normalizeWrappedProse(passage)}
     </p>
   );
 }
