@@ -140,6 +140,10 @@ h1.hero-copy-title {
   display: flex;
   min-height: 100svh;
   flex-direction: column;
+  position: relative;
+  z-index: 2;
+  /* Pull next section up so atmospheres overlap (~40–48px) */
+  margin-bottom: -3rem;
 }
 
 .home-hero {
@@ -148,7 +152,15 @@ h1.hero-copy-title {
   flex: 1 1 auto;
   flex-direction: column;
   justify-content: center;
-  background: var(--home-band);
+  /* Soft dissolve into the next section — no hard band edge */
+  background: linear-gradient(
+    to bottom,
+    var(--home-band) 0%,
+    var(--home-band) 62%,
+    color-mix(in oklab, var(--home-band) 72%, transparent) 82%,
+    color-mix(in oklab, var(--home-band) 28%, transparent) 94%,
+    transparent 100%
+  );
   min-height: 0;
 }
 
@@ -169,8 +181,9 @@ h1.hero-copy-title {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 58%,
-    color-mix(in oklab, var(--home-band) 18%, transparent) 100%
+    transparent 52%,
+    color-mix(in oklab, var(--home-band) 12%, transparent) 78%,
+    color-mix(in oklab, var(--home-band) 28%, transparent) 100%
   );
 }
 
@@ -187,20 +200,22 @@ h1.hero-copy-title {
   }
 }
 
+/* Wave dissolves — no solid cutoff at the hero boundary */
 .home-hero-wave-fade {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   z-index: 2;
-  height: 52%;
+  height: 58%;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    color-mix(in oklab, var(--home-band) 18%, transparent) 42%,
-    color-mix(in oklab, var(--home-band) 55%, transparent) 78%,
-    var(--home-band) 100%
+    color-mix(in oklab, var(--home-band) 10%, transparent) 38%,
+    color-mix(in oklab, var(--home-band) 32%, transparent) 68%,
+    color-mix(in oklab, var(--home-band) 55%, transparent) 88%,
+    color-mix(in oklab, var(--home-band) 35%, transparent) 100%
   );
 }
 
@@ -923,56 +938,58 @@ html.dark .hero-celestial-face--moon {
   );
 }
 
+/* Hero reveal: soft top → down, staggered (not instant pop) */
 .home-entrance > header,
 .home-entrance .home-reveal {
-  animation: home-fade-up 0.62s var(--home-rise-ease) both;
+  animation: home-reveal-down 0.72s var(--home-rise-ease) both;
 }
 
 .home-entrance > header {
-  animation-duration: 0.52s;
-  animation-delay: 0.02s;
-}
-
-.home-entrance .home-atmosphere {
-  animation: home-fade-in 0.9s ease both;
-  animation-delay: 0.08s;
+  animation-duration: 0.55s;
+  animation-delay: 0.04s;
 }
 
 .home-entrance .home-reveal-kicker {
-  animation-delay: 0.16s;
+  animation-delay: 0.1s;
 }
 
 .home-entrance .home-reveal-title-a {
-  animation-delay: 0.24s;
+  animation-delay: 0.14s;
 }
 
 .home-entrance .home-reveal-title-b {
-  animation-delay: 0.32s;
+  animation-delay: 0.26s;
 }
 
 .home-entrance .home-reveal-lead {
+  animation-delay: 0.34s;
+}
+
+.home-entrance .home-reveal-actions {
   animation-delay: 0.42s;
 }
 
 .home-entrance .home-reveal-card {
-  animation-name: home-fade-up-card;
-  animation-duration: 0.72s;
-  animation-delay: 0.38s;
-}
-
-.home-entrance .home-reveal-actions {
-  animation-delay: 0.52s;
+  animation-name: home-reveal-down-card;
+  animation-duration: 0.82s;
+  animation-delay: 0.54s;
 }
 
 .home-entrance .home-reveal-note {
-  animation-duration: 0.56s;
+  animation-duration: 0.6s;
+  animation-delay: 0.68s;
+}
+
+/* Atmosphere settles after content so stars/wave feel like the final layer */
+.home-entrance .home-atmosphere {
+  animation: home-atmosphere-settle 1.15s var(--home-rise-ease) both;
   animation-delay: 0.62s;
 }
 
-@keyframes home-fade-up {
+@keyframes home-reveal-down {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(-18px);
   }
   to {
     opacity: 1;
@@ -980,14 +997,25 @@ html.dark .hero-celestial-face--moon {
   }
 }
 
-@keyframes home-fade-up-card {
+@keyframes home-reveal-down-card {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(-26px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes home-atmosphere-settle {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
   }
 }
 
@@ -1012,7 +1040,10 @@ html.dark .hero-celestial-face--moon {
   .home-entrance > header,
   .home-entrance .home-reveal,
   .home-entrance .home-atmosphere {
-    animation: none;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 }
 
@@ -1366,30 +1397,56 @@ html.dark .hero-celestial-face--moon {
   --exam-accent: var(--exam-sat);
   --exam-soft: var(--exam-sat-soft);
   --exam-dark: var(--exam-sat-dark);
+  --exam-curtain-b: #a78bfa;
   --exam-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --frame-transition: 900ms;
   position: relative;
+  z-index: 1;
   width: 100%;
   overflow: hidden;
   isolation: isolate;
   border: none;
   box-shadow: none;
+  /* Continuous with hero — no second full-viewport band */
   background: transparent;
+  min-height: 0;
 }
 
 .exam-frame[data-exam="sat"] {
   --exam-accent: var(--exam-sat);
   --exam-soft: var(--exam-sat-soft);
   --exam-dark: var(--exam-sat-dark);
+  --exam-curtain-b: #c084fc;
 }
 
 .exam-frame[data-exam="toefl"] {
   --exam-accent: var(--exam-toefl);
   --exam-soft: var(--exam-toefl-soft);
   --exam-dark: var(--exam-toefl-dark);
+  --exam-curtain-b: #818cf8;
 }
 
 .exam-frame[data-exam="dim"] {
+  --exam-accent: var(--exam-dim);
+  --exam-soft: var(--exam-dim-soft);
+  --exam-dark: var(--exam-dim-dark);
+  --exam-curtain-b: #38bdf8;
+}
+
+/* Per-slide accent so crossfade layers keep their own color */
+.exam-frame-slide[data-exam="sat"] {
+  --exam-accent: var(--exam-sat);
+  --exam-soft: var(--exam-sat-soft);
+  --exam-dark: var(--exam-sat-dark);
+}
+
+.exam-frame-slide[data-exam="toefl"] {
+  --exam-accent: var(--exam-toefl);
+  --exam-soft: var(--exam-toefl-soft);
+  --exam-dark: var(--exam-toefl-dark);
+}
+
+.exam-frame-slide[data-exam="dim"] {
   --exam-accent: var(--exam-dim);
   --exam-soft: var(--exam-dim-soft);
   --exam-dark: var(--exam-dim-dark);
@@ -1405,18 +1462,193 @@ html.dark .hero-celestial-face--moon {
 }
 
 .exam-frame::before {
-  content: "";
+  content: none;
+}
+
+.exam-frame::after {
+  content: none;
+}
+
+.exam-frame-fx {
   position: absolute;
-  inset: 6% -10% auto;
-  height: 78%;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
+  overflow: hidden;
+}
+
+/* One continuous fill — no mid-band seam */
+.exam-frame-fx-void {
+  position: absolute;
+  inset: 0;
+  background: var(--home-band);
+  opacity: 1;
+}
+
+.dark .exam-frame-fx-void {
+  background: var(--home-band);
+}
+
+/* Soft ambient stars — very quiet */
+.exam-frame-fx-stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(140, 148, 160, 0.4) 0 0.65px, transparent 1px),
+    radial-gradient(circle, rgba(120, 128, 140, 0.28) 0 0.5px, transparent 0.9px);
+  background-size:
+    96px 96px,
+    64px 64px;
+  background-position:
+    12px 18px,
+    40px 8px;
+  opacity: 0.14;
+  animation: exam-frame-stars-drift 48s linear infinite;
+}
+
+.dark .exam-frame-fx-stars {
+  background-image:
+    radial-gradient(circle, rgba(200, 208, 220, 0.4) 0 0.65px, transparent 1px),
+    radial-gradient(circle, rgba(180, 188, 200, 0.28) 0 0.5px, transparent 0.9px);
+  opacity: 0.2;
+}
+
+/*
+ * Side atmosphere: endless soft mist + dots.
+ * Horizontal fade only — no vertical beam / upward flare.
+ */
+.exam-frame-fx-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(30vw, 22rem);
+  pointer-events: none;
+  filter: blur(0.4px);
+  opacity: 0;
+  transition: opacity 600ms ease;
+  will-change: transform, opacity;
+}
+
+.exam-frame.is-inview .exam-frame-fx-curtain {
+  opacity: 1;
+}
+
+.exam-frame-fx-curtain--left {
+  left: 0;
+  background:
+    linear-gradient(
+      to right,
+      rgba(148, 156, 168, 0.07) 0%,
+      rgba(148, 156, 168, 0.03) 42%,
+      transparent 100%
+    ),
+    radial-gradient(circle, rgba(120, 128, 140, 0.22) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle, rgba(140, 148, 158, 0.14) 0 0.6px, transparent 1.05px);
+  background-size:
+    100% 100%,
+    8px 9px,
+    6px 7px;
+  background-position:
+    0 0,
+    0 0,
+    3px 4px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right, #000 0%, #000 35%, transparent 100%);
+  animation: exam-frame-curtain-left 22s ease-in-out infinite alternate;
+}
+
+.exam-frame-fx-curtain--right {
+  right: 0;
+  background:
+    linear-gradient(
+      to left,
+      rgba(148, 156, 168, 0.06) 0%,
+      rgba(148, 156, 168, 0.025) 42%,
+      transparent 100%
+    ),
+    radial-gradient(circle, rgba(120, 128, 140, 0.2) 0 0.9px, transparent 1.4px),
+    radial-gradient(circle, rgba(140, 148, 158, 0.12) 0 0.6px, transparent 1.05px);
+  background-size:
+    100% 100%,
+    8px 9px,
+    6px 7px;
+  background-position:
+    0 0,
+    2px 3px,
+    4px 5px;
+  -webkit-mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to left, #000 0%, #000 35%, transparent 100%);
+  animation: exam-frame-curtain-right 24s ease-in-out infinite alternate;
+}
+
+/* Keep bloom extremely soft — no colored flare */
+.exam-frame-fx-bloom {
+  position: absolute;
+  inset: 12% 22%;
   background: radial-gradient(
-    48% 70% at 16% 48%,
-    color-mix(in oklab, var(--exam-soft) 98%, transparent),
+    ellipse 70% 55% at 50% 50%,
+    rgba(160, 168, 178, 0.06) 0%,
     transparent 72%
   );
-  z-index: 0;
-  transition: background 600ms ease;
+  filter: blur(40px);
+  opacity: 0.7;
+}
+
+.dark .exam-frame-fx-bloom {
+  opacity: 0.35;
+  background: radial-gradient(
+    ellipse 65% 50% at 50% 50%,
+    rgba(130, 140, 155, 0.1) 0%,
+    transparent 72%
+  );
+}
+
+.exam-frame.is-inview .exam-frame-fx-curtain--left,
+.exam-frame.is-inview .exam-frame-fx-curtain--right {
+  opacity: 0.42;
+}
+
+.dark .exam-frame.is-inview .exam-frame-fx-curtain--left,
+.dark .exam-frame.is-inview .exam-frame-fx-curtain--right {
+  opacity: 0.32;
+}
+
+/* Soft sideways drift only — no upward shoot / scale flare */
+@keyframes exam-frame-curtain-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(1.2%, 0, 0);
+  }
+}
+
+@keyframes exam-frame-curtain-right {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-1.2%, 0, 0);
+  }
+}
+
+@keyframes exam-frame-stars-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-14px, -8px, 0);
+  }
 }
 
 .exam-frame-inner {
@@ -1425,16 +1657,27 @@ html.dark .hero-celestial-face--moon {
   width: 100%;
   max-width: min(90rem, 100%);
   margin: 0 auto;
-  padding: clamp(3.5rem, 6.5vw, 5.5rem) clamp(1.25rem, 4vw, 3rem)
-    clamp(3.25rem, 5.5vw, 5rem);
+  /* ~90–130px vertical padding — content-driven height, not full viewport */
+  padding: clamp(5.5rem, 9vw, 7.5rem) clamp(1.25rem, 4vw, 3rem)
+    clamp(5.25rem, 8vw, 7rem);
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.exam-frame.is-inview .exam-frame-inner {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .exam-frame-stage {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: clamp(1.5rem, 5vw, 4rem);
-  min-height: clamp(20rem, 44vw, 28rem);
+  gap: clamp(1.15rem, 3.5vw, 2.75rem);
+  min-height: 0;
 }
 
 .exam-frame-star {
@@ -1488,9 +1731,61 @@ html.dark .hero-celestial-face--moon {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: clamp(1.4rem, 3.2vw, 2.25rem);
+  gap: clamp(1.1rem, 2.6vw, 1.75rem);
   text-align: left;
-  padding: 0.25rem 0;
+  padding: 0.15rem 0;
+}
+
+.exam-frame-crossfade {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  display: grid;
+  align-items: center;
+}
+
+.exam-frame-crossfade > .exam-frame-slide {
+  grid-area: 1 / 1;
+  width: 100%;
+  transition:
+    opacity var(--frame-fade, 700ms) cubic-bezier(0.4, 0, 0.2, 1),
+    transform var(--frame-fade, 700ms) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+/* Incoming — soft fade + settle from below / slight scale */
+.exam-frame-slide.is-enter {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: exam-frame-slide-in var(--frame-fade, 700ms)
+    cubic-bezier(0.4, 0, 0.2, 1) both;
+  z-index: 2;
+}
+
+.exam-frame-slide.is-hold {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  z-index: 2;
+}
+
+/* Outgoing — soft fade + lift (transition from hold/enter on same node) */
+.exam-frame-slide.is-leaving {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.985);
+  pointer-events: none;
+  z-index: 1;
+  animation: none;
+}
+
+@keyframes exam-frame-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .exam-frame-title {
@@ -1503,25 +1798,9 @@ html.dark .hero-celestial-face--moon {
   line-height: 0.86;
   color: var(--exam-accent);
   text-shadow: 0 0 42px color-mix(in oklab, var(--exam-accent) 30%, transparent);
-  opacity: 0;
-  transform: translateX(22px) translateY(8px) scale(0.97);
-  transition:
-    opacity 520ms var(--exam-ease),
-    transform 640ms var(--exam-ease),
-    color 550ms ease,
-    text-shadow 550ms ease;
-}
-
-.exam-frame[data-phase="enter"] .exam-frame-title,
-.exam-frame[data-phase="hold"] .exam-frame-title {
   opacity: 1;
-  transform: translateX(0) translateY(0) scale(1);
-}
-
-.exam-frame[data-phase="exiting"] .exam-frame-title {
-  opacity: 0;
-  transform: translateX(-18px) translateY(-6px) scale(0.97);
-  transition-duration: 520ms;
+  transform: none;
+  transition: color 550ms ease, text-shadow 550ms ease;
 }
 
 .exam-frame-metrics {
@@ -1543,35 +1822,46 @@ html.dark .hero-celestial-face--moon {
 }
 
 .exam-frame-metric {
-  opacity: 0;
-  transform: translateY(18px) translateX(12px);
-  transition:
-    opacity 480ms var(--exam-ease),
-    transform 560ms var(--exam-ease);
-}
-
-.exam-frame[data-phase="enter"] .exam-frame-metric,
-.exam-frame[data-phase="hold"] .exam-frame-metric {
   opacity: 1;
-  transform: translateY(0) translateX(0);
-  transition-delay: calc(120ms + var(--stagger, 0) * 140ms);
+  transform: none;
 }
 
-.exam-frame[data-phase="exiting"] .exam-frame-metric {
+.exam-frame-slide.is-enter .exam-frame-metric {
   opacity: 0;
-  transform: translateY(-10px) translateX(-10px);
-  transition-delay: calc(var(--stagger, 0) * 45ms);
-  transition-duration: 420ms;
+  transform: translateY(12px);
+  animation: exam-frame-metric-in 560ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: calc(120ms + var(--stagger, 0) * 120ms);
+}
+
+.exam-frame-slide.is-hold .exam-frame-metric,
+.exam-frame-slide.is-leaving .exam-frame-metric {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+@keyframes exam-frame-metric-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .exam-frame-metric-label {
   display: block;
   font-family: var(--font-heading), var(--font-sans), ui-sans-serif, system-ui,
     sans-serif;
-  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 650;
   letter-spacing: -0.025em;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: color-mix(in oklab, var(--foreground) 86%, var(--exam-accent));
 }
 
@@ -1591,15 +1881,15 @@ html.dark .hero-celestial-face--moon {
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
   color: var(--exam-accent);
   text-shadow: 0 0 22px color-mix(in oklab, var(--exam-accent) 26%, transparent);
   transform-origin: left center;
 }
 
-.exam-frame[data-phase="enter"] .exam-frame-num,
-.exam-frame[data-phase="hold"] .exam-frame-num {
-  animation: exam-frame-num-pop 560ms var(--exam-ease) both;
-  animation-delay: calc(160ms + var(--stagger, 0) * 140ms);
+.exam-frame-slide.is-enter .exam-frame-num {
+  animation: exam-frame-num-emphasis 900ms var(--exam-ease) both;
+  animation-delay: calc(180ms + var(--stagger, 0) * 150ms);
 }
 
 .exam-frame-plus {
@@ -1613,26 +1903,35 @@ html.dark .hero-celestial-face--moon {
   color: var(--muted);
 }
 
-@keyframes exam-frame-num-pop {
+@keyframes exam-frame-num-emphasis {
   0% {
-    transform: scale(0.88);
-    opacity: 0.4;
+    transform: translateY(8px) scale(0.92);
+    filter: blur(2px);
   }
   55% {
-    transform: scale(1.05);
-    opacity: 1;
+    transform: translateY(0) scale(1.04);
+    filter: blur(0);
   }
   100% {
-    transform: scale(1);
-    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
 @media (max-width: 719px) {
+  .home-screen {
+    margin-bottom: -1.75rem;
+  }
+
+  .exam-frame-inner {
+    padding-top: clamp(3.75rem, 10vw, 5.25rem);
+    padding-bottom: clamp(3.5rem, 9vw, 5rem);
+  }
+
   .exam-frame-stage {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     text-align: center;
   }
 
@@ -1669,18 +1968,29 @@ html.dark .hero-celestial-face--moon {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .exam-frame-inner,
+  .exam-frame-slide,
   .exam-frame-title,
   .exam-frame-metric,
   .exam-frame-star-svg,
   .exam-frame-star-glow,
-  .exam-frame-num {
+  .exam-frame-num,
+  .exam-frame-fx-curtain,
+  .exam-frame-fx-stars {
     transition: none !important;
     animation: none !important;
   }
 
+  .exam-frame-inner,
+  .exam-frame-slide,
   .exam-frame-title,
   .exam-frame-metric {
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .exam-frame-fx-curtain {
+    opacity: 0.75 !important;
     transform: none !important;
   }
 }

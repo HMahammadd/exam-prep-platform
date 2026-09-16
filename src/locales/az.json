@@ -52,9 +52,9 @@
         "readingWriting": "Oxu və Yazı",
         "readingWritingCount": "5000+ sual",
         "readingWritingUnit": "sual",
-        "practiceExams": "Tam sınaq imtahanları",
+        "practiceExams": "Sınaq imtahanları",
         "practiceExamsCount": "30+ tam sınaq imtahanı",
-        "practiceExamsUnit": "tam sınaq imtahanı",
+        "practiceExamsUnit": "imtahan",
         "math": "Riyaziyyat bölməsi",
         "mathCount": "3000+ sual",
         "mathUnit": "sual",
@@ -77,7 +77,7 @@
         "readingUnit": "tapşırıq",
         "listening": "Dinləmə",
         "listeningUnit": "tapşırıq",
-        "vocab": "Lüğət və anlama",
+        "vocab": "Lüğət",
         "vocabUnit": "tapşırıq"
       }
     },
@@ -90,7 +90,7 @@
         "azerbaijaniUnit": "tapşırıq",
         "math": "Riyaziyyat",
         "mathUnit": "tapşırıq",
-        "topics": "Mövzu və sınaq məşqləri",
+        "topics": "Mövzular",
         "topicsUnit": "tapşırıq"
       }
     }

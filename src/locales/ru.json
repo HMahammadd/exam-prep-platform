@@ -52,9 +52,9 @@
         "readingWriting": "Чтение и письмо",
         "readingWritingCount": "5000+ вопросов",
         "readingWritingUnit": "вопросов",
-        "practiceExams": "Полные пробные экзамены",
+        "practiceExams": "Пробные экзамены",
         "practiceExamsCount": "30+ полных пробных экзаменов",
-        "practiceExamsUnit": "полных пробных экзаменов",
+        "practiceExamsUnit": "экзаменов",
         "math": "Математика",
         "mathCount": "3000+ вопросов",
         "mathUnit": "вопросов",
@@ -77,7 +77,7 @@
         "readingUnit": "заданий",
         "listening": "Аудирование",
         "listeningUnit": "заданий",
-        "vocab": "Словарь и понимание",
+        "vocab": "Словарь",
         "vocabUnit": "заданий"
       }
     },
@@ -90,7 +90,7 @@
         "azerbaijaniUnit": "tapşırıq",
         "math": "Riyaziyyat",
         "mathUnit": "tapşırıq",
-        "topics": "Mövzu və sınaq məşqləri",
+        "topics": "Темы",
         "topicsUnit": "tapşırıq"
       }
     }

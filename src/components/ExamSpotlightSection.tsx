@@ -102,8 +102,10 @@ const SLIDES: SlideDef[] = [
 ];
 
 const DWELL_MS = 2500;
-const TRANSITION_MS = 900;
-const ENTER_MS = 520;
+const FADE_MS = 700;
+const OVERLAP_MS = 220;
+const ENTER_MS = 700;
+const COUNT_MS = 1050;
 
 function prefersReducedMotion() {
   return (
@@ -114,37 +116,46 @@ function prefersReducedMotion() {
 
 function CountUp({
   target,
-  active,
-  duration = 650,
+  play,
+  delay = 0,
+  duration = COUNT_MS,
 }: {
   target: number;
-  active: boolean;
+  play: boolean;
+  delay?: number;
   duration?: number;
 }) {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (!active) {
-      setValue(0);
-      return;
-    }
+    if (!play) return;
+
     if (prefersReducedMotion()) {
       setValue(target);
       return;
     }
 
     let frame = 0;
-    const start = performance.now();
+    let startAt = 0;
     setValue(0);
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(target * eased));
-      if (progress < 1) frame = requestAnimationFrame(tick);
+
+    const startTimer = window.setTimeout(() => {
+      startAt = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - startAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 2.6);
+        setValue(Math.round(target * eased));
+        if (progress < 1) frame = requestAnimationFrame(tick);
+        else setValue(target);
+      };
+      frame = requestAnimationFrame(tick);
+    }, delay);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      cancelAnimationFrame(frame);
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [active, duration, target]);
+  }, [play, delay, duration, target]);
 
   return (
     <span className="exam-frame-num">
@@ -182,6 +193,63 @@ function TransitionStar({
   );
 }
 
+function ExamFrameBackdrop() {
+  return (
+    <div className="exam-frame-fx" aria-hidden>
+      <div className="exam-frame-fx-void" />
+      <div className="exam-frame-fx-stars" />
+      <div className="exam-frame-fx-curtain exam-frame-fx-curtain--left" />
+      <div className="exam-frame-fx-curtain exam-frame-fx-curtain--right" />
+      <div className="exam-frame-fx-bloom" />
+    </div>
+  );
+}
+
+function ExamSlide({
+  slide,
+  mode,
+  counting,
+}: {
+  slide: SlideDef;
+  mode: "enter" | "hold" | "leaving";
+  counting: boolean;
+}) {
+  const t = useTranslations();
+
+  return (
+    <article
+      className={`exam-frame-slide is-${mode}`}
+      data-exam={slide.id}
+      aria-hidden={mode === "leaving"}
+    >
+      <p className="exam-frame-title">{t(slide.nameKey)}</p>
+      <ul className="exam-frame-metrics">
+        {slide.metrics.map((metric, metricIndex) => (
+          <li
+            key={metric.id}
+            className="exam-frame-metric"
+            style={{ "--stagger": metricIndex } as CSSProperties}
+          >
+            <span className="exam-frame-metric-label">
+              {t(metric.labelKey)}
+            </span>
+            <span className="exam-frame-metric-stat">
+              <CountUp
+                target={metric.target}
+                play={counting}
+                delay={180 + metricIndex * 140}
+              />
+              <span className="exam-frame-metric-unit">
+                {t(metric.unitKey)}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 export function ExamSpotlightSection() {
   const t = useTranslations();
   const sectionRef = useRef<HTMLElement>(null);
@@ -190,6 +258,10 @@ export function ExamSpotlightSection() {
   const [phase, setPhase] = useState<Phase>("enter");
   const [starDegrees, setStarDegrees] = useState(0);
   const [cycleKey, setCycleKey] = useState(0);
+  const [outgoing, setOutgoing] = useState<{
+    index: number;
+    key: number;
+  } | null>(null);
   const labelId = useId();
   const active = SLIDES[index] ?? SLIDES[0];
   const reduce = useRef(false);
@@ -214,49 +286,61 @@ export function ExamSpotlightSection() {
     return () => observer.disconnect();
   }, []);
 
-  // New slide: content enters, then hold
+  // enter → hold
   useEffect(() => {
     if (!inView) return;
-
     if (reduce.current) {
       setPhase("hold");
       return;
     }
-
-    setPhase("enter");
-    setCycleKey((key) => key + 1);
+    if (phase !== "enter") return;
 
     const holdTimer = window.setTimeout(() => setPhase("hold"), ENTER_MS);
-
     return () => window.clearTimeout(holdTimer);
-  }, [inView, index]);
+  }, [inView, phase, cycleKey]);
 
-  // Hold ~2.5s, then rotate star + exit content
+  // hold → begin exit + capture outgoing
   useEffect(() => {
     if (!inView || reduce.current) return;
     if (phase !== "hold") return;
 
     const exitTimer = window.setTimeout(() => {
+      setOutgoing({ index, key: cycleKey });
       setPhase("exiting");
       setStarDegrees((deg) => deg + 180);
     }, DWELL_MS);
 
     return () => window.clearTimeout(exitTimer);
-  }, [inView, phase, index]);
+  }, [inView, phase, index, cycleKey]);
 
-  // After transition, advance SAT → TOEFL → DİM → SAT
+  // Crossfade timeline: overlap swap, then drop outgoing after full fade
   useEffect(() => {
-    if (!inView || reduce.current) return;
-    if (phase !== "exiting") return;
+    if (!inView || reduce.current || !outgoing) return;
 
-    const advanceTimer = window.setTimeout(() => {
+    const swapTimer = window.setTimeout(() => {
       setIndex((current) => (current + 1) % SLIDES.length);
-    }, TRANSITION_MS);
+      setCycleKey((key) => key + 1);
+      setPhase("enter");
+    }, OVERLAP_MS);
 
-    return () => window.clearTimeout(advanceTimer);
-  }, [inView, phase]);
+    const clearTimer = window.setTimeout(() => {
+      setOutgoing(null);
+    }, FADE_MS);
 
-  const contentLive = phase === "enter" || phase === "hold";
+    return () => {
+      window.clearTimeout(swapTimer);
+      window.clearTimeout(clearTimer);
+    };
+  }, [inView, outgoing]);
+
+  const outgoingSlide =
+    outgoing != null ? (SLIDES[outgoing.index] ?? SLIDES[0]) : null;
+  // Same React key as the prior active slide so opacity 1→0 transitions on the DOM node
+  const soloLeaving =
+    outgoing != null &&
+    outgoing.index === index &&
+    outgoing.key === cycleKey;
+  const counting = phase === "enter" || phase === "hold";
 
   return (
     <section
@@ -266,8 +350,10 @@ export function ExamSpotlightSection() {
       data-exam={active.id}
       data-phase={phase}
       aria-labelledby={labelId}
-      style={{ "--frame-transition": `${TRANSITION_MS}ms` } as CSSProperties}
+      style={{ "--frame-fade": `${FADE_MS}ms` } as CSSProperties}
     >
+      <ExamFrameBackdrop />
+
       <div className="exam-frame-inner">
         <h2 id={labelId} className="sr-only">
           {t("exam.sat.name")}, {t("exam.toefl.name")}, {t("exam.dim.name")}
@@ -276,35 +362,28 @@ export function ExamSpotlightSection() {
         <div className="exam-frame-stage">
           <TransitionStar
             degrees={starDegrees}
-            blooming={phase === "exiting"}
+            blooming={outgoing !== null}
           />
 
-          <article
-            key={`${active.id}-${cycleKey}`}
-            className="exam-frame-slide"
-            data-exam={active.id}
-          >
-            <p className="exam-frame-title">{t(active.nameKey)}</p>
-            <ul className="exam-frame-metrics">
-              {active.metrics.map((metric, metricIndex) => (
-                <li
-                  key={metric.id}
-                  className="exam-frame-metric"
-                  style={{ "--stagger": metricIndex } as CSSProperties}
-                >
-                  <span className="exam-frame-metric-label">
-                    {t(metric.labelKey)}
-                  </span>
-                  <span className="exam-frame-metric-stat">
-                    <CountUp target={metric.target} active={contentLive} />
-                    <span className="exam-frame-metric-unit">
-                      {t(metric.unitKey)}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </article>
+          <div className="exam-frame-crossfade">
+            {outgoingSlide && outgoing ? (
+              <ExamSlide
+                key={`slide-${outgoingSlide.id}-${outgoing.key}`}
+                slide={outgoingSlide}
+                mode="leaving"
+                counting={false}
+              />
+            ) : null}
+
+            {!soloLeaving ? (
+              <ExamSlide
+                key={`slide-${active.id}-${cycleKey}`}
+                slide={active}
+                mode={phase === "hold" ? "hold" : "enter"}
+                counting={counting}
+              />
+            ) : null}
+          </div>
         </div>
       </div>
     </section>
