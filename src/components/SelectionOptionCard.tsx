@@ -1,5 +1,8 @@
+"use client";
+
 import { ArrowRight, Clock } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "@/components/I18nProvider";
+import { LocaleLink } from "@/components/LocaleLink";
 import type { DimOption } from "@/lib/dim";
 
 type SelectionOptionCardProps = {
@@ -7,6 +10,7 @@ type SelectionOptionCardProps = {
 };
 
 export function SelectionOptionCard({ option }: SelectionOptionCardProps) {
+  const t = useTranslations();
   const isAvailable = option.status === "available";
 
   const cardContent = (
@@ -22,7 +26,9 @@ export function SelectionOptionCard({ option }: SelectionOptionCardProps) {
               : "bg-card-border text-muted"
           }`}
         >
-          {isAvailable ? "Available" : "Coming Soon"}
+          {isAvailable
+            ? t("examSelector.available")
+            : t("examSelector.comingSoon")}
         </span>
       </div>
       <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
@@ -36,7 +42,7 @@ export function SelectionOptionCard({ option }: SelectionOptionCardProps) {
         }`}
       >
         {!isAvailable && <Clock className="h-4 w-4" aria-hidden />}
-        {isAvailable ? "Continue" : "Coming Soon"}
+        {isAvailable ? t("dashboard.continue") : t("examSelector.comingSoon")}
         {isAvailable && <ArrowRight className="h-4 w-4" aria-hidden />}
       </span>
     </>
@@ -51,11 +57,11 @@ export function SelectionOptionCard({ option }: SelectionOptionCardProps) {
   }
 
   return (
-    <Link
+    <LocaleLink
       href={option.href}
       className="group flex flex-col rounded-2xl border border-card-border bg-card p-6 shadow-card transition hover:border-accent hover:shadow-lg"
     >
       {cardContent}
-    </Link>
+    </LocaleLink>
   );
 }

@@ -11,7 +11,6 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { AuthHeader } from "@/components/AuthHeader";
@@ -19,6 +18,8 @@ import {
   AuthDivider,
   GoogleSignInButton,
 } from "@/components/GoogleSignInButton";
+import { useI18n } from "@/components/I18nProvider";
+import { LocaleLink } from "@/components/LocaleLink";
 import {
   isTurnstileRequired,
   TurnstileField,
@@ -27,6 +28,7 @@ import {
   checkUsernameAvailability,
   verifySignupTurnstile,
 } from "@/app/signup/actions";
+import { withLocale } from "@/lib/i18n/config";
 import { supabase } from "@/lib/supabaseClient";
 import { validateUsername } from "@/lib/username";
 
@@ -35,6 +37,7 @@ const inputClassName =
 
 export default function SignupPage() {
   const router = useRouter();
+  const { locale, t } = useI18n();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,12 +88,12 @@ export default function SignupPage() {
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(t("auth.passwordMin"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t("auth.passwordMismatch"));
       return;
     }
 
@@ -140,7 +143,7 @@ export default function SignupPage() {
 
   function goToLogin() {
     setShowConfirmModal(false);
-    router.push("/login");
+    router.push(withLocale("/login", locale));
   }
 
   return (
@@ -153,16 +156,16 @@ export default function SignupPage() {
               <UserPlus className="h-6 w-6 text-accent" aria-hidden />
             </span>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Create an account
+              {t("auth.createAccountTitle")}
             </h1>
             <p className="mt-2 text-sm text-muted">
-              Start practicing for your exams today
+              {t("auth.createAccountSubtitle")}
             </p>
           </div>
 
           <div className="mb-5 space-y-4">
             <GoogleSignInButton
-              label="Continue with Google"
+              label={t("auth.signInWithGoogle")}
               disabled={loading}
               onError={(message) => setError(message || null)}
             />
@@ -176,7 +179,7 @@ export default function SignupPage() {
                 className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
               >
                 <User className="h-4 w-4 text-accent" aria-hidden />
-                Username
+                {t("auth.username")}
               </label>
               <input
                 id="username"
@@ -188,10 +191,10 @@ export default function SignupPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className={inputClassName}
-                placeholder="e.g. kepler_student"
+                placeholder={t("auth.usernamePlaceholder")}
               />
               <p className="mt-1.5 text-xs text-muted">
-                3–20 characters: letters, numbers, and underscores
+                {t("auth.usernameHint")}
               </p>
             </div>
 
@@ -201,7 +204,7 @@ export default function SignupPage() {
                 className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
               >
                 <Mail className="h-4 w-4 text-accent" aria-hidden />
-                Email
+                {t("auth.email")}
               </label>
               <input
                 id="email"
@@ -211,7 +214,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputClassName}
-                placeholder="you@example.com"
+                placeholder={t("auth.emailPlaceholder")}
               />
             </div>
 
@@ -221,7 +224,7 @@ export default function SignupPage() {
                 className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
               >
                 <Lock className="h-4 w-4 text-accent" aria-hidden />
-                Password
+                {t("auth.password")}
               </label>
               <div className="relative">
                 <input
@@ -233,13 +236,15 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`${inputClassName} pr-10`}
-                  placeholder="At least 6 characters"
+                  placeholder={t("auth.passwordPlaceholder")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   className="absolute inset-y-0 right-0 flex items-center px-3 text-muted transition hover:text-foreground"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+                  }
                 >
                   {showPassword ? (
                     <Eye className="h-4 w-4" aria-hidden />
@@ -256,7 +261,7 @@ export default function SignupPage() {
                 className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
               >
                 <Lock className="h-4 w-4 text-accent" aria-hidden />
-                Confirm password
+                {t("auth.confirmPassword")}
               </label>
               <div className="relative">
                 <input
@@ -268,7 +273,7 @@ export default function SignupPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`${inputClassName} pr-10`}
-                  placeholder="Repeat your password"
+                  placeholder={t("auth.confirmPasswordPlaceholder")}
                 />
                 <button
                   type="button"
@@ -276,8 +281,8 @@ export default function SignupPage() {
                   className="absolute inset-y-0 right-0 flex items-center px-3 text-muted transition hover:text-foreground"
                   aria-label={
                     showConfirmPassword
-                      ? "Hide confirm password"
-                      : "Show confirm password"
+                      ? t("auth.hidePassword")
+                      : t("auth.showPassword")
                   }
                 >
                   {showConfirmPassword ? (
@@ -294,11 +299,7 @@ export default function SignupPage() {
               onToken={setTurnstileToken}
               onExpire={() => setTurnstileToken(null)}
               onError={() => setTurnstileToken(null)}
-              onWidgetError={() =>
-                setError(
-                  "Could not load the security check. Try disabling ad blockers or use another browser."
-                )
-              }
+              onWidgetError={() => setError(t("auth.turnstileError"))}
             />
 
             {error && (
@@ -315,25 +316,25 @@ export default function SignupPage() {
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Creating account…
+                  {t("auth.creating")}
                 </>
               ) : (
                 <>
                   <UserPlus className="h-4 w-4" aria-hidden />
-                  Sign up
+                  {t("auth.createAccountCta")}
                 </>
               )}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
-            Already have an account?{" "}
-            <Link
+            {t("auth.alreadyHaveAccount")}{" "}
+            <LocaleLink
               href="/login"
               className="font-medium text-accent hover:underline"
             >
-              Sign in
-            </Link>
+              {t("auth.signIn")}
+            </LocaleLink>
           </p>
         </div>
       </div>
@@ -361,7 +362,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => setShowConfirmModal(false)}
                 className="rounded-lg p-1.5 text-muted transition hover:bg-accent-soft hover:text-foreground"
-                aria-label="Close"
+                aria-label={t("auth.close")}
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
@@ -371,17 +372,13 @@ export default function SignupPage() {
               id="confirm-email-title"
               className="text-xl font-semibold tracking-tight text-foreground"
             >
-              Check your email
+              {t("auth.checkEmailTitle")}
             </h2>
             <p
               id="confirm-email-description"
               className="mt-2 text-sm leading-relaxed text-muted"
             >
-              We sent a confirmation link to{" "}
-              <span className="font-medium text-foreground">
-                {submittedEmail}
-              </span>
-              . Open it to activate your account, then sign in.
+              {t("auth.checkEmailBody", { email: submittedEmail })}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
@@ -390,14 +387,14 @@ export default function SignupPage() {
                 onClick={goToLogin}
                 className="inline-flex flex-1 items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover"
               >
-                Go to sign in
+                {t("auth.goToSignIn")}
               </button>
               <button
                 type="button"
                 onClick={() => setShowConfirmModal(false)}
                 className="inline-flex flex-1 items-center justify-center rounded-lg border border-card-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent-soft"
               >
-                Close
+                {t("auth.close")}
               </button>
             </div>
           </div>

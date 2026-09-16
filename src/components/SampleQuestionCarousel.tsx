@@ -1,7 +1,8 @@
 "use client";
 
 import { BookOpen, CheckCircle2, Clock } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useTranslations } from "@/components/I18nProvider";
 
 type Choice = {
   label: string;
@@ -11,15 +12,16 @@ type Choice = {
 
 type SampleSlide = {
   exam: "SAT" | "TOEFL" | "DIM";
-  label: string;
+  labelKey: string;
   stem: string;
   choices: Choice[];
 };
 
-const SLIDES: SampleSlide[] = [
+/** Exam content stays in the exam's language; only UI labels localize. */
+const SLIDE_CONTENT: SampleSlide[] = [
   {
     exam: "SAT",
-    label: "SAT sample",
+    labelKey: "sample.satLabel",
     stem: "The committee’s report was valued not for its length but for its ____ treatment of the evidence.",
     choices: [
       { label: "A", text: "perfunctory", state: "default" },
@@ -30,18 +32,34 @@ const SLIDES: SampleSlide[] = [
   },
   {
     exam: "TOEFL",
-    label: "TOEFL sample",
+    labelKey: "sample.toeflLabel",
     stem: "The author most likely mentions hydrothermal vents in order to",
     choices: [
-      { label: "A", text: "contradict an earlier theory about ocean temperature", state: "default" },
-      { label: "B", text: "illustrate a habitat that supports unusual adaptations", state: "correct" },
-      { label: "C", text: "argue that sunlight is irrelevant to all marine life", state: "eliminated" },
-      { label: "D", text: "minimize the role of chemical energy in ecosystems", state: "default" },
+      {
+        label: "A",
+        text: "contradict an earlier theory about ocean temperature",
+        state: "default",
+      },
+      {
+        label: "B",
+        text: "illustrate a habitat that supports unusual adaptations",
+        state: "correct",
+      },
+      {
+        label: "C",
+        text: "argue that sunlight is irrelevant to all marine life",
+        state: "eliminated",
+      },
+      {
+        label: "D",
+        text: "minimize the role of chemical energy in ecosystems",
+        state: "default",
+      },
     ],
   },
   {
     exam: "DIM",
-    label: "DİM NÜMUNƏ SUALI",
+    labelKey: "sample.dimLabel",
     stem: "Hansı cümlədə feili bağlama işlənmişdir?",
     choices: [
       { label: "A", text: "Oxuduğu kitab onu dərindən düşündürdü.", state: "default" },
@@ -53,7 +71,6 @@ const SLIDES: SampleSlide[] = [
 ];
 
 const SLIDE_DURATION_MS = 1000;
-const TRACK_SLIDES = [SLIDES[2], ...SLIDES, SLIDES[0]] as SampleSlide[];
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -71,6 +88,7 @@ function StarMark({ className }: { className?: string }) {
 }
 
 export function SampleQuestionCarousel() {
+  const t = useTranslations();
   const [logical, setLogical] = useState(0);
   const [trackIndex, setTrackIndex] = useState(1);
   const [trackMotion, setTrackMotion] = useState(true);
@@ -81,13 +99,27 @@ export function SampleQuestionCarousel() {
   const logicalRef = useRef(0);
   const snapTimer = useRef(0);
 
-  const slide = SLIDES[logical];
+  const slides = useMemo(
+    () =>
+      SLIDE_CONTENT.map((item) => ({
+        ...item,
+        label: t(item.labelKey),
+      })),
+    [t]
+  );
+
+  const trackSlides = useMemo(
+    () => [slides[2], ...slides, slides[0]],
+    [slides]
+  );
+
+  const slide = slides[logical];
 
   const goTo = (to: number) => {
     if (busyRef.current || to === logicalRef.current) return;
 
     const from = logicalRef.current;
-    const count = SLIDES.length;
+    const count = slides.length;
     const forward = (to - from + count) % count;
     const backward = (from - to + count) % count;
     const dir: 1 | -1 = forward <= backward ? 1 : -1;
@@ -132,7 +164,7 @@ export function SampleQuestionCarousel() {
     if (paused) return;
     if (prefersReducedMotion()) return;
     const id = window.setInterval(() => {
-      goTo((logicalRef.current + 1) % SLIDES.length);
+      goTo((logicalRef.current + 1) % SLIDE_CONTENT.length);
     }, 7000);
     return () => window.clearInterval(id);
   }, [paused]);
@@ -152,7 +184,7 @@ export function SampleQuestionCarousel() {
         className={`hero-slide-track flex ${trackMotion ? "" : "is-instant"}`}
         style={{ transform: `translateX(-${trackIndex * 100}%)` }}
       >
-        {TRACK_SLIDES.map((item, i) => (
+        {trackSlides.map((item, i) => (
           <div key={`${item.exam}-${i}`} className="hero-slide-panel w-full shrink-0">
             <div className="mb-3.5 flex items-center justify-between gap-3">
               <p className="hero-slide-label inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -161,7 +193,7 @@ export function SampleQuestionCarousel() {
               </p>
               <span className="hero-slide-timer inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-heading text-xs font-semibold tracking-[0.04em]">
                 <Clock className="h-3.5 w-3.5" aria-hidden />
-                12:04
+                {t("sample.timer")}
               </span>
             </div>
 
@@ -206,11 +238,11 @@ export function SampleQuestionCarousel() {
 
       <div className="flex items-center justify-center border-t border-card-border px-6 py-2.5">
         <div className="hero-slide-star-rail">
-          {SLIDES.map((item, i) => (
+          {slides.map((item, i) => (
             <button
               key={item.exam}
               type="button"
-              aria-label={`Show ${item.exam} sample`}
+              aria-label={t("sample.showSample", { exam: item.exam })}
               aria-current={i === logical ? "true" : undefined}
               onClick={() => goTo(i)}
               className="hero-slide-star-slot"

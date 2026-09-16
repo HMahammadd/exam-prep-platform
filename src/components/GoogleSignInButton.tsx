@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "@/components/I18nProvider";
 import { supabase } from "@/lib/supabaseClient";
 
 function GoogleIcon({ className }: { className?: string }) {
@@ -39,11 +40,13 @@ type GoogleSignInButtonProps = {
 };
 
 export function GoogleSignInButton({
-  label = "Continue with Google",
+  label,
   disabled = false,
   onError,
 }: GoogleSignInButtonProps) {
+  const t = useTranslations();
   const [loading, setLoading] = useState(false);
+  const buttonLabel = label ?? t("auth.signInWithGoogle");
 
   async function handleClick() {
     onError?.("");
@@ -88,19 +91,22 @@ export function GoogleSignInButton({
       ) : (
         <GoogleIcon className="h-4 w-4 shrink-0" />
       )}
-      {loading ? "Redirecting…" : label}
+      {loading ? t("auth.redirecting") : buttonLabel}
     </button>
   );
 }
 
-export function AuthDivider({ label = "or" }: { label?: string }) {
+export function AuthDivider({ label }: { label?: string }) {
+  const t = useTranslations();
   return (
     <div className="relative my-1">
       <div className="absolute inset-0 flex items-center" aria-hidden>
         <div className="w-full border-t border-card-border" />
       </div>
       <div className="relative flex justify-center text-xs uppercase tracking-wide">
-        <span className="bg-card px-3 text-muted">{label}</span>
+        <span className="bg-card px-3 text-muted">
+          {label ?? t("auth.orContinueWith")}
+        </span>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export default async function AdminLayout({
         backLabel="Dashboard"
       />
 
-      <div className="border-b border-card-border bg-card">
+      <div className="site-subnav">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <AdminNav />
           <p className="text-xs text-muted">

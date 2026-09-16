@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "./LocaleLink";
+import { useTranslations } from "./I18nProvider";
 
 type KeplerLogoProps = {
   /** Where the logo navigates. Defaults to the public home page. */
@@ -31,16 +34,16 @@ export function KeplerLogo({
   size = "md",
   className = "",
 }: KeplerLogoProps) {
+  const t = useTranslations();
   const markClass = MARK_CLASS[size];
   const wordmarkClass = WORDMARK_CLASS[size];
-
-  const destinationLabel =
-    href === "/dashboard" ? "go to dashboard" : "go to home page";
+  const ariaLabel =
+    href === "/dashboard" ? t("nav.logoDashboard") : t("nav.logoHome");
 
   return (
-    <Link
+    <LocaleLink
       href={href}
-      aria-label={`Keplerly — ${destinationLabel}`}
+      aria-label={ariaLabel}
       className={`group inline-flex shrink-0 items-center gap-2 transition-opacity duration-200 hover:opacity-90 sm:gap-2.5 ${className}`}
     >
       <Image
@@ -63,6 +66,6 @@ export function KeplerLogo({
       >
         Keplerly
       </span>
-    </Link>
+    </LocaleLink>
   );
 }

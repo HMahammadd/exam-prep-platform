@@ -1,5 +1,8 @@
+"use client";
+
 import { ArrowRight, BookOpen, Clock, ClipboardList } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "@/components/I18nProvider";
+import { LocaleLink } from "@/components/LocaleLink";
 import type { Exam } from "@/lib/exams";
 import { getExamIcon } from "@/lib/exam-icons";
 import { getExamTheme } from "@/lib/exam-themes";
@@ -9,10 +12,22 @@ type ExamSelectionCardProps = {
   practiceLabel?: string;
 };
 
-const EXAM_FOCUS: Record<string, string[]> = {
-  sat: ["Guided lessons", "Timed exams", "Answer review"],
-  dim: ["Lesson modules", "Buraxılış", "Chapter practice"],
-  toefl: ["Skill lessons", "Reading", "Listening"],
+const EXAM_FOCUS_KEYS: Record<string, string[]> = {
+  sat: [
+    "dashboard.focus.satLessons",
+    "dashboard.focus.satExams",
+    "dashboard.focus.satReview",
+  ],
+  dim: [
+    "dashboard.focus.dimModules",
+    "dashboard.focus.dimBuraxilis",
+    "dashboard.focus.dimChapter",
+  ],
+  toefl: [
+    "dashboard.focus.toeflSkills",
+    "dashboard.focus.toeflReading",
+    "dashboard.focus.toeflListening",
+  ],
 };
 
 function ActionButton({
@@ -48,7 +63,7 @@ function ActionButton({
   }
 
   return (
-    <Link href={href} className={className}>
+    <LocaleLink href={href} className={className}>
       <Icon className="h-4 w-4 shrink-0" aria-hidden />
       {label}
       {primary && (
@@ -57,7 +72,7 @@ function ActionButton({
           aria-hidden
         />
       )}
-    </Link>
+    </LocaleLink>
   );
 }
 
@@ -65,15 +80,18 @@ export function ExamSelectionCard({
   exam,
   practiceLabel,
 }: ExamSelectionCardProps) {
+  const t = useTranslations();
   const practiceAvailable = exam.status === "available";
   const lessonsAvailable = exam.lessonsStatus === "available";
   const trackLive = practiceAvailable || lessonsAvailable;
   const theme = getExamTheme(exam.id);
   const ExamIcon = getExamIcon(exam.id);
-  const focus = EXAM_FOCUS[exam.id] ?? [];
+  const focusKeys = EXAM_FOCUS_KEYS[exam.id] ?? [];
   const practiceText =
     practiceLabel ??
-    (practiceAvailable ? `Start ${exam.name} Practice` : "Practice — Soon");
+    (practiceAvailable
+      ? t("dashboard.startPractice", { exam: exam.name })
+      : t("dashboard.practiceSoon"));
 
   const cardClass = `group relative flex w-full flex-col overflow-hidden rounded-2xl border bg-card p-6 transition duration-300 sm:p-8 ${theme.border} ${theme.shadow} ${theme.borderHover} ${
     trackLive
@@ -110,26 +128,28 @@ export function ExamSelectionCard({
                   trackLive ? theme.badgeAvailable : theme.badgeSoon
                 }`}
               >
-                {trackLive ? "Available" : "Coming Soon"}
+                {trackLive
+                  ? t("examSelector.available")
+                  : t("examSelector.comingSoon")}
               </span>
             </div>
             <p className="mt-1 text-xs font-medium text-muted sm:text-sm">
               {trackLive
-                ? "Lessons and practice tests"
-                : "Lessons and practice — in the works"}
+                ? t("dashboard.lessonsLive")
+                : t("dashboard.lessonsPracticeSoon")}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-              {exam.description}
+              {t(`exam.${exam.id}.description`)}
             </p>
 
-            {focus.length > 0 && (
+            {focusKeys.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-1.5">
-                {focus.map((tag) => (
+                {focusKeys.map((key) => (
                   <span
-                    key={tag}
+                    key={key}
                     className={`rounded-md border px-2.5 py-0.5 text-[11px] font-medium sm:text-xs ${theme.tag}`}
                   >
-                    {tag}
+                    {t(key)}
                   </span>
                 ))}
               </div>
@@ -144,7 +164,9 @@ export function ExamSelectionCard({
             theme={theme}
             icon={BookOpen}
             label={
-              lessonsAvailable ? `${exam.name} Lessons` : "Lessons — Soon"
+              lessonsAvailable
+                ? t("dashboard.startLessons", { exam: exam.name })
+                : t("dashboard.lessonsSoon")
             }
           />
           <ActionButton

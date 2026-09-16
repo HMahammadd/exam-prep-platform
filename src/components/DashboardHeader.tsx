@@ -1,9 +1,14 @@
+"use client";
+
+"use client";
+
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 import { AccountButton } from "./AccountButton";
 import { AdminHeaderLink } from "./AdminHeaderLink";
 import { KeplerLogo } from "./KeplerLogo";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { LocaleLink } from "./LocaleLink";
 import { ThemeToggle } from "./ThemeToggle";
 
 type DashboardHeaderProps = {
@@ -18,37 +23,34 @@ export function DashboardHeader({
   backLabel = "Dashboard",
 }: DashboardHeaderProps) {
   return (
-    <header className="border-b border-card-border bg-card">
+    <header className="site-header">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-4">
         <div className="flex min-w-0 items-center gap-3">
-          {/* Brand in the left corner — stays inside the signed-in area. */}
           <KeplerLogo href="/dashboard" />
 
-          <span
-            className="h-5 w-px shrink-0 bg-card-border"
-            aria-hidden
-          />
+          <span className="h-5 w-px shrink-0 bg-card-border" aria-hidden />
 
-          <Link
+          <LocaleLink
             href="/dashboard"
             className="truncate text-lg font-semibold text-foreground transition hover:text-accent"
           >
             {title}
-          </Link>
+          </LocaleLink>
 
           {backHref && (
-            <Link
+            <LocaleLink
               href={backHref}
               className="hidden items-center gap-1 text-sm font-medium text-muted transition hover:text-foreground sm:inline-flex"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
               {backLabel}
-            </Link>
+            </LocaleLink>
           )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AdminHeaderLink />
+          <LanguageSwitcher />
           <ThemeToggle />
           <Suspense
             fallback={

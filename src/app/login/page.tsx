@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2, Lock, LogIn, Mail } from "lucide-react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { AuthHeader } from "@/components/AuthHeader";
@@ -9,7 +8,10 @@ import {
   AuthDivider,
   GoogleSignInButton,
 } from "@/components/GoogleSignInButton";
+import { useI18n } from "@/components/I18nProvider";
+import { LocaleLink } from "@/components/LocaleLink";
 import { LogInIcon } from "@/components/LogInIcon";
+import { withLocale } from "@/lib/i18n/config";
 import { supabase } from "@/lib/supabaseClient";
 
 const inputClassName =
@@ -18,6 +20,7 @@ const inputClassName =
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { locale, t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,13 +28,11 @@ function LoginForm() {
 
   useEffect(() => {
     if (searchParams.get("error") === "auth") {
-      setError(
-        "Sign-in failed. Try again, or request a new password-reset link if that is what you were doing."
-      );
+      setError(t("auth.authFailed"));
       void supabase.auth.signOut({ scope: "local" });
-      router.replace("/login");
+      router.replace(withLocale("/login", locale));
     }
-  }, [router, searchParams]);
+  }, [router, searchParams, locale, t]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -48,21 +49,15 @@ function LoginForm() {
         const isNetworkError =
           authError.message.toLowerCase().includes("failed to fetch") ||
           authError.name === "AuthRetryableFetchError";
-        setError(
-          isNetworkError
-            ? "Cannot reach Supabase. Check NEXT_PUBLIC_SUPABASE_URL in .env.local and that your project is active."
-            : authError.message
-        );
+        setError(isNetworkError ? t("auth.networkError") : authError.message);
         setLoading(false);
         return;
       }
 
-      router.push("/dashboard");
+      router.push(withLocale("/dashboard", locale));
       router.refresh();
     } catch {
-      setError(
-        "Cannot reach Supabase. Check NEXT_PUBLIC_SUPABASE_URL in .env.local and that your project is active."
-      );
+      setError(t("auth.networkError"));
       setLoading(false);
     }
   }
@@ -74,16 +69,14 @@ function LoginForm() {
           <LogIn className="h-6 w-6 text-accent" aria-hidden />
         </span>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Welcome back
+          {t("auth.welcomeBack")}
         </h1>
-        <p className="mt-2 text-sm text-muted">
-          Sign in to continue your exam prep
-        </p>
+        <p className="mt-2 text-sm text-muted">{t("auth.signInContinue")}</p>
       </div>
 
       <div className="mb-5 space-y-4">
         <GoogleSignInButton
-          label="Continue with Google"
+          label={t("auth.signInWithGoogle")}
           disabled={loading}
           onError={(message) => setError(message || null)}
         />
@@ -97,7 +90,7 @@ function LoginForm() {
             className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-foreground"
           >
             <Mail className="h-4 w-4 text-accent" aria-hidden />
-            Email
+            {t("auth.email")}
           </label>
           <input
             id="email"
@@ -107,7 +100,7 @@ function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={inputClassName}
-            placeholder="you@example.com"
+            placeholder={t("auth.emailPlaceholder")}
           />
         </div>
 
@@ -118,14 +111,14 @@ function LoginForm() {
               className="flex items-center gap-1.5 text-sm font-medium text-foreground"
             >
               <Lock className="h-4 w-4 text-accent" aria-hidden />
-              Password
+              {t("auth.password")}
             </label>
-            <Link
+            <LocaleLink
               href="/forgot-password"
               className="text-xs font-medium text-accent hover:underline"
             >
-              Forgot password?
-            </Link>
+              {t("auth.forgotPassword")}
+            </LocaleLink>
           </div>
           <input
             id="password"
@@ -153,31 +146,33 @@ function LoginForm() {
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Signing in…
+              {t("auth.signingIn")}
             </>
           ) : (
             <>
               <LogInIcon className="h-4 w-4" />
-              Sign in
+              {t("auth.signIn")}
             </>
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
-        Don&apos;t have an account?{" "}
-        <Link
+        {t("auth.noAccount")}{" "}
+        <LocaleLink
           href="/signup"
           className="font-medium text-accent hover:underline"
         >
-          Sign up
-        </Link>
+          {t("auth.signUpLink")}
+        </LocaleLink>
       </p>
     </div>
   );
 }
 
 export default function LoginPage() {
+  const t = useI18n().t;
+
   return (
     <div className="flex flex-1 flex-col bg-background">
       <AuthHeader />
@@ -186,7 +181,7 @@ export default function LoginPage() {
           fallback={
             <p className="flex items-center justify-center gap-2 text-sm text-muted">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Loading…
+              {t("auth.loading")}
             </p>
           }
         >

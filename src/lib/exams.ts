@@ -31,8 +31,8 @@ export const EXAMS: Exam[] = [
   },
   {
     id: "dim",
-    name: "DIM",
-    description: "Targeted practice for DIM exam preparation.",
+    name: "DİM",
+    description: "Targeted practice for DİM exam preparation.",
     status: "coming-soon",
     dashboardHref: "/dashboard/dim",
     lessonsHref: "/dashboard/dim",

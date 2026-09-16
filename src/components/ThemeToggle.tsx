@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "./ThemeProvider";
+import { useTranslations } from "./I18nProvider";
 
 function SunIcon() {
   return (
@@ -26,14 +27,15 @@ function MoonIcon() {
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const t = useTranslations();
   const isDark = theme === "dark";
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={isDark ? "Switch to day mode" : "Switch to dark mode"}
-      title={isDark ? "Day mode" : "Dark mode"}
+      aria-label={isDark ? t("theme.toDay") : t("theme.toDark")}
+      title={isDark ? t("theme.day") : t("theme.dark")}
       className="theme-toggle inline-flex h-9 items-center gap-1.5 rounded-lg border border-card-border bg-card px-2.5 text-sm font-medium text-foreground shadow-sm"
     >
       <span className="theme-toggle-icon relative grid h-4 w-4 place-items-center overflow-visible text-accent">
@@ -52,7 +54,9 @@ export function ThemeToggle() {
           <MoonIcon />
         </span>
       </span>
-      <span className="hidden sm:inline">{isDark ? "Day" : "Dark"}</span>
+      <span className="hidden sm:inline">
+        {isDark ? t("theme.day") : t("theme.dark")}
+      </span>
     </button>
   );
 }

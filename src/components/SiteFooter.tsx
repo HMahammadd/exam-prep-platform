@@ -1,39 +1,43 @@
-import Link from "next/link";
-import { KeplerLogo } from "./KeplerLogo";
+"use client";
 
-const FOOTER_LINKS: { heading: string; links: { label: string; href: string }[] }[] =
-  [
+import { KeplerLogo } from "./KeplerLogo";
+import { LocaleLink } from "./LocaleLink";
+import { useTranslations } from "./I18nProvider";
+
+export function SiteFooter() {
+  const t = useTranslations();
+  const year = new Date().getFullYear();
+
+  const groups = [
     {
-      heading: "Exams",
+      heading: t("footer.exams"),
       links: [
-        { label: "SAT Practice", href: "/dashboard/sat" },
-        { label: "DIM Practice", href: "/dashboard/dim" },
-        { label: "TOEFL", href: "/dashboard/toefl" },
+        { label: t("footer.satPractice"), href: "/dashboard/sat" },
+        { label: t("footer.dimPractice"), href: "/dashboard/dim" },
+        { label: t("footer.toefl"), href: "/dashboard/toefl" },
       ],
     },
     {
-      heading: "Account",
+      heading: t("footer.account"),
       links: [
-        { label: "Log In", href: "/login" },
-        { label: "Sign Up", href: "/signup" },
-        { label: "Dashboard", href: "/dashboard" },
+        { label: t("nav.login"), href: "/login" },
+        { label: t("nav.signup"), href: "/signup" },
+        { label: t("footer.dashboard"), href: "/dashboard" },
       ],
     },
   ];
 
-export function SiteFooter() {
   return (
-    <footer className="border-t border-card-border bg-card">
+    <footer className="site-footer">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <KeplerLogo />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Kepler helps students prepare for SAT, TOEFL, and DIM with realistic
-            exam-style practice, detailed explanations, and progress tracking.
+            {t("footer.blurb")}
           </p>
         </div>
 
-        {FOOTER_LINKS.map((group) => (
+        {groups.map((group) => (
           <div key={group.heading}>
             <h3 className="text-sm font-semibold text-foreground">
               {group.heading}
@@ -41,12 +45,12 @@ export function SiteFooter() {
             <ul className="mt-3 space-y-2">
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <LocaleLink
                     href={link.href}
                     className="text-sm text-muted transition hover:text-accent"
                   >
                     {link.label}
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
@@ -54,10 +58,10 @@ export function SiteFooter() {
         ))}
       </div>
 
-      <div className="border-t border-card-border">
+      <div>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-muted sm:flex-row">
-          <p>© {new Date().getFullYear()} Kepler. All rights reserved.</p>
-          <p>Built for students preparing for SAT, TOEFL, and DIM.</p>
+          <p>{t("footer.rights", { year })}</p>
+          <p>{t("footer.tagline")}</p>
         </div>
       </div>
     </footer>
