@@ -20,6 +20,14 @@
   /* Soft cool-gray dotted texture for below-hero sections */
   --home-dot: rgb(132 146 166 / 0.11);
   --home-dot-gap: 18px;
+  /* Why-Kepler feature train — fixed brand-blue/navy card fills, kept
+     deliberately theme-stable so the alternating rhythm reads the same
+     in both themes rather than washing out under the dark-mode accent. */
+  --feature-accent-bg: #2563eb;
+  --feature-accent-text: #ffffff;
+  --feature-navy-bg: #10233f;
+  --feature-navy-text: #eef4ff;
+  --feature-navy-border: #1c3a63;
 }
 
 .dark {
@@ -38,6 +46,10 @@
   --page-tone-c: #0d192a;
   --header-separator: rgb(255 255 255 / 0.03);
   --home-dot: rgb(168 180 198 / 0.08);
+  --feature-accent-bg: #1d4ed8;
+  --feature-navy-bg: #060b16;
+  --feature-navy-text: #f1f5f9;
+  --feature-navy-border: #1e293b;
 }
 
 @theme inline {
@@ -4002,5 +4014,397 @@ html.dark .hero-celestial-face--moon {
   .exam-frame-fx-curtain {
     opacity: 0.75 !important;
     transform: none !important;
+  }
+}
+
+/* —— Why Kepler feature train — cinematic left-to-right marquee showcase —— */
+
+.kepler-feature-section {
+  position: relative;
+}
+
+.kepler-feature-glow {
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: min(70%, 34rem);
+  height: 16rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--accent) 22%, transparent) 0%,
+    transparent 72%
+  );
+  filter: blur(36px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.kepler-feature-viewport {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-top: 2.75rem;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.kepler-feature-track {
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+  width: max-content;
+  will-change: transform;
+  animation: kepler-feature-scroll 42s linear infinite;
+}
+
+.kepler-feature-viewport:hover .kepler-feature-track,
+.kepler-feature-viewport:focus-within .kepler-feature-track {
+  animation-play-state: paused;
+}
+
+@keyframes kepler-feature-scroll {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+
+.kepler-feature-card {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  width: 460px;
+  height: 300px;
+  border-radius: 1.25rem;
+  border: 1px solid transparent;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  outline-offset: 4px;
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kepler-feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms;
+  background: radial-gradient(
+    140% 140% at var(--card-mx, 50%) var(--card-my, 50%),
+    color-mix(in oklab, var(--accent) 18%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.kepler-feature-card:hover,
+.kepler-feature-card:focus-visible {
+  transform: translateY(-4px) scale(1.025);
+  box-shadow: var(--shadow);
+}
+
+.kepler-feature-card:hover::before,
+.kepler-feature-card:focus-visible::before {
+  opacity: 1;
+}
+
+.kepler-feature-card--accent {
+  background: var(--feature-accent-bg);
+  color: var(--feature-accent-text);
+  border-color: color-mix(in oklab, white 20%, var(--feature-accent-bg));
+}
+
+.kepler-feature-card--accent::before {
+  background: radial-gradient(
+    140% 140% at var(--card-mx, 50%) var(--card-my, 50%),
+    color-mix(in oklab, white 22%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.kepler-feature-card--neutral {
+  background: var(--card);
+  color: var(--foreground);
+  border-color: var(--card-border);
+}
+
+.kepler-feature-card--navy {
+  background: var(--feature-navy-bg);
+  color: var(--feature-navy-text);
+  border-color: var(--feature-navy-border);
+}
+
+.kepler-feature-card--navy .kepler-feature-stat-label {
+  color: color-mix(in oklab, var(--feature-navy-text) 65%, transparent);
+}
+
+.kepler-feature-card--accent .kepler-feature-stat-label {
+  color: color-mix(in oklab, white 70%, transparent);
+}
+
+.kepler-feature-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kepler-feature-card--no-stat .kepler-feature-card-top {
+  justify-content: flex-start;
+}
+
+.kepler-feature-icon-chip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.kepler-feature-card--accent .kepler-feature-icon-chip {
+  background: color-mix(in oklab, white 22%, transparent);
+  color: #fff;
+}
+
+.kepler-feature-card--navy .kepler-feature-icon-chip {
+  background: color-mix(in oklab, var(--feature-navy-text) 14%, transparent);
+  color: var(--feature-navy-text);
+}
+
+.kepler-feature-card--no-stat .kepler-feature-icon-chip {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.kepler-feature-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  transition: transform 300ms ease;
+}
+
+.kepler-feature-stat {
+  text-align: right;
+}
+
+.kepler-feature-stat-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.kepler-feature-stat-label {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.kepler-feature-title {
+  margin-top: 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.kepler-feature-body {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  opacity: 0.88;
+}
+
+/* Per-card microinteractions — keyed by data-card, never by color variant,
+   since two cards always share the same accent/neutral/navy fill. */
+
+.kepler-feature-card[data-card="practice"]:hover .kepler-feature-icon {
+  transform: rotate(-4deg) scale(1.08);
+}
+
+.kepler-feature-spark {
+  display: block;
+  margin-top: 0.35rem;
+  margin-left: auto;
+  width: 2.5rem;
+  height: 1rem;
+  overflow: visible;
+}
+
+.kepler-feature-spark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  transition: stroke-dashoffset 500ms ease;
+}
+
+.kepler-feature-card[data-card="progress"]:hover .kepler-feature-spark path {
+  stroke-dashoffset: 0;
+}
+
+.kepler-feature-card[data-card="explanations"]:hover .kepler-feature-icon {
+  animation: kepler-bulb-glow 1.4s ease-in-out infinite;
+}
+
+@keyframes kepler-bulb-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    filter: drop-shadow(
+      0 0 6px color-mix(in oklab, var(--feature-navy-text) 70%, transparent)
+    );
+  }
+}
+
+.kepler-feature-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kepler-feature-card[data-card="focus"]:hover .kepler-feature-ring {
+  animation: kepler-ring-pulse 900ms ease-out;
+}
+
+@keyframes kepler-ring-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.kepler-feature-card[data-card="mistakes"]:hover .kepler-feature-icon {
+  animation: kepler-rotate-nudge 500ms ease-out;
+}
+
+@keyframes kepler-rotate-nudge {
+  from {
+    transform: rotate(-25deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.kepler-feature-card[data-card="vocabulary"]:hover .kepler-feature-icon {
+  animation: kepler-bookmark-bounce 600ms ease-in-out;
+}
+
+@keyframes kepler-bookmark-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Mobile fallback — single set, swipeable, no autoplay */
+
+.kepler-feature-mobile-row {
+  margin-top: 2.5rem;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.25rem 0.25rem 0.75rem;
+}
+
+.kepler-feature-card--mobile {
+  width: 84vw;
+  max-width: 420px;
+  height: auto;
+  min-height: 260px;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 767px) {
+  .kepler-feature-glow {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .kepler-feature-card {
+    width: 400px;
+    height: 300px;
+    padding: 1.65rem;
+  }
+
+  .kepler-feature-track {
+    animation-duration: 38s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kepler-feature-track {
+    animation: none;
+    transform: none;
+  }
+
+  .kepler-feature-viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .kepler-feature-card:nth-child(n + 7) {
+    display: none;
+  }
+
+  .kepler-feature-viewport .kepler-feature-card {
+    scroll-snap-align: start;
+  }
+
+  .kepler-feature-card,
+  .kepler-feature-card::before,
+  .kepler-feature-icon,
+  .kepler-feature-ring,
+  .kepler-feature-spark path {
+    transition: none !important;
+    animation: none !important;
   }
 }

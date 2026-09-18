@@ -10,16 +10,15 @@ function requireEnv(name: string, value: string | undefined): string {
   return value;
 }
 
-const supabaseUrl = requireEnv(
-  "NEXT_PUBLIC_SUPABASE_URL",
-  process.env.NEXT_PUBLIC_SUPABASE_URL
-);
-const supabasePublishableKey = requireEnv(
-  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-);
-
 export async function createClient() {
+  const supabaseUrl = requireEnv(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
+  const supabasePublishableKey = requireEnv(
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  );
   const cookieStore = await cookies();
 
   return createServerClient(supabaseUrl, supabasePublishableKey, {

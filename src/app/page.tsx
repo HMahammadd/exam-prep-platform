@@ -4,12 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
-  ClipboardList,
-  Lightbulb,
   ListChecks,
   PenLine,
   Target,
-  TrendingUp,
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
@@ -23,6 +20,7 @@ import { Navbar } from "@/components/Navbar";
 import { ParticleWaveField } from "@/components/ParticleWaveField";
 import { SampleQuestionCarousel } from "@/components/SampleQuestionCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
+import { WhyKeplerShowcase } from "@/components/WhyKeplerShowcase";
 
 function ExamConditionsSection() {
   const t = useTranslations();
@@ -82,33 +80,6 @@ function ExamConditionsSection() {
 
 export default function Home() {
   const t = useTranslations();
-
-  const benefits: {
-    title: string;
-    description: string;
-    icon: LucideIcon;
-  }[] = [
-    {
-      title: t("home.benefitPractice"),
-      description: t("home.benefitPracticeBody"),
-      icon: ClipboardList,
-    },
-    {
-      title: t("home.benefitProgress"),
-      description: t("home.benefitProgressBody"),
-      icon: TrendingUp,
-    },
-    {
-      title: t("home.benefitExplanations"),
-      description: t("home.benefitExplanationsBody"),
-      icon: Lightbulb,
-    },
-    {
-      title: t("home.benefitFocus"),
-      description: t("home.benefitFocusBody"),
-      icon: Target,
-    },
-  ];
 
   const steps: { text: string; detail: string; icon: LucideIcon }[] = [
     {
@@ -191,38 +162,7 @@ export default function Home() {
 
         <ExamConditionsSection />
 
-        <section
-          id="about"
-          className="site-section mx-auto max-w-6xl px-6 py-16"
-        >
-          <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-foreground">
-              {t("home.whyTitle")}
-            </h2>
-            <p className="mt-2 text-muted">{t("home.whySubtitle")}</p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {benefits.map((benefit) => {
-              const Icon = benefit.icon;
-              return (
-                <div
-                  key={benefit.title}
-                  className="rounded-2xl border border-card-border bg-card p-6 shadow-card transition hover:-translate-y-1"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
-                    <Icon className="h-5 w-5 text-accent" aria-hidden />
-                  </span>
-                  <h3 className="mt-4 font-semibold text-foreground">
-                    {benefit.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
-                    {benefit.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <WhyKeplerShowcase />
 
         <section className="site-section site-section--surface">
           <div className="mx-auto max-w-6xl px-6 py-16">

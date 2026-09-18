@@ -10,15 +10,6 @@ function requireEnv(name: string, value: string | undefined): string {
   return value;
 }
 
-const supabaseUrl = requireEnv(
-  "NEXT_PUBLIC_SUPABASE_URL",
-  process.env.NEXT_PUBLIC_SUPABASE_URL
-);
-const supabasePublishableKey = requireEnv(
-  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-);
-
 /**
  * Supabase client for Auth route handlers. Session cookies are written onto
  * the redirect response so the browser keeps the recovery/login session.
@@ -27,6 +18,15 @@ export function createRouteHandlerClient(
   request: NextRequest,
   response: NextResponse
 ) {
+  const supabaseUrl = requireEnv(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+  );
+  const supabasePublishableKey = requireEnv(
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  );
+
   return createServerClient(supabaseUrl, supabasePublishableKey, {
     cookies: {
       getAll() {
