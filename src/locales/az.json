@@ -177,7 +177,12 @@
     "faq4A": "İmtahan cəhdlərin və balların hesabında saxlanılır; imtahanı yenidən keçib nəticələri müqayisə edə bilərsən.",
     "finalTitle": "Məşqə hazırısan?",
     "finalBody": "Pulsuz Kepler hesabı yarat və bu gün SAT məşqinə başla.",
-    "createAccount": "Hesab yarat"
+    "createAccount": "Hesab yarat",
+    "feature7Title": "DİM riyaziyyatı, mövzu-mövzu",
+    "feature7Body": "DİM proqramını fəsil-fəsil keç — natural ədədlərdən triqonometriyaya qədər.",
+    "feature7Stat": "Proqram mövzusu",
+    "feature8Title": "Tam DİM sınaq imtahanları",
+    "feature8Body": "İmtahan formatında tam sınaq yaz, sonra səhv etdiyin mövzulara qayıt."
   },
   "footer": {
     "blurb": "Kepler tələbələrə SAT, TOEFL və DİM üçün real imtahan tipli məşq, ətraflı izahlar və irəliləyiş izləməsi ilə hazırlaşmağa kömək edir.",

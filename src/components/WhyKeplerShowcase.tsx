@@ -5,7 +5,9 @@ import {
   ClipboardCheck,
   Lightbulb,
   RotateCcw,
+  Sigma,
   Target,
+  Timer,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
@@ -16,10 +18,18 @@ import {
 } from "react";
 import { useTranslations } from "@/components/I18nProvider";
 
-type FeatureVariant = "accent" | "neutral" | "navy";
+type FeatureVariant = "accent" | "neutral" | "navy" | "dim";
 
 type FeatureCardDef = {
-  id: "practice" | "progress" | "explanations" | "focus" | "mistakes" | "vocabulary";
+  id:
+    | "practice"
+    | "progress"
+    | "explanations"
+    | "focus"
+    | "mistakes"
+    | "vocabulary"
+    | "dimMath"
+    | "dimMock";
   icon: LucideIcon;
   titleKey: string;
   bodyKey: string;
@@ -55,6 +65,15 @@ const CARDS: FeatureCardDef[] = [
     variant: "navy",
   },
   {
+    id: "dimMath",
+    icon: Sigma,
+    titleKey: "home.feature7Title",
+    bodyKey: "home.feature7Body",
+    statKey: "home.feature7Stat",
+    statValue: "40",
+    variant: "dim",
+  },
+  {
     id: "focus",
     icon: Target,
     titleKey: "home.feature4Title",
@@ -81,7 +100,17 @@ const CARDS: FeatureCardDef[] = [
     statValue: "127",
     variant: "navy",
   },
+  {
+    id: "dimMock",
+    icon: Timer,
+    titleKey: "home.feature8Title",
+    bodyKey: "home.feature8Body",
+    variant: "dim",
+  },
 ];
+
+/** Real chapter titles from the DİM math syllabus (DIM_MATH_CHAPTERS). */
+const DIM_CHAPTERS = ["Natural ədədlər", "Çoxluqlar", "Həqiqi ədədlər"];
 
 /**
  * Each card carries a miniature of a real Keplerly screen rather than filler —
@@ -230,6 +259,46 @@ function CardVisual({
           <span className="kf-mini-tag">{t("home.deckDemo.mistakeSkillD")}</span>
           <span className="kf-mini-chip is-done">100%</span>
         </span>
+      </div>
+    );
+  }
+
+  if (id === "dimMath") {
+    return (
+      <div className="kf-mini kf-mini--syllabus" aria-hidden>
+        {DIM_CHAPTERS.map((title, i) => (
+          <span
+            className="kf-mini-chapter"
+            key={title}
+            style={{ animationDelay: `${i * 2.4}s` }}
+          >
+            <i>{i + 1}</i>
+            <span className="kf-mini-chapter-name">{title}</span>
+            <b />
+          </span>
+        ))}
+      </div>
+    );
+  }
+
+  if (id === "dimMock") {
+    return (
+      <div className="kf-mini kf-mini--mock" aria-hidden>
+        <div className="kf-mini-mock-head">
+          <span className="kf-mini-badge">DİM</span>
+          <span className="kf-mini-progress">
+            <b />
+          </span>
+        </div>
+        <div className="kf-mini-grid-cells">
+          {Array.from({ length: 18 }, (_, i) => (
+            <span
+              className="kf-mini-cell"
+              key={i}
+              style={{ animationDelay: `${i * 0.18}s` }}
+            />
+          ))}
+        </div>
       </div>
     );
   }

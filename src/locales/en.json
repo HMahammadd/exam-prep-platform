@@ -177,7 +177,12 @@
     "faq4A": "Your exam attempts and scores are saved to your account, so you can retake an exam and compare your results over time.",
     "finalTitle": "Ready to start practicing?",
     "finalBody": "Create a free Kepler account and begin your SAT practice today.",
-    "createAccount": "Create Account"
+    "createAccount": "Create Account",
+    "feature7Title": "DİM math, topic by topic",
+    "feature7Body": "Work through the DİM curriculum one chapter at a time, from natural numbers to trigonometry.",
+    "feature7Stat": "Curriculum topics",
+    "feature8Title": "Full DİM mock exams",
+    "feature8Body": "Sit a complete mock in exam format, then go straight back to the topics you missed."
   },
   "footer": {
     "blurb": "Kepler helps students prepare for SAT, TOEFL, and DIM with realistic exam-style practice, detailed explanations, and progress tracking.",

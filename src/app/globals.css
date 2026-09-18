@@ -28,6 +28,8 @@
   --feature-navy-bg: #10233f;
   --feature-navy-text: #eef4ff;
   --feature-navy-border: #1c3a63;
+  --feature-dim-bg: #0c7a69;
+  --feature-dim-text: #ffffff;
 }
 
 .dark {
@@ -50,6 +52,7 @@
   --feature-navy-bg: #060b16;
   --feature-navy-text: #f1f5f9;
   --feature-navy-border: #1e293b;
+  --feature-dim-bg: #08594c;
 }
 
 @theme inline {
@@ -4069,7 +4072,7 @@ html.dark .hero-celestial-face--moon {
   gap: 1.5rem;
   width: max-content;
   will-change: transform;
-  animation: kepler-feature-scroll 42s linear infinite;
+  animation: kepler-feature-scroll 56s linear infinite;
 }
 
 .kepler-feature-viewport:hover .kepler-feature-track,
@@ -4140,6 +4143,29 @@ html.dark .hero-celestial-face--moon {
     color-mix(in oklab, white 22%, transparent) 0%,
     transparent 60%
   );
+}
+
+.kepler-feature-card--dim {
+  background: var(--feature-dim-bg);
+  color: var(--feature-dim-text);
+  border-color: color-mix(in oklab, white 18%, var(--feature-dim-bg));
+}
+
+.kepler-feature-card--dim::before {
+  background: radial-gradient(
+    140% 140% at var(--card-mx, 50%) var(--card-my, 50%),
+    color-mix(in oklab, white 20%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.kepler-feature-card--dim .kepler-feature-icon-chip {
+  background: color-mix(in oklab, white 22%, transparent);
+  color: #fff;
+}
+
+.kepler-feature-card--dim .kepler-feature-stat-label {
+  color: color-mix(in oklab, white 70%, transparent);
 }
 
 .kepler-feature-card--neutral {
@@ -4373,7 +4399,7 @@ html.dark .hero-celestial-face--moon {
   }
 
   .kepler-feature-track {
-    animation-duration: 38s;
+    animation-duration: 50s;
   }
 }
 
@@ -5493,10 +5519,151 @@ html.dark .hero-celestial-face--moon {
   overflow: hidden;
 }
 
+.kepler-feature-card--dim .kf-mini {
+  color: var(--feature-dim-text);
+}
+
+/* 7 — DİM syllabus, highlight walking down the chapter list */
+
+.kf-mini--syllabus {
+  gap: 0.26rem;
+}
+
+.kf-mini-chapter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.32rem;
+  border-radius: 0.35rem;
+  border: 1px solid transparent;
+  animation: kf-chapter-cycle 7.2s ease-in-out infinite;
+}
+
+.kf-mini-chapter i {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.25rem;
+  font-size: 0.45rem;
+  font-weight: 800;
+  background: color-mix(in oklab, currentColor 18%, transparent);
+}
+
+.kf-mini-chapter-name {
+  flex: 1;
+  font-size: 0.55rem;
+  font-weight: 600;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kf-mini-chapter b {
+  width: 1.6rem;
+  height: 0.24rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 22%, transparent);
+}
+
+@keyframes kf-chapter-cycle {
+  0%,
+  22% {
+    border-color: color-mix(in oklab, currentColor 45%, transparent);
+    background: color-mix(in oklab, currentColor 13%, transparent);
+  }
+  34%,
+  100% {
+    border-color: transparent;
+    background: transparent;
+  }
+}
+
+/* 8 — DİM mock exam, answer grid filling in under a running bar */
+
+.kf-mini--mock {
+  gap: 0.35rem;
+}
+
+.kf-mini-mock-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kf-mini-progress {
+  flex: 1;
+  height: 0.26rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 16%, transparent);
+  overflow: hidden;
+}
+
+.kf-mini-progress b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0.85;
+  transform-origin: left center;
+  animation: kf-mock-timer 3.6s linear infinite;
+}
+
+@keyframes kf-mock-timer {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.kf-mini-grid-cells {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0.18rem;
+}
+
+.kf-mini-cell {
+  aspect-ratio: 1;
+  border-radius: 0.2rem;
+  background: color-mix(in oklab, currentColor 14%, transparent);
+  animation: kf-cell-fill 3.6s ease-in-out infinite;
+}
+
+@keyframes kf-cell-fill {
+  0%,
+  8% {
+    background: color-mix(in oklab, currentColor 14%, transparent);
+  }
+  22%,
+  88% {
+    background: color-mix(in oklab, currentColor 72%, transparent);
+  }
+  100% {
+    background: color-mix(in oklab, currentColor 14%, transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kf-mini-line,
-  .kf-mini-topic-bar b {
+  .kf-mini-topic-bar b,
+  .kf-mini-chapter,
+  .kf-mini-progress b,
+  .kf-mini-cell {
     animation: none !important;
     transition: none !important;
+  }
+
+  .kf-mini-chapter:first-child {
+    border-color: color-mix(in oklab, currentColor 45%, transparent);
+    background: color-mix(in oklab, currentColor 13%, transparent);
+  }
+
+  .kf-mini-cell:nth-child(-n + 11) {
+    background: color-mix(in oklab, currentColor 72%, transparent);
   }
 }
