@@ -166,16 +166,6 @@
     "feature6Title": "Lüğətini genişləndir",
     "feature6Body": "Məşq zamanı tanımadığın sözləri yadda saxla və istənilən vaxt lüğət kolleksiyanda təkrar et.",
     "feature6Stat": "Yadda saxlanmış söz",
-    "howTitle": "Necə işləyir",
-    "howSubtitle": "Qeydiyyatdan nəticə artımına qədər dörd addım.",
-    "step1": "Hesab yarat",
-    "step1Body": "Bir neçə saniyədə e-poçtla qeydiyyatdan keç.",
-    "step2": "İmtahanını seç",
-    "step2Body": "SAT və ya DİM məşq dəstləri ilə başla.",
-    "step3": "Suallar üzərində məşq et",
-    "step3Body": "Real, vaxtlı imtahan şəraitində işlə.",
-    "step4": "Baxış və təkmilləşmə",
-    "step4Body": "İzahları oxu və zəif mövzulara qayıt.",
     "faqTitle": "Tez-tez verilən suallar",
     "faq1Q": "Kepler-də hansı imtahanlara hazırlaşmaq olar?",
     "faq1A": "SAT və DİM bu gün əlçatandır, TOEFL isə tezliklə gələcək. Tam siyahını yuxarıdakı İmtahanlar bölməsində görə bilərsən.",
@@ -278,5 +268,24 @@
       "toeflReading": "Oxu",
       "toeflListening": "Dinləmə"
     }
+  },
+  "tools": {
+    "headingLine1": "Lazım olan bütün alətlər,",
+    "headingLine2": "bir yerdə.",
+    "coursesTitle": "Kurslar",
+    "coursesHighlight": "yüksək bal toplayanlardan.",
+    "coursesBody": "Bütün riyaziyyat və oxu-yazı mövzuları hər bal səviyyəsi üçün sadə izah olunur.",
+    "desmosTitle": "Desmos,",
+    "desmosHighlight": "hər yerdə inteqrasiya olunub.",
+    "desmosBody": "Tam Desmos kursu və riyaziyyat sualları üçün Desmos izahları.",
+    "desmosFrameLabel": "Riyaziyyat izahı",
+    "desmosProblem": "Addım-addım həll",
+    "explanationsTitle": "İzahları",
+    "explanationsHighlight": "dərhal al.",
+    "explanationsBody": "Cavabın niyə doğru olduğunu gör, səhvləri daha tez anla və məşq edərkən öyrən.",
+    "conditionsTitle": "Məşq et",
+    "conditionsHighlight": "real imtahan şəraitində.",
+    "conditionsBody": "Vaxt limitli bölmələr, tanış alətlər və real imtahan hissi verən fokuslu interfeys.",
+    "desmosTopic": "Xətti tənliklər"
   }
 }

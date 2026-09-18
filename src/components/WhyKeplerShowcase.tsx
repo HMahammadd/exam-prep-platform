@@ -83,6 +83,129 @@ const CARDS: FeatureCardDef[] = [
   },
 ];
 
+/**
+ * Each card gets a small bespoke visual instead of trailing white space —
+ * drawn from the design tokens so it stays on-brand in both themes and
+ * needs no third-party imagery.
+ */
+function CardVisual({ id }: { id: FeatureCardDef["id"] }) {
+  if (id === "practice") {
+    return (
+      <div className="kf-visual kf-visual--choices" aria-hidden>
+        <span className="kf-choice">
+          <i>A</i>
+        </span>
+        <span className="kf-choice is-picked">
+          <i>B</i>
+          <svg viewBox="0 0 16 16" className="kf-choice-check">
+            <path
+              d="M3.5 8.5 6.5 11.5 12.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <span className="kf-choice">
+          <i>C</i>
+        </span>
+        <span className="kf-choice">
+          <i>D</i>
+        </span>
+      </div>
+    );
+  }
+
+  if (id === "progress") {
+    return (
+      <div className="kf-visual" aria-hidden>
+        <svg viewBox="0 0 200 54" className="kf-spark-chart" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="kfSparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0 46 L34 40 L68 42 L102 28 L136 22 L170 12 L200 6 L200 54 L0 54 Z"
+            fill="url(#kfSparkFill)"
+          />
+          <path
+            className="kf-spark-line"
+            d="M0 46 L34 40 L68 42 L102 28 L136 22 L170 12 L200 6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="200" cy="6" r="3.2" fill="currentColor" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (id === "explanations") {
+    return (
+      <div className="kf-visual kf-visual--steps" aria-hidden>
+        <span className="kf-step">
+          <i>1</i>
+          <b style={{ width: "72%" }} />
+        </span>
+        <span className="kf-step">
+          <i>2</i>
+          <b style={{ width: "88%" }} />
+        </span>
+        <span className="kf-step is-final">
+          <i>3</i>
+          <b style={{ width: "54%" }} />
+        </span>
+      </div>
+    );
+  }
+
+  if (id === "focus") {
+    return (
+      <div className="kf-visual kf-visual--bars" aria-hidden>
+        {[38, 64, 86].map((pct, i) => (
+          <span className="kf-bar" key={pct}>
+            <b style={{ ["--kf-fill" as string]: `${pct}%`, animationDelay: `${i * 90}ms` }} />
+          </span>
+        ))}
+      </div>
+    );
+  }
+
+  if (id === "mistakes") {
+    return (
+      <div className="kf-visual kf-visual--flip" aria-hidden>
+        <span className="kf-flip kf-flip--wrong">✕</span>
+        <svg viewBox="0 0 24 12" className="kf-flip-arrow">
+          <path
+            d="M1 6 H20 M16 2 L20 6 L16 10"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <span className="kf-flip kf-flip--right">✓</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="kf-visual kf-visual--words" aria-hidden>
+      <span className="kf-word">perfunctory</span>
+      <span className="kf-word">candid</span>
+      <span className="kf-word is-new">meticulous</span>
+    </div>
+  );
+}
+
 function FeatureCard({
   card,
   t,
@@ -150,6 +273,8 @@ function FeatureCard({
 
       <h3 className="kepler-feature-title">{t(card.titleKey)}</h3>
       <p className="kepler-feature-body">{t(card.bodyKey)}</p>
+
+      <CardVisual id={card.id} />
     </div>
   );
 }

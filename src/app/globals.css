@@ -4037,7 +4037,7 @@ html.dark .hero-celestial-face--moon {
     transparent 72%
   );
   filter: blur(36px);
-  opacity: 0.45;
+  opacity: 0.32;
   pointer-events: none;
   z-index: 0;
 }
@@ -4050,15 +4050,15 @@ html.dark .hero-celestial-face--moon {
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
-    #000 8%,
-    #000 92%,
+    #000 3.5%,
+    #000 96.5%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to right,
     transparent 0%,
-    #000 8%,
-    #000 92%,
+    #000 3.5%,
+    #000 96.5%,
     transparent 100%
   );
 }
@@ -4120,7 +4120,7 @@ html.dark .hero-celestial-face--moon {
 .kepler-feature-card:hover,
 .kepler-feature-card:focus-visible {
   transform: translateY(-4px) scale(1.025);
-  box-shadow: var(--shadow);
+  box-shadow: 0 10px 26px -18px color-mix(in oklab, var(--accent) 45%, transparent);
 }
 
 .kepler-feature-card:hover::before,
@@ -4406,5 +4406,939 @@ html.dark .hero-celestial-face--moon {
   .kepler-feature-spark path {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* —— FAQ accordion — hover-to-open (desktop), tap-to-open (touch) —— */
+
+.faq-item {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.faq-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 300ms ease;
+  background: radial-gradient(
+    160% 160% at var(--faq-mx, 50%) var(--faq-my, 50%),
+    color-mix(in oklab, var(--accent) 10%, transparent) 0%,
+    transparent 62%
+  );
+}
+
+.faq-item.is-open {
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--card-border));
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.faq-item.is-open::before {
+  opacity: 1;
+}
+
+.faq-item-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.faq-item-icon {
+  display: inline-flex;
+  transition:
+    transform 250ms ease,
+    opacity 250ms ease;
+  opacity: 0.75;
+}
+
+.faq-item-icon.is-open {
+  transform: rotate(45deg);
+  opacity: 1;
+}
+
+.faq-answer-wrap {
+  overflow: hidden;
+  max-height: 0px;
+  transition: max-height 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq-answer-inner {
+  /* Establishes a block-formatting context so the answer paragraph's
+     top margin is counted in this element's own measured height instead
+     of collapsing through it — otherwise ResizeObserver under-reports
+     the content height by that margin and the last line gets clipped. */
+  overflow: hidden;
+}
+
+.faq-answer-inner p {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+}
+
+.faq-item.is-open .faq-answer-inner p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item,
+  .faq-item::before,
+  .faq-item-icon,
+  .faq-answer-wrap,
+  .faq-answer-inner p {
+    transition: none !important;
+  }
+}
+
+/* —— "All the tools you need" — product showcase with space decor —— */
+
+.tools-showcase {
+  position: relative;
+  overflow: hidden;
+  padding: 5.5rem 0 5rem;
+  --tools-blue: var(--accent);
+  --tools-teal: #0d9488;
+  --tools-violet: #7c5cff;
+  --tools-aqua: #0891b2;
+}
+
+.dark .tools-showcase {
+  --tools-teal: #2dd4bf;
+  --tools-violet: #a78bfa;
+  --tools-aqua: #38bdf8;
+}
+
+.tools-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* Decoration layer — stars + rockets, always behind content */
+
+.tools-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tools-star {
+  position: absolute;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--accent) 60%, transparent);
+  opacity: 0.35;
+  animation: tools-twinkle 4.5s ease-in-out infinite;
+}
+
+.dark .tools-star {
+  background: color-mix(in oklab, #cbd5f5 80%, transparent);
+  opacity: 0.45;
+}
+
+@keyframes tools-twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.15);
+  }
+}
+
+.tools-rocket {
+  position: absolute;
+  width: 1.55rem;
+  height: 1.55rem;
+  color: color-mix(in oklab, var(--accent) 45%, transparent);
+  opacity: 0.16;
+  will-change: transform;
+}
+
+.dark .tools-rocket {
+  color: color-mix(in oklab, #93c5fd 60%, transparent);
+  opacity: 0.2;
+}
+
+.tools-rocket-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tools-rocket-window {
+  fill: var(--background);
+  opacity: 0.85;
+}
+
+.tools-rocket--a {
+  top: 12%;
+  left: -4%;
+  animation: tools-drift-a 22s linear infinite;
+}
+
+.tools-rocket--b {
+  top: 58%;
+  left: -6%;
+  animation: tools-drift-b 17s linear infinite;
+}
+
+.tools-rocket--c {
+  top: 82%;
+  left: -5%;
+  animation: tools-drift-c 25s linear infinite;
+}
+
+@keyframes tools-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) rotate(38deg);
+  }
+  to {
+    transform: translate3d(112vw, -7vh, 0) rotate(38deg);
+  }
+}
+
+@keyframes tools-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) rotate(52deg);
+  }
+  to {
+    transform: translate3d(114vw, -12vh, 0) rotate(52deg);
+  }
+}
+
+@keyframes tools-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) rotate(30deg);
+  }
+  to {
+    transform: translate3d(110vw, -5vh, 0) rotate(30deg);
+  }
+}
+
+/* Heading */
+
+.tools-head {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.tools-title {
+  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.tools-title-line {
+  display: block;
+}
+
+.tools-title-accent {
+  position: relative;
+  color: var(--accent);
+}
+
+.tools-title-accent::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.15em;
+  height: 0.16em;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 28%, transparent);
+}
+
+/* Blocks */
+
+.tools-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 5.5rem;
+}
+
+.tools-block {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: center;
+}
+
+.tools-block[data-accent="blue"] {
+  --tools-accent: var(--tools-blue);
+}
+.tools-block[data-accent="teal"] {
+  --tools-accent: var(--tools-teal);
+}
+.tools-block[data-accent="violet"] {
+  --tools-accent: var(--tools-violet);
+}
+.tools-block[data-accent="aqua"] {
+  --tools-accent: var(--tools-aqua);
+}
+
+.tools-copy-title {
+  font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+}
+
+.tools-copy-highlight {
+  position: relative;
+  color: var(--tools-accent);
+  white-space: nowrap;
+}
+
+.tools-copy-highlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.12em;
+  height: 0.14em;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--tools-accent) 30%, transparent);
+}
+
+.tools-copy-body {
+  margin-top: 0.85rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 34rem;
+}
+
+/* Media frame */
+
+.tools-media {
+  position: relative;
+}
+
+.tools-media-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.1rem;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--tools-accent) 55%, transparent);
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 320ms ease;
+}
+
+.tools-media-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 320ms ease;
+  background: radial-gradient(
+    120% 120% at var(--tools-mx, 50%) var(--tools-my, 50%),
+    color-mix(in oklab, var(--tools-accent) 16%, transparent) 0%,
+    transparent 62%
+  );
+}
+
+.tools-media:hover .tools-media-frame {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--tools-accent) 45%, var(--card-border));
+  box-shadow: 0 26px 52px -22px color-mix(in oklab, var(--tools-accent) 65%, transparent);
+}
+
+.tools-media:hover .tools-media-frame::after {
+  opacity: 1;
+}
+
+/*
+ * The supplied clips carry a baked-in step caption across the bottom edge
+ * ("02 Choose exam" …) from an older sequence. Overscanning past the frame
+ * keeps it out of view without re-encoding the source videos.
+ */
+.tools-media-video {
+  width: 100%;
+  height: 107%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Desmos block — product-styled frame, no graphing capture exists in the assets */
+
+.tools-desmos {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--card);
+}
+
+.tools-desmos-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.tools-desmos-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  color: var(--tools-teal);
+  background: color-mix(in oklab, var(--tools-teal) 13%, transparent);
+}
+
+.tools-desmos-label {
+  margin-left: auto;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.tools-desmos-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 0.85rem;
+  padding: 0.85rem 0.95rem;
+  min-height: 0;
+}
+
+.tools-desmos-problem {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tools-desmos-eyebrow {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+/* Inline fraction — keeps the equation readable without a math renderer */
+
+.tools-desmos-equation {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  color: var(--foreground);
+  font-size: clamp(0.62rem, 1.15vw, 0.78rem);
+}
+
+.tools-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.25;
+}
+
+.tools-frac-top {
+  padding: 0 0.2rem;
+}
+
+.tools-frac-bot {
+  padding: 0 0.2rem;
+  border-top: 1px solid currentColor;
+}
+
+.tools-frac-eq {
+  font-weight: 600;
+}
+
+.tools-desmos-choices {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tools-desmos-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.45rem;
+  border-radius: 0.45rem;
+  border: 1px solid var(--card-border);
+  font-size: clamp(0.58rem, 1.05vw, 0.7rem);
+  color: var(--muted);
+}
+
+.tools-desmos-choice.is-correct {
+  border-color: color-mix(in oklab, var(--tools-teal) 55%, transparent);
+  background: color-mix(in oklab, var(--tools-teal) 9%, transparent);
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.tools-desmos-choice-key {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: color-mix(in oklab, var(--muted) 14%, transparent);
+}
+
+.tools-desmos-choice.is-correct .tools-desmos-choice-key {
+  color: #fff;
+  background: var(--tools-teal);
+}
+
+/* Graphing panel */
+
+.tools-desmos-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  border-radius: 0.6rem;
+  border: 1px solid var(--card-border);
+  background: color-mix(in oklab, var(--tools-teal) 4%, var(--background));
+  padding: 0.5rem;
+}
+
+.tools-desmos-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.tools-desmos-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(0.5rem, 0.95vw, 0.6rem);
+  color: var(--muted);
+}
+
+.tools-desmos-swatch {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.tools-desmos-swatch--curve {
+  background: #e2574c;
+}
+
+.tools-desmos-swatch--line {
+  background: var(--accent);
+}
+
+.tools-desmos-eval {
+  margin-left: auto;
+  padding: 0.05rem 0.3rem;
+  border-radius: 0.3rem;
+  font-weight: 600;
+  color: var(--tools-teal);
+  background: color-mix(in oklab, var(--tools-teal) 12%, transparent);
+}
+
+.tools-desmos-svg {
+  width: 100%;
+  height: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.tools-desmos-grid {
+  stroke: color-mix(in oklab, var(--muted) 18%, transparent);
+  stroke-width: 0.5;
+}
+
+.tools-desmos-axis {
+  stroke: color-mix(in oklab, var(--muted) 55%, transparent);
+  stroke-width: 1;
+}
+
+.tools-desmos-line {
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+
+.tools-desmos-curve {
+  fill: none;
+  stroke: #e2574c;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.tools-desmos-root {
+  fill: var(--tools-teal);
+  stroke: var(--card);
+  stroke-width: 1.4;
+}
+
+/* Scroll reveal */
+
+.tools-block .tools-copy,
+.tools-block .tools-media {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tools-block .tools-media {
+  transform: translateY(20px) scale(0.98);
+}
+
+.tools-block.is-inview .tools-copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tools-block.is-inview .tools-media {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: 120ms;
+}
+
+/* Desktop — alternating two-column rhythm */
+
+@media (min-width: 900px) {
+  .tools-showcase {
+    padding: 7rem 0 6.5rem;
+  }
+
+  .tools-blocks {
+    gap: 7rem;
+  }
+
+  .tools-block {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4rem;
+  }
+
+  .tools-block--media-first .tools-copy {
+    order: 2;
+  }
+
+  .tools-block--media-first .tools-media {
+    order: 1;
+  }
+}
+
+/* Mobile / tablet — text above media, lighter decor */
+
+@media (max-width: 899px) {
+  .tools-head {
+    margin-bottom: 2.75rem;
+  }
+
+  .tools-blocks {
+    gap: 3.5rem;
+  }
+
+  .tools-rocket--c {
+    display: none;
+  }
+
+  .tools-star:nth-child(n + 6) {
+    display: none;
+  }
+
+  .tools-desmos-body {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .tools-desmos-graph {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tools-rocket,
+  .tools-star {
+    animation: none !important;
+  }
+
+  .tools-rocket {
+    display: none;
+  }
+
+  .tools-block .tools-copy,
+  .tools-block .tools-media {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .tools-media-frame,
+  .tools-media-frame::after {
+    transition: none !important;
+  }
+
+  .tools-media:hover .tools-media-frame {
+    transform: none;
+  }
+}
+
+/* —— Feature-train card visuals — small bespoke graphics per card —— */
+
+.kf-visual {
+  margin-top: auto;
+  padding-top: 0.9rem;
+  color: var(--accent);
+}
+
+.kepler-feature-card--accent .kf-visual {
+  color: #fff;
+}
+
+.kepler-feature-card--navy .kf-visual {
+  color: var(--feature-navy-text);
+}
+
+/* Practice — answer choices */
+
+.kf-visual--choices {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.kf-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.45rem;
+  border: 1px solid color-mix(in oklab, currentColor 22%, transparent);
+  font-size: 0.66rem;
+  font-weight: 700;
+  opacity: 0.55;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.kf-choice.is-picked {
+  opacity: 1;
+  border-color: color-mix(in oklab, currentColor 60%, transparent);
+  background: color-mix(in oklab, currentColor 12%, transparent);
+}
+
+.kf-choice-check {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.kepler-feature-card:hover .kf-choice.is-picked {
+  transform: translateY(-2px);
+}
+
+/* Progress — sparkline */
+
+.kf-spark-chart {
+  width: 100%;
+  height: 3.1rem;
+  display: block;
+}
+
+.kf-spark-line {
+  stroke-dasharray: 260;
+  stroke-dashoffset: 0;
+}
+
+.kepler-feature-card[data-card="progress"]:hover .kf-spark-line {
+  animation: kf-draw 900ms ease-out;
+}
+
+@keyframes kf-draw {
+  from {
+    stroke-dashoffset: 260;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Explanations — worked steps */
+
+.kf-visual--steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.33rem;
+}
+
+.kf-step {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kf-step i {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  font-size: 0.52rem;
+  font-style: normal;
+  font-weight: 700;
+  background: color-mix(in oklab, currentColor 16%, transparent);
+}
+
+.kf-step b {
+  height: 0.3rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 20%, transparent);
+}
+
+.kf-step.is-final b {
+  background: color-mix(in oklab, currentColor 55%, transparent);
+}
+
+/* Focus — weak-area bars */
+
+.kf-visual--bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.kf-bar {
+  height: 0.34rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, currentColor 16%, transparent);
+  overflow: hidden;
+}
+
+.kf-bar b {
+  display: block;
+  height: 100%;
+  width: var(--kf-fill, 50%);
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0.75;
+  transform-origin: left center;
+}
+
+.kepler-feature-card[data-card="focus"]:hover .kf-bar b {
+  animation: kf-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes kf-grow {
+  from {
+    transform: scaleX(0.25);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Mistakes — wrong turns into right */
+
+.kf-visual--flip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kf-flip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid color-mix(in oklab, currentColor 25%, transparent);
+}
+
+.kf-flip--wrong {
+  opacity: 0.45;
+}
+
+.kf-flip--right {
+  background: color-mix(in oklab, currentColor 14%, transparent);
+  border-color: color-mix(in oklab, currentColor 55%, transparent);
+}
+
+.kf-flip-arrow {
+  width: 1.4rem;
+  height: 0.7rem;
+  opacity: 0.5;
+  transition: transform 300ms ease;
+}
+
+.kepler-feature-card[data-card="mistakes"]:hover .kf-flip-arrow {
+  transform: translateX(3px);
+}
+
+/* Vocabulary — saved word chips */
+
+.kf-visual--words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.kf-word {
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 600;
+  border: 1px solid color-mix(in oklab, currentColor 22%, transparent);
+  opacity: 0.6;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.kf-word.is-new {
+  opacity: 1;
+  background: color-mix(in oklab, currentColor 14%, transparent);
+  border-color: color-mix(in oklab, currentColor 55%, transparent);
+}
+
+.kepler-feature-card[data-card="vocabulary"]:hover .kf-word.is-new {
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-spark-line,
+  .kf-bar b,
+  .kf-flip-arrow,
+  .kf-word,
+  .kf-choice {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }

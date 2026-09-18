@@ -166,16 +166,6 @@
     "feature6Title": "Build your vocabulary",
     "feature6Body": "Save unfamiliar words while practicing and review them anytime in your vocabulary deck.",
     "feature6Stat": "Words saved",
-    "howTitle": "How it works",
-    "howSubtitle": "From sign-up to score improvement in four steps.",
-    "step1": "Create an account",
-    "step1Body": "Sign up with your email in a few seconds.",
-    "step2": "Choose your exam",
-    "step2Body": "Start with SAT or DIM practice sets.",
-    "step3": "Practice questions",
-    "step3Body": "Work under real, timed exam conditions.",
-    "step4": "Review and improve",
-    "step4Body": "Read explanations and revisit weak topics.",
     "faqTitle": "Frequently asked questions",
     "faq1Q": "Which exams can I practice on Kepler?",
     "faq1A": "SAT and DIM practice are available today, and TOEFL is coming soon. You can see the full list in the Exams section above.",
@@ -278,5 +268,24 @@
       "toeflReading": "Reading",
       "toeflListening": "Listening"
     }
+  },
+  "tools": {
+    "headingLine1": "All the tools you need,",
+    "headingLine2": "in one spot.",
+    "coursesTitle": "Courses built by",
+    "coursesHighlight": "top scorers.",
+    "coursesBody": "All math and reading & writing topics explained simply for any score level.",
+    "desmosTitle": "Desmos,",
+    "desmosHighlight": "embedded everywhere.",
+    "desmosBody": "A full Desmos course and Desmos explanations for math problems.",
+    "desmosFrameLabel": "Math explanation",
+    "desmosProblem": "Worked solution",
+    "explanationsTitle": "Get explanations",
+    "explanationsHighlight": "instantly.",
+    "explanationsBody": "See why an answer is correct, understand mistakes faster, and learn while practicing.",
+    "conditionsTitle": "Practice in",
+    "conditionsHighlight": "real exam conditions.",
+    "conditionsBody": "Timed sections, familiar tools, and a focused interface that feels like the real test.",
+    "desmosTopic": "Linear equations"
   }
 }

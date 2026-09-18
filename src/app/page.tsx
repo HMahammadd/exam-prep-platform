@@ -1,17 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowRight,
-  BarChart3,
-  ListChecks,
-  PenLine,
-  Target,
-  UserPlus,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Target, UserPlus } from "lucide-react";
 import { ExamFeatureDeck } from "@/components/ExamFeatureDeck";
 import { ExamSpotlightSection } from "@/components/ExamSpotlightSection";
+import { FaqAccordion } from "@/components/FaqAccordion";
 import { GraduationCapIcon } from "@/components/GraduationCapIcon";
 import { useTranslations } from "@/components/I18nProvider";
 import { LocaleLink } from "@/components/LocaleLink";
@@ -20,6 +13,7 @@ import { Navbar } from "@/components/Navbar";
 import { ParticleWaveField } from "@/components/ParticleWaveField";
 import { SampleQuestionCarousel } from "@/components/SampleQuestionCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
+import { ToolsShowcase } from "@/components/ToolsShowcase";
 import { WhyKeplerShowcase } from "@/components/WhyKeplerShowcase";
 
 function ExamConditionsSection() {
@@ -81,29 +75,6 @@ function ExamConditionsSection() {
 export default function Home() {
   const t = useTranslations();
 
-  const steps: { text: string; detail: string; icon: LucideIcon }[] = [
-    {
-      text: t("home.step1"),
-      detail: t("home.step1Body"),
-      icon: UserPlus,
-    },
-    {
-      text: t("home.step2"),
-      detail: t("home.step2Body"),
-      icon: ListChecks,
-    },
-    {
-      text: t("home.step3"),
-      detail: t("home.step3Body"),
-      icon: PenLine,
-    },
-    {
-      text: t("home.step4"),
-      detail: t("home.step4Body"),
-      icon: BarChart3,
-    },
-  ];
-
   const faqs: { question: string; answer: string }[] = [
     { question: t("home.faq1Q"), answer: t("home.faq1A") },
     { question: t("home.faq2Q"), answer: t("home.faq2A") },
@@ -164,40 +135,7 @@ export default function Home() {
 
         <WhyKeplerShowcase />
 
-        <section className="site-section site-section--surface">
-          <div className="mx-auto max-w-6xl px-6 py-16">
-            <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold text-foreground">
-                {t("home.howTitle")}
-              </h2>
-              <p className="mt-2 text-muted">{t("home.howSubtitle")}</p>
-            </div>
-            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <li
-                    key={step.text}
-                    className="relative rounded-2xl border border-card-border bg-background p-6"
-                  >
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
-                      {index + 1}
-                    </span>
-                    <span className="mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
-                      <Icon className="h-5 w-5 text-accent" aria-hidden />
-                    </span>
-                    <p className="mt-3 font-semibold text-foreground">
-                      {step.text}
-                    </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                      {step.detail}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-        </section>
+        <ToolsShowcase />
 
         <section className="site-section mx-auto max-w-3xl px-6 py-16">
           <div className="mb-10 text-center">
@@ -205,27 +143,7 @@ export default function Home() {
               {t("home.faqTitle")}
             </h2>
           </div>
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <details
-                key={faq.question}
-                className="group rounded-2xl border border-card-border bg-card p-5 shadow-card"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-foreground">
-                  {faq.question}
-                  <span
-                    className="text-accent transition group-open:rotate-45"
-                    aria-hidden
-                  >
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted">
-                  {faq.answer}
-                </p>
-              </details>
-            ))}
-          </div>
+          <FaqAccordion items={faqs} />
         </section>
 
         <section className="site-section site-section--accent">
