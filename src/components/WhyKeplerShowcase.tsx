@@ -84,64 +84,94 @@ const CARDS: FeatureCardDef[] = [
 ];
 
 /**
- * Each card gets a small bespoke visual instead of trailing white space —
- * drawn from the design tokens so it stays on-brand in both themes and
- * needs no third-party imagery.
+ * Each card carries a miniature of a real Keplerly screen rather than filler —
+ * built from the design tokens so it recolors correctly on the accent, neutral
+ * and navy card variants and in both themes.
  */
-function CardVisual({ id }: { id: FeatureCardDef["id"] }) {
+function CardVisual({
+  id,
+  t,
+}: {
+  id: FeatureCardDef["id"];
+  t: ReturnType<typeof useTranslations>;
+}) {
   if (id === "practice") {
     return (
-      <div className="kf-visual kf-visual--choices" aria-hidden>
-        <span className="kf-choice">
-          <i>A</i>
-        </span>
-        <span className="kf-choice is-picked">
-          <i>B</i>
-          <svg viewBox="0 0 16 16" className="kf-choice-check">
-            <path
-              d="M3.5 8.5 6.5 11.5 12.5 4.5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-        <span className="kf-choice">
-          <i>C</i>
-        </span>
-        <span className="kf-choice">
-          <i>D</i>
-        </span>
+      <div className="kf-mini kf-mini--question" aria-hidden>
+        <div className="kf-mini-head">
+          <span className="kf-mini-badge">SAT</span>
+          <span className="kf-mini-time">12:04</span>
+        </div>
+        <span className="kf-mini-q" />
+        <span className="kf-mini-q kf-mini-q--short" />
+        <div className="kf-mini-choices">
+          {["A", "B", "C"].map((key) => (
+            <span
+              key={key}
+              className={`kf-mini-choice${key === "B" ? " is-correct" : ""}`}
+            >
+              <i>{key}</i>
+              <b />
+              {key === "B" ? (
+                <svg viewBox="0 0 16 16" className="kf-mini-tick">
+                  <path
+                    d="M3.5 8.4 6.4 11.3 12.5 4.8"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : null}
+            </span>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (id === "progress") {
     return (
-      <div className="kf-visual" aria-hidden>
-        <svg viewBox="0 0 200 54" className="kf-spark-chart" preserveAspectRatio="none">
+      <div className="kf-mini kf-mini--chart" aria-hidden>
+        <div className="kf-mini-scores">
+          <span>1300</span>
+          <svg viewBox="0 0 14 8" className="kf-mini-arrow">
+            <path
+              d="M1 4h11M9 1l3 3-3 3"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <b>1550</b>
+        </div>
+        <svg viewBox="0 0 200 48" className="kf-mini-graph" preserveAspectRatio="none">
           <defs>
-            <linearGradient id="kfSparkFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
+            <linearGradient id="kfArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.32" />
               <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
             </linearGradient>
           </defs>
+          {[12, 24, 36].map((y) => (
+            <line key={y} x1="0" y1={y} x2="200" y2={y} className="kf-mini-grid" />
+          ))}
           <path
-            d="M0 46 L34 40 L68 42 L102 28 L136 22 L170 12 L200 6 L200 54 L0 54 Z"
-            fill="url(#kfSparkFill)"
+            d="M0 42 L33 37 L66 39 L100 26 L133 20 L166 11 L200 5 L200 48 L0 48 Z"
+            fill="url(#kfArea)"
           />
           <path
-            className="kf-spark-line"
-            d="M0 46 L34 40 L68 42 L102 28 L136 22 L170 12 L200 6"
+            className="kf-mini-line"
+            d="M0 42 L33 37 L66 39 L100 26 L133 20 L166 11 L200 5"
             fill="none"
             stroke="currentColor"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <circle cx="200" cy="6" r="3.2" fill="currentColor" />
+          <circle cx="200" cy="5" r="3" fill="currentColor" />
         </svg>
       </div>
     );
@@ -149,29 +179,38 @@ function CardVisual({ id }: { id: FeatureCardDef["id"] }) {
 
   if (id === "explanations") {
     return (
-      <div className="kf-visual kf-visual--steps" aria-hidden>
-        <span className="kf-step">
-          <i>1</i>
-          <b style={{ width: "72%" }} />
+      <div className="kf-mini kf-mini--review" aria-hidden>
+        <span className="kf-mini-answer">
+          <i>D</i>
+          <b />
+          <em>✓</em>
         </span>
-        <span className="kf-step">
-          <i>2</i>
-          <b style={{ width: "88%" }} />
-        </span>
-        <span className="kf-step is-final">
-          <i>3</i>
-          <b style={{ width: "54%" }} />
-        </span>
+        <span className="kf-mini-eyebrow">{t("home.deckDemo.mistakesLabel")}</span>
+        <span className="kf-mini-line" />
+        <span className="kf-mini-line kf-mini-line--short" />
       </div>
     );
   }
 
   if (id === "focus") {
+    const topics: [string, number][] = [
+      [t("home.deckDemo.mistakeSkillA"), 42],
+      [t("home.deckDemo.mistakeSkillD"), 68],
+      [t("home.deckDemo.mistakeSkillC"), 88],
+    ];
     return (
-      <div className="kf-visual kf-visual--bars" aria-hidden>
-        {[38, 64, 86].map((pct, i) => (
-          <span className="kf-bar" key={pct}>
-            <b style={{ ["--kf-fill" as string]: `${pct}%`, animationDelay: `${i * 90}ms` }} />
+      <div className="kf-mini kf-mini--topics" aria-hidden>
+        {topics.map(([name, pct], i) => (
+          <span className="kf-mini-topic" key={name}>
+            <span className="kf-mini-topic-name">{name}</span>
+            <span className="kf-mini-topic-bar">
+              <b
+                style={{
+                  ["--kf-fill" as string]: `${pct}%`,
+                  animationDelay: `${i * 90}ms`,
+                }}
+              />
+            </span>
           </span>
         ))}
       </div>
@@ -180,28 +219,28 @@ function CardVisual({ id }: { id: FeatureCardDef["id"] }) {
 
   if (id === "mistakes") {
     return (
-      <div className="kf-visual kf-visual--flip" aria-hidden>
-        <span className="kf-flip kf-flip--wrong">✕</span>
-        <svg viewBox="0 0 24 12" className="kf-flip-arrow">
-          <path
-            d="M1 6 H20 M16 2 L20 6 L16 10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="kf-flip kf-flip--right">✓</span>
+      <div className="kf-mini kf-mini--mistakes" aria-hidden>
+        <span className="kf-mini-row">
+          <i className="kf-mini-mark is-wrong">✕</i>
+          <span className="kf-mini-tag">{t("home.deckDemo.mistakeSkillA")}</span>
+          <span className="kf-mini-chip">{t("home.deckDemo.reviewAgainChip")}</span>
+        </span>
+        <span className="kf-mini-row">
+          <i className="kf-mini-mark is-right">✓</i>
+          <span className="kf-mini-tag">{t("home.deckDemo.mistakeSkillD")}</span>
+          <span className="kf-mini-chip is-done">100%</span>
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="kf-visual kf-visual--words" aria-hidden>
-      <span className="kf-word">perfunctory</span>
-      <span className="kf-word">candid</span>
-      <span className="kf-word is-new">meticulous</span>
+    <div className="kf-mini kf-mini--vocab" aria-hidden>
+      <div className="kf-mini-vocab-head">
+        <span className="kf-mini-word">meticulous</span>
+        <span className="kf-mini-pos">{t("home.deckDemo.vocabPosAdj")}</span>
+      </div>
+      <span className="kf-mini-meaning">{t("home.deckDemo.vocabMeaningA")}</span>
     </div>
   );
 }
@@ -274,7 +313,7 @@ function FeatureCard({
       <h3 className="kepler-feature-title">{t(card.titleKey)}</h3>
       <p className="kepler-feature-body">{t(card.bodyKey)}</p>
 
-      <CardVisual id={card.id} />
+      <CardVisual id={card.id} t={t} />
     </div>
   );
 }
