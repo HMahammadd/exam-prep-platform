@@ -52,14 +52,14 @@ export function KeplerLogo({
         width={432}
         height={432}
         priority
-        className={`${markClass} object-contain dark:hidden`}
+        className={`kepler-logo-mark ${markClass} object-contain dark:hidden`}
       />
       <Image
         src="/brand/keplerly-dark-logo.png"
         alt=""
         width={279}
         height={279}
-        className={`${markClass} hidden object-contain dark:block`}
+        className={`kepler-logo-mark ${markClass} hidden object-contain dark:block`}
       />
       <span
         className={`font-heading ${wordmarkClass} font-semibold leading-none tracking-tight text-foreground`}

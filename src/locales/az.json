@@ -42,8 +42,10 @@
   "hero": {
     "line1": "",
     "examsHighlight": "SAT, TOEFL və DİM",
-    "line2Suffix": "imtahanlarına daha ağıllı hazırlaş.",
-    "cta": "Məşqə başla"
+    "line2Suffix": "imtahanlarına daha *ağıllı* hazırlaş.",
+    "cta": "Məşqə başla",
+    "statValue": "10 000+",
+    "statLabel": "Məşq sualı"
   },
   "sample": {
     "satLabel": "SAT nümunəsi",

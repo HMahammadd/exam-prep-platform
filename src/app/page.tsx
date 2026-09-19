@@ -7,6 +7,7 @@ import { ExamFeatureDeck } from "@/components/ExamFeatureDeck";
 import { ExamSpotlightSection } from "@/components/ExamSpotlightSection";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { GraduationCapIcon } from "@/components/GraduationCapIcon";
+import { HeroStat } from "@/components/HeroStat";
 import { useTranslations } from "@/components/I18nProvider";
 import { LocaleLink } from "@/components/LocaleLink";
 import { LogInIcon } from "@/components/LogInIcon";
@@ -16,6 +17,25 @@ import { SampleQuestionCarousel } from "@/components/SampleQuestionCarousel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ToolsShowcase } from "@/components/ToolsShowcase";
 import { WhyKeplerShowcase } from "@/components/WhyKeplerShowcase";
+
+
+/**
+ * Locale strings mark the emphasised word with *asterisks* — it falls on a
+ * different line in each language ("smarter", "ağıllı", "эффективнее").
+ */
+function withEmphasis(text: string) {
+  const parts = text.split("*");
+  if (parts.length < 3) return text;
+  return parts.map((part, i) =>
+    i % 2 === 1 ? (
+      <span key={i} className="hero-emphasis">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+}
 
 function ExamConditionsSection() {
   const t = useTranslations();
@@ -98,19 +118,21 @@ export default function Home() {
 
           <div className="home-hero-inner relative z-10 mx-auto grid grid-cols-1 max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
             <div className="hero-copy w-fit max-w-full justify-self-start">
-              <h1 className="hero-copy-title text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+              <h1 className="hero-copy-title font-bold tracking-tight text-foreground">
                 {line1 ? (
                   <span className="hero-copy-line home-reveal home-reveal-title-a">
-                    {line1}
+                    {withEmphasis(line1)}
                   </span>
                 ) : null}
                 <span className="hero-copy-line home-reveal home-reveal-title-b">
                   {examsHighlight ? (
                     <span className="hero-copy-exams">{examsHighlight}</span>
                   ) : null}
-                  {line2Suffix ? <> {line2Suffix}</> : null}
+                  {line2Suffix ? <> {withEmphasis(line2Suffix)}</> : null}
                 </span>
               </h1>
+
+              <HeroStat />
 
               <div className="hero-copy-actions home-reveal home-reveal-actions">
                 <LocaleLink

@@ -165,7 +165,7 @@ export function SampleQuestionCarousel() {
     if (prefersReducedMotion()) return;
     const id = window.setInterval(() => {
       goTo((logicalRef.current + 1) % SLIDE_CONTENT.length);
-    }, 7000);
+    }, 5500);
     return () => window.clearInterval(id);
   }, [paused]);
 

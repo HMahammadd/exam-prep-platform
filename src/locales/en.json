@@ -40,10 +40,12 @@
     "signupFree": "Sign Up Free"
   },
   "hero": {
-    "line1": "Practice smarter for",
+    "line1": "Practice *smarter* for",
     "examsHighlight": "SAT, TOEFL, and DIM",
     "line2Suffix": "exams.",
-    "cta": "Start Practicing"
+    "cta": "Start Practicing",
+    "statValue": "10,000+",
+    "statLabel": "Practice questions"
   },
   "sample": {
     "satLabel": "SAT sample",
