@@ -32,8 +32,11 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <KeplerLogo />
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
+          <KeplerLogo className="footer-logo" />
+          <p className="footer-brand-message mt-4 max-w-sm">
+            {t("footer.brandMessage")}
+          </p>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted">
             {t("footer.blurb")}
           </p>
         </div>
@@ -46,10 +49,7 @@ export function SiteFooter() {
             <ul className="mt-3 space-y-2">
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <LocaleLink
-                    href={link.href}
-                    className="text-sm text-muted transition hover:text-accent"
-                  >
+                  <LocaleLink href={link.href} className="footer-link text-sm text-muted">
                     {link.label}
                   </LocaleLink>
                 </li>
@@ -67,7 +67,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-muted sm:flex-row">
+        <div className="footer-copyright mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 sm:flex-row">
           <p>{t("footer.rights", { year })}</p>
           <p>{t("footer.tagline")}</p>
         </div>

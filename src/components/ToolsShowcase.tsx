@@ -13,7 +13,7 @@ import { useTranslations } from "@/components/I18nProvider";
 type ToolAccent = "blue" | "teal" | "violet" | "aqua";
 
 type ToolBlock = {
-  id: "courses" | "desmos" | "explanations" | "conditions";
+  id: "courses" | "desmos" | "explanations" | "conditions" | "video" | "tutor";
   accent: ToolAccent;
   titleKey: string;
   highlightKey: string;
@@ -21,6 +21,8 @@ type ToolBlock = {
   /** Real product footage; omitted where the ZIP has no matching capture. */
   video?: string;
   poster?: string;
+  /** Not shipped yet — renders a "Soon" badge on the frame. */
+  soon?: boolean;
 };
 
 const BLOCKS: ToolBlock[] = [
@@ -57,6 +59,22 @@ const BLOCKS: ToolBlock[] = [
     bodyKey: "tools.conditionsBody",
     video: "/demo/videos/03-practice.mp4",
     poster: "/demo/posters/03-practice.jpg",
+  },
+  {
+    id: "video",
+    accent: "violet",
+    titleKey: "tools.videoTitle",
+    highlightKey: "tools.videoHighlight",
+    bodyKey: "tools.videoBody",
+    soon: true,
+  },
+  {
+    id: "tutor",
+    accent: "blue",
+    titleKey: "tools.tutorTitle",
+    highlightKey: "tools.tutorHighlight",
+    bodyKey: "tools.tutorBody",
+    soon: true,
   },
 ];
 
@@ -232,6 +250,85 @@ function DesmosFrame() {
   );
 }
 
+
+/**
+ * Video lessons — original scene, no stock art: an abstract presenter beside a
+ * board whose lines write themselves in. Pure CSS keyframes.
+ */
+function VideoLessonFrame() {
+  const t = useTranslations();
+
+  return (
+    <div className="tools-lesson" aria-hidden>
+      <div className="tools-lesson-board">
+        <div className="tools-lesson-board-head">
+          <span className="tools-lesson-topic">{t("tools.boardTopic")}</span>
+          <span className="tools-lesson-dots">
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+
+        <p className="tools-lesson-eq">
+          <span className="tools-lesson-write">x² − 5x + 6 = 0</span>
+        </p>
+
+        <p className="tools-lesson-eq tools-lesson-eq--2">
+          <span className="tools-lesson-write">(x − 2)(x − 3) = 0</span>
+        </p>
+
+        <p className="tools-lesson-answer">
+          <span className="tools-lesson-write">x = 2, x = 3</span>
+          <span className="tools-lesson-underline" />
+        </p>
+
+        <span className="tools-lesson-step">{t("tools.boardStep")}</span>
+      </div>
+
+      <div className="tools-lesson-teacher">
+        <span className="tools-lesson-head" />
+        <span className="tools-lesson-body" />
+        <span className="tools-lesson-arm" />
+      </div>
+    </div>
+  );
+}
+
+/** Tutor support — chat thread that types and replies on a loop. */
+function TutorFrame() {
+  const t = useTranslations();
+
+  return (
+    <div className="tools-tutor" aria-hidden>
+      <div className="tools-tutor-head">
+        <span className="tools-tutor-avatar tools-tutor-avatar--tutor">
+          <span className="tools-tutor-pulse" />
+        </span>
+        <span className="tools-tutor-name">{t("tools.tutorName")}</span>
+        <span className="tools-tutor-online" />
+      </div>
+
+      <div className="tools-tutor-thread">
+        <span className="tools-tutor-bubble tools-tutor-bubble--them">
+          {t("tools.tutorMsg")}
+        </span>
+        <span className="tools-tutor-bubble tools-tutor-bubble--me">
+          {t("tools.tutorStudent")}
+        </span>
+        <span className="tools-tutor-bubble tools-tutor-bubble--them tools-tutor-bubble--3">
+          {t("tools.tutorReply")}
+        </span>
+        <span className="tools-tutor-typing">
+          <i />
+          <i />
+          <i />
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function ToolsBlock({ block, index }: { block: ToolBlock; index: number }) {
   const t = useTranslations();
   const ref = useRef<HTMLDivElement>(null);
@@ -291,8 +388,14 @@ function ToolsBlock({ block, index }: { block: ToolBlock; index: number }) {
         onPointerMove={onPointerMove}
       >
         <div className="tools-media-frame">
+          {block.soon ? <span className="tools-soon">{t("tools.soon")}</span> : null}
+
           {block.video && block.poster ? (
             <ProductVideo src={block.video} poster={block.poster} />
+          ) : block.id === "video" ? (
+            <VideoLessonFrame />
+          ) : block.id === "tutor" ? (
+            <TutorFrame />
           ) : (
             <DesmosFrame />
           )}

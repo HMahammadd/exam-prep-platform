@@ -197,7 +197,8 @@
     "feature9Stat": "Books replaced"
   },
   "footer": {
-    "blurb": "Kepler helps students prepare for SAT, TOEFL, and DIM with realistic exam-style practice, detailed explanations, and progress tracking.",
+    "brandMessage": "Created from real student experience. Designed for your success.",
+    "blurb": "Realistic exam practice, clear explanations, and progress tracking — everything you need for SAT, TOEFL, and DİM exam day.",
     "exams": "Exams",
     "account": "Account",
     "satPractice": "SAT Practice",
@@ -303,7 +304,20 @@
     "conditionsTitle": "Practice in",
     "conditionsHighlight": "real exam conditions.",
     "conditionsBody": "Timed sections, familiar tools, and a focused interface that feels like the real test.",
-    "desmosTopic": "Linear equations"
+    "desmosTopic": "Linear equations",
+    "videoTitle": "Study with",
+    "videoHighlight": "video lessons.",
+    "videoBody": "Understand difficult topics faster with short, visual lessons created specifically for exam preparation.",
+    "tutorTitle": "1-on-1",
+    "tutorHighlight": "tutor support.",
+    "tutorBody": "Need extra help? Connect with experienced tutors for personalized guidance and faster progress.",
+    "soon": "Soon",
+    "boardTopic": "Quadratic equations",
+    "boardStep": "Factor, then solve",
+    "tutorName": "Tutor",
+    "tutorStudent": "You",
+    "tutorMsg": "Stuck on question 12?",
+    "tutorReply": "Let me walk you through it."
   },
   "beta": {
     "badge": "Free During Beta",

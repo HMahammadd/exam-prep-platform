@@ -197,7 +197,8 @@
     "feature9Stat": "Əvəz olunan kitab"
   },
   "footer": {
-    "blurb": "Kepler tələbələrə SAT, TOEFL və DİM üçün real imtahan tipli məşq, ətraflı izahlar və irəliləyiş izləməsi ilə hazırlaşmağa kömək edir.",
+    "brandMessage": "Real tələbə təcrübəsindən yaranıb. Sənin uğurun üçün hazırlanıb.",
+    "blurb": "Real imtahan məşqi, aydın izahlar və irəliləyiş izləməsi — SAT, TOEFL və DİM imtahan gününə hazır olmaq üçün lazım olan hər şey.",
     "exams": "İmtahanlar",
     "account": "Hesab",
     "satPractice": "SAT Hazırlığı",
@@ -303,7 +304,20 @@
     "conditionsTitle": "Məşq et",
     "conditionsHighlight": "real imtahan şəraitində.",
     "conditionsBody": "Vaxt limitli bölmələr, tanış alətlər və real imtahan hissi verən fokuslu interfeys.",
-    "desmosTopic": "Xətti tənliklər"
+    "desmosTopic": "Xətti tənliklər",
+    "videoTitle": "Öyrən",
+    "videoHighlight": "video dərslərlə.",
+    "videoBody": "Çətin mövzuları imtahan hazırlığı üçün xüsusi hazırlanmış qısa, vizual dərslərlə daha tez anla.",
+    "tutorTitle": "Fərdi",
+    "tutorHighlight": "müəllim dəstəyi.",
+    "tutorBody": "Əlavə köməyə ehtiyacın var? Təcrübəli müəllimlərlə əlaqə saxla, fərdi yanaşma ilə daha sürətli irəlilə.",
+    "soon": "Tezliklə",
+    "boardTopic": "Kvadrat tənliklər",
+    "boardStep": "Vuruqlara ayır, sonra həll et",
+    "tutorName": "Müəllim",
+    "tutorStudent": "Sən",
+    "tutorMsg": "12-ci sualda çətinlik var?",
+    "tutorReply": "Gəl addım-addım keçək."
   },
   "beta": {
     "badge": "Beta dövründə pulsuz",
