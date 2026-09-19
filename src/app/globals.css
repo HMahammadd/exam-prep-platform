@@ -6053,3 +6053,125 @@ html.dark .hero-celestial-face--moon {
     animation: none !important;
   }
 }
+
+/* —— "Everything in one place" card — original cover shapes, layered DoF ——
+   These are generic book forms drawn from the brand palette, not reproductions
+   of any publisher's cover art. Blur is graded front-to-back for depth; the
+   Keplerly mark stays perfectly sharp as the focal point. */
+
+.kf-mini--books {
+  position: relative;
+  height: 5.4rem;
+  margin-top: auto;
+  overflow: hidden;
+}
+
+.kf-book {
+  position: absolute;
+  bottom: 0;
+  border-radius: 0.22rem 0.32rem 0.32rem 0.22rem;
+  /* thin spine + soft page edge, so the silhouette still reads as a book */
+  box-shadow:
+    inset 0.13rem 0 0 rgb(255 255 255 / 0.28),
+    inset -0.06rem 0 0 rgb(255 255 255 / 0.14),
+    0 6px 14px -8px rgb(3 10 20 / 0.6);
+  will-change: transform;
+}
+
+/* Back row — strongest diffusion */
+.kf-book--back {
+  filter: blur(4.6px) saturate(108%);
+  opacity: 0.58;
+}
+
+/* Middle row */
+.kf-book--mid {
+  filter: blur(2.6px) saturate(112%);
+  opacity: 0.76;
+}
+
+/* Front — only lightly softened, still clearly "a book" */
+.kf-book--front {
+  filter: blur(1.1px) saturate(118%);
+  opacity: 0.92;
+}
+
+.kf-book--b1 {
+  left: 4%;
+  width: 17%;
+  height: 74%;
+  background: linear-gradient(168deg, #1d4ed8 0%, #3b82f6 100%);
+  transform: rotate(-7deg);
+}
+
+.kf-book--b2 {
+  left: 62%;
+  width: 19%;
+  height: 80%;
+  background: linear-gradient(168deg, #6d28d9 0%, #a855f7 100%);
+  transform: rotate(6deg);
+}
+
+.kf-book--b3 {
+  left: 20%;
+  width: 18%;
+  height: 88%;
+  background: linear-gradient(168deg, #0f766e 0%, #2dd4bf 100%);
+  transform: rotate(-3deg);
+}
+
+.kf-book--b4 {
+  left: 78%;
+  width: 18%;
+  height: 70%;
+  background: linear-gradient(168deg, #b91c1c 0%, #f87171 100%);
+  transform: rotate(9deg);
+}
+
+.kf-book--b5 {
+  left: 40%;
+  width: 20%;
+  height: 96%;
+  background: linear-gradient(168deg, #f8fafc 0%, #cbd5e1 100%);
+  transform: rotate(2deg);
+}
+
+/* The one sharp element — the platform that replaces the stack. */
+.kf-mini-books-mark {
+  position: absolute;
+  left: 50%;
+  bottom: 0.9rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: currentColor;
+  background: color-mix(in oklab, var(--accent) 85%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, white 34%, transparent),
+    0 8px 22px -8px rgb(3 10 20 / 0.7),
+    0 0 26px -6px color-mix(in oklab, white 45%, transparent);
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kf-mini-books-mark svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.kepler-feature-card[data-card="books"]:hover .kf-mini-books-mark {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.kepler-feature-card[data-card="books"]:hover .kf-book--front {
+  filter: blur(0.8px) saturate(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-mini-books-mark,
+  .kf-book {
+    transition: none !important;
+  }
+}

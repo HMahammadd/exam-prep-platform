@@ -4,6 +4,7 @@ import {
   BookMarked,
   ClipboardCheck,
   Lightbulb,
+  Library,
   RotateCcw,
   Sigma,
   Target,
@@ -22,6 +23,7 @@ type FeatureVariant = "accent" | "neutral" | "navy" | "dim";
 
 type FeatureCardDef = {
   id:
+    | "books"
     | "practice"
     | "progress"
     | "explanations"
@@ -39,6 +41,15 @@ type FeatureCardDef = {
 };
 
 const CARDS: FeatureCardDef[] = [
+  {
+    id: "books",
+    icon: Library,
+    titleKey: "home.feature9Title",
+    bodyKey: "home.feature9Body",
+    statKey: "home.feature9Stat",
+    statValue: "40+",
+    variant: "navy",
+  },
   {
     id: "practice",
     icon: ClipboardCheck,
@@ -124,6 +135,36 @@ function CardVisual({
   id: FeatureCardDef["id"];
   t: ReturnType<typeof useTranslations>;
 }) {
+  if (id === "books") {
+    // Original cover shapes in Keplerly's palette — deliberately not replicas
+    // of any real publisher's artwork. Depth of field: back row blurs most.
+    return (
+      <div className="kf-mini kf-mini--books" aria-hidden>
+        <span className="kf-book kf-book--back kf-book--b1" />
+        <span className="kf-book kf-book--back kf-book--b2" />
+        <span className="kf-book kf-book--mid kf-book--b3" />
+        <span className="kf-book kf-book--mid kf-book--b4" />
+        <span className="kf-book kf-book--front kf-book--b5" />
+        <span className="kf-mini-books-mark">
+          <svg viewBox="0 0 24 24" aria-hidden>
+            <circle cx="12" cy="12" r="5.4" fill="currentColor" />
+            <ellipse
+              cx="12"
+              cy="12"
+              rx="10.5"
+              ry="3.6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              transform="rotate(-24 12 12)"
+              opacity="0.9"
+            />
+          </svg>
+        </span>
+      </div>
+    );
+  }
+
   if (id === "practice") {
     return (
       <div className="kf-mini kf-mini--question" aria-hidden>
