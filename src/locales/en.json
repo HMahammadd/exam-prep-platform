@@ -314,10 +314,15 @@
     "soon": "Soon",
     "boardTopic": "Quadratic equations",
     "boardStep": "Factor, then solve",
-    "tutorName": "Tutor",
+    "tutorName": "Ms. Leyla",
     "tutorStudent": "You",
     "tutorMsg": "Stuck on question 12?",
-    "tutorReply": "Let me walk you through it."
+    "tutorReply": "Let me walk you through it.",
+    "lessonTitle": "Natural numbers · Lesson 4",
+    "lessonTime": "12:40",
+    "chatS1": "Hello, I could not understand question 12. Could you explain it?",
+    "chatT1": "Hello Omar. Yes — this one is from the natural numbers section we covered earlier. First, we factor the expression…",
+    "chatS2": "Thank you very much, now it is clear."
   },
   "beta": {
     "badge": "Free During Beta",

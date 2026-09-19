@@ -314,10 +314,15 @@
     "soon": "Tezliklə",
     "boardTopic": "Kvadrat tənliklər",
     "boardStep": "Vuruqlara ayır, sonra həll et",
-    "tutorName": "Müəllim",
+    "tutorName": "Leyla müəllimə",
     "tutorStudent": "Sən",
     "tutorMsg": "12-ci sualda çətinlik var?",
-    "tutorReply": "Gəl addım-addım keçək."
+    "tutorReply": "Gəl addım-addım keçək.",
+    "lessonTitle": "Natural ədədlər · 4-cü dərs",
+    "lessonTime": "12:40",
+    "chatS1": "Salam, müəllimə. 12-ci sualı başa düşmədim, izah edə bilərsiniz?",
+    "chatT1": "Salam, Ömər. Bəli, bu əvvəl keçdiyimiz natural ədədlər bölməsinə aid testdir. İlk olaraq ifadəni vuruqlara ayırırıq…",
+    "chatS2": "Çox sağ olun, müəllimə. Aydın oldu."
   },
   "beta": {
     "badge": "Beta dövründə pulsuz",

@@ -251,58 +251,81 @@ function DesmosFrame() {
 }
 
 
+/** Original flat avatar — drawn here, not a stock illustration or a photo. */
+function TeacherAvatar({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} aria-hidden>
+      <defs>
+        <clipPath id="toolsAvatarClip">
+          <circle cx="32" cy="32" r="32" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#toolsAvatarClip)">
+        <rect width="64" height="64" fill="var(--tools-accent)" opacity="0.16" />
+        {/* shoulders */}
+        <path d="M10 64c0-12 10-19 22-19s22 7 22 19z" fill="var(--tools-accent)" opacity="0.85" />
+        <path d="M27 46h10v6a5 5 0 0 1-10 0z" fill="#f0c9a8" />
+        {/* hair back */}
+        <path d="M15 30c0-11 7-19 17-19s17 8 17 19v10c0 3-2 5-4 4l-1-9H20l-1 9c-2 1-4-1-4-4z" fill="#2f2a3d" />
+        {/* face */}
+        <ellipse cx="32" cy="31" rx="12" ry="14" fill="#f7d7bb" />
+        {/* fringe */}
+        <path d="M20 26c1-7 6-11 12-11s11 4 12 11c-4-4-8-5-12-5s-8 1-12 5z" fill="#2f2a3d" />
+        <circle cx="27" cy="31" r="1.6" fill="#2f2a3d" />
+        <circle cx="37" cy="31" r="1.6" fill="#2f2a3d" />
+        <path d="M29 37c1.8 1.6 4.2 1.6 6 0" stroke="#c98a72" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      </g>
+    </svg>
+  );
+}
+
 /**
- * Video lessons — original scene, no stock art: an abstract presenter beside a
- * board whose lines write themselves in. Pure CSS keyframes.
+ * Video lessons — a lesson player, deliberately in Keplerly's palette rather
+ * than any real player's branding, with a presenter pointing at it.
  */
 function VideoLessonFrame() {
   const t = useTranslations();
 
   return (
     <div className="tools-lesson" aria-hidden>
-      <div className="tools-lesson-board">
-        <div className="tools-lesson-board-head">
-          <span className="tools-lesson-topic">{t("tools.boardTopic")}</span>
-          <span className="tools-lesson-dots">
-            <i />
-            <i />
-            <i />
+      <div className="tools-player">
+        <div className="tools-player-stage">
+          <span className="tools-player-topic">{t("tools.lessonTitle")}</span>
+
+          <span className="tools-player-play">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 6.5 18 12l-9 5.5z" fill="currentColor" />
+            </svg>
+            <span className="tools-player-ring" />
           </span>
         </div>
 
-        <p className="tools-lesson-eq">
-          <span className="tools-lesson-write">x² − 5x + 6 = 0</span>
-        </p>
-
-        <p className="tools-lesson-eq tools-lesson-eq--2">
-          <span className="tools-lesson-write">(x − 2)(x − 3) = 0</span>
-        </p>
-
-        <p className="tools-lesson-answer">
-          <span className="tools-lesson-write">x = 2, x = 3</span>
-          <span className="tools-lesson-underline" />
-        </p>
-
-        <span className="tools-lesson-step">{t("tools.boardStep")}</span>
+        <div className="tools-player-bar">
+          <span className="tools-player-track">
+            <span className="tools-player-fill" />
+          </span>
+          <span className="tools-player-time">{t("tools.lessonTime")}</span>
+        </div>
       </div>
 
       <div className="tools-lesson-teacher">
-        <span className="tools-lesson-head" />
-        <span className="tools-lesson-body" />
-        <span className="tools-lesson-arm" />
+        <TeacherAvatar className="tools-lesson-avatar" />
+        <span className="tools-lesson-torso" />
+        <span className="tools-lesson-pointer" />
       </div>
     </div>
   );
 }
 
-/** Tutor support — chat thread that types and replies on a loop. */
+/** Tutor support — a real exchange, typed out and answered on a loop. */
 function TutorFrame() {
   const t = useTranslations();
 
   return (
     <div className="tools-tutor" aria-hidden>
       <div className="tools-tutor-head">
-        <span className="tools-tutor-avatar tools-tutor-avatar--tutor">
+        <span className="tools-tutor-avatar">
+          <TeacherAvatar className="tools-tutor-avatar-img" />
           <span className="tools-tutor-pulse" />
         </span>
         <span className="tools-tutor-name">{t("tools.tutorName")}</span>
@@ -310,19 +333,19 @@ function TutorFrame() {
       </div>
 
       <div className="tools-tutor-thread">
-        <span className="tools-tutor-bubble tools-tutor-bubble--them">
-          {t("tools.tutorMsg")}
-        </span>
         <span className="tools-tutor-bubble tools-tutor-bubble--me">
-          {t("tools.tutorStudent")}
-        </span>
-        <span className="tools-tutor-bubble tools-tutor-bubble--them tools-tutor-bubble--3">
-          {t("tools.tutorReply")}
+          {t("tools.chatS1")}
         </span>
         <span className="tools-tutor-typing">
           <i />
           <i />
           <i />
+        </span>
+        <span className="tools-tutor-bubble tools-tutor-bubble--them">
+          {t("tools.chatT1")}
+        </span>
+        <span className="tools-tutor-bubble tools-tutor-bubble--me tools-tutor-bubble--3">
+          {t("tools.chatS2")}
         </span>
       </div>
     </div>
