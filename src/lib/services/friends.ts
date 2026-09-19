@@ -102,10 +102,18 @@ export async function removeFriend(
   friendshipId: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "You must be logged in." };
+
+  // Scope the delete to friendships the caller is actually part of. RLS also
+  // enforces this, but this action must not depend on a policy being applied.
   const { error } = await supabase
     .from("friendships")
     .delete()
-    .eq("id", friendshipId);
+    .eq("id", friendshipId)
+    .or(`user_id_1.eq.${user.id},user_id_2.eq.${user.id}`);
   if (error) return { success: false, error: "Failed to remove friend." };
   return { success: true };
 }

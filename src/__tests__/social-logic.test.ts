@@ -60,8 +60,8 @@ describe("inbox permission rules", () => {
   });
 
   it("news type should only be insertable by admins", () => {
-    const userRole = "user";
-    expect(userRole !== "admin").toBe(true);
+    const roles: ("user" | "admin")[] = ["user", "admin"];
+    expect(roles.filter((role) => role === "admin")).toEqual(["admin"]);
   });
 
   it("supports announcement as a distinct inbox type", () => {

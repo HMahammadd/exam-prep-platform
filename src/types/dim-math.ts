@@ -30,7 +30,8 @@ export type DimMathClientQuestion = Omit<
 export type DimMathGradedResult = {
   questionId: string;
   isCorrect: boolean;
-  correctAnswer: string;
+  /** null when the question was left blank — the key is not revealed for skips. */
+  correctAnswer: string | null;
 };
 
 export type DimMathGradeResponse = {

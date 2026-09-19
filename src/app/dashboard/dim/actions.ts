@@ -42,10 +42,15 @@ export async function gradeDimTest(
       score += 1;
     }
 
+    // Only reveal the key for questions this submission actually attempted.
+    // Returning it unconditionally turned `gradeDimTest(chapterId, {})` into a
+    // one-call dump of the whole chapter's answers.
+    const attempted = answer !== null && answer !== "";
+
     return {
       questionId: question.id,
       isCorrect,
-      correctAnswer: question.correctAnswer,
+      correctAnswer: attempted ? question.correctAnswer : null,
     };
   });
 

@@ -120,6 +120,14 @@ export async function proxy(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (!supabaseUrl || !supabaseKey) {
+      // Auth cannot be evaluated without Supabase configured. Let public pages
+      // through, but never hand out a protected one unauthenticated.
+      if (isProtectedPath(barePath)) {
+        const url = request.nextUrl.clone();
+        url.pathname = withLocale("/login", locale);
+        url.search = "";
+        return withLocaleCookie(NextResponse.redirect(url), locale);
+      }
       return supabaseResponse;
     }
 
@@ -146,6 +154,15 @@ export async function proxy(request: NextRequest) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    // Fail closed: protected areas must never render for an anonymous caller,
+    // even if a page below forgets its own guard.
+    if (!user && isProtectedPath(barePath)) {
+      const url = request.nextUrl.clone();
+      url.pathname = withLocale("/login", locale);
+      url.search = "";
+      return withLocaleCookie(NextResponse.redirect(url), locale);
+    }
 
     const shouldCheckUsername =
       Boolean(user) &&
@@ -188,6 +205,13 @@ export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!supabaseUrl || !supabaseKey) {
+    if (isProtectedPath(pathname)) {
+      const locale = resolvePreferredLocale(request);
+      const url = request.nextUrl.clone();
+      url.pathname = withLocale("/login", locale);
+      url.search = "";
+      return withLocaleCookie(NextResponse.redirect(url), locale);
+    }
     return supabaseResponse;
   }
 
@@ -211,6 +235,14 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user && isProtectedPath(pathname)) {
+    const locale = resolvePreferredLocale(request);
+    const url = request.nextUrl.clone();
+    url.pathname = withLocale("/login", locale);
+    url.search = "";
+    return withLocaleCookie(NextResponse.redirect(url), locale);
+  }
 
   const shouldCheckUsername =
     Boolean(user) && (isProtectedPath(pathname) || isOnboardingPath(pathname));

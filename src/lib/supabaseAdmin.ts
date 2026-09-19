@@ -56,6 +56,15 @@ export async function createGradingClient(): Promise<SupabaseClient> {
     return createAdminClient();
   }
 
+  // Falling back to the caller's own session client means grading reads the
+  // answer key with the student's privileges and writes score rows they could
+  // forge. Tolerable while developing locally; never in production.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is not set. Refusing to grade with the user session client."
+    );
+  }
+
   console.warn(
     "[security] SUPABASE_SERVICE_ROLE_KEY is not set — grading is using the user session client. " +
       "Add the service_role key to your server environment and run supabase/migrations/004_security_hardening.sql."

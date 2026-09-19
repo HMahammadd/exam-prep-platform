@@ -14,10 +14,13 @@ Sentry.init({
   // Enable logs to be sent to Sentry
   enableLogs: true,
 
+  // This app handles auth cookies, exam answers and profile data. Sentry's
+  // defaults would attach request bodies, headers and user info to every
+  // event, so both are turned off explicitly.
+  sendDefaultPii: false,
+
   dataCollection: {
-    // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#dataCollection
-    // userInfo: false,
-    // httpBodies: [],
+    userInfo: false,
+    httpBodies: [],
   },
 });

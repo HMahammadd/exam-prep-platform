@@ -30,8 +30,13 @@ export const getAdminProfile = cache(async (): Promise<AdminProfile | null> => {
   }
 
   const email = user.email ?? null;
+  // Only honour the bootstrap allowlist for a *confirmed* address. Without
+  // this, anyone who can register an ADMIN_EMAILS address gains admin if email
+  // confirmation is ever disabled in the Supabase project.
   const isAllowlisted =
-    email !== null && allowlistedEmails().includes(email.toLowerCase());
+    email !== null &&
+    Boolean(user.email_confirmed_at) &&
+    allowlistedEmails().includes(email.toLowerCase());
 
   const supabase = await createClient();
   const { data: profile } = await supabase
