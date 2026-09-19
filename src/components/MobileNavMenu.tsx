@@ -188,7 +188,7 @@ export function MobileNavMenu() {
             </LocaleLink>
             <LocaleLink href="/signup" className="mobile-nav-signup" onClick={close}>
               <UserPlus className="h-4 w-4" aria-hidden />
-              <span>{t("nav.signup")}</span>
+              <span>{t("nav.signupFree")}</span>
             </LocaleLink>
           </div>
         </nav>

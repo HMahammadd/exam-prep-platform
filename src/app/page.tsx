@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Target, UserPlus } from "lucide-react";
+import { BetaBadge } from "@/components/BetaBadge";
 import { ExamFeatureDeck } from "@/components/ExamFeatureDeck";
 import { ExamSpotlightSection } from "@/components/ExamSpotlightSection";
 import { FaqAccordion } from "@/components/FaqAccordion";
@@ -80,6 +81,7 @@ export default function Home() {
     { question: t("home.faq2Q"), answer: t("home.faq2A") },
     { question: t("home.faq3Q"), answer: t("home.faq3A") },
     { question: t("home.faq4Q"), answer: t("home.faq4A") },
+    { question: t("beta.faqQ"), answer: t("beta.faqA") },
   ];
 
   const line1 = t("hero.line1");
@@ -111,13 +113,17 @@ export default function Home() {
               </h1>
 
               <div className="hero-copy-actions home-reveal home-reveal-actions">
+                <BetaBadge tone="hero" withSubline className="mb-5" />
+
                 <LocaleLink
                   href="/signup"
                   className="home-hero-cta group/practice inline-flex items-center gap-2 rounded-[0.85rem] bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
                 >
                   <GraduationCapIcon className="h-4 w-4 shrink-0" />
-                  {t("hero.cta")}
+                  {t("beta.ctaFree")}
                 </LocaleLink>
+
+                <p className="beta-cta-note">{t("beta.noCard")}</p>
               </div>
             </div>
 
@@ -129,6 +135,18 @@ export default function Home() {
       </div>
 
       <div className="home-below">
+        <div className="beta-trustbar">
+          <span className="beta-trustbar-item beta-trustbar-item--lead">
+            <BetaBadge tone="soft" />
+          </span>
+          <span className="beta-trustbar-sep" aria-hidden />
+          <span className="beta-trustbar-item">{t("beta.trustQuestions")}</span>
+          <span className="beta-trustbar-sep" aria-hidden />
+          <span className="beta-trustbar-item">{t("beta.trustUnlimited")}</span>
+          <span className="beta-trustbar-sep" aria-hidden />
+          <span className="beta-trustbar-item">{t("beta.trustNoCard")}</span>
+        </div>
+
         <ExamSpotlightSection />
 
         <ExamConditionsSection />
@@ -136,6 +154,8 @@ export default function Home() {
         <WhyKeplerShowcase />
 
         <ToolsShowcase />
+
+        <p className="beta-caption">{t("beta.toolsCaption")}</p>
 
         <section className="site-section mx-auto max-w-3xl px-6 py-16">
           <div className="mb-10 text-center">

@@ -1,5 +1,6 @@
 "use client";
 
+import { BetaBadge } from "@/components/BetaBadge";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -350,11 +351,18 @@ export function ExamInterface({
   }
 
   if (phase === "instructions") {
+    // The badge lives here, before the timer starts — the live question screen
+    // is a Bluebook replica and must stay free of product chrome.
     return (
-      <SatInstructionsScreen
-        onBack={() => router.push("/dashboard/sat")}
-        onNext={() => startModule(1)}
-      />
+      <div className="relative">
+        <span className="beta-exam-badge">
+          <BetaBadge tone="soft" />
+        </span>
+        <SatInstructionsScreen
+          onBack={() => router.push("/dashboard/sat")}
+          onNext={() => startModule(1)}
+        />
+      </div>
     );
   }
 

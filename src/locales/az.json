@@ -36,7 +36,8 @@
     "menu": "Menyu",
     "closeMenu": "Menyunu bağla",
     "language": "Dil",
-    "theme": "Tema"
+    "theme": "Tema",
+    "signupFree": "Pulsuz qeydiyyat"
   },
   "hero": {
     "line1": "",
@@ -303,5 +304,28 @@
     "conditionsHighlight": "real imtahan şəraitində.",
     "conditionsBody": "Vaxt limitli bölmələr, tanış alətlər və real imtahan hissi verən fokuslu interfeys.",
     "desmosTopic": "Xətti tənliklər"
+  },
+  "beta": {
+    "badge": "Beta dövründə pulsuz",
+    "unlimited": "Limitsiz giriş",
+    "noCard": "Kart tələb olunmur",
+    "heroSub": "Bütün funksiyalara limitsiz giriş",
+    "ctaFree": "Pulsuz məşqə başla",
+    "trustQuestions": "5 000+ sual",
+    "trustUnlimited": "Limitsiz məşq",
+    "trustNoCard": "Kartsız",
+    "toolsCaption": "Burada göstərilən hər şey Beta dövründə pulsuz əlçatandır.",
+    "cardTitle": "Lazım olan hər şey. Bir platforma.",
+    "cardBody": "Ayrı-ayrı kitab, PDF və ya kurs almağa ehtiyac yoxdur. Məşq, izahlar, lüğət və analitika onsuz da daxildir.",
+    "footerTitle": "Hazırda Beta dövründə pulsuzdur",
+    "footerBody": "Keplerly-ni qurmağa davam etdiyimiz müddətdə limitsiz istifadə et.",
+    "signupNote": "Ödəniş məlumatı tələb olunmur.",
+    "loginCta": "Pulsuz hesab yarat.",
+    "examBadge": "Pulsuz Beta-ya daxildir",
+    "welcomeTitle": "Keplerly-yə xoş gəldin!",
+    "welcomeBody": "Beta dövründə limitsiz pulsuz girişin var.",
+    "dismiss": "Bağla",
+    "faqQ": "Keplerly həqiqətən pulsuzdur?",
+    "faqA": "Bəli. Keplerly-də hazırda mövcud olan bütün funksiyalar Beta dövründə tamamilə pulsuzdur və heç bir ödəniş məlumatı tələb olunmur. Gələcəkdə ayrıca premium funksiyalar əlavə oluna bilər, amma bu gün mövcud olan hər şeydən ödəniş etmədən istifadə edə bilərsən."
   }
 }

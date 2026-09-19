@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSatExamSummaries } from "@/app/dashboard/sat/actions";
+import { BetaWelcomeBanner } from "@/components/BetaWelcomeBanner";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { ExamSelectionCard } from "@/components/ExamSelectionCard";
 import { EXAMS } from "@/lib/exams";
@@ -87,6 +88,9 @@ export default async function DashboardPage() {
       <DashboardHeader />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8 sm:py-10">
+        <div className="mb-6">
+          <BetaWelcomeBanner />
+        </div>
         {/* Compact welcome — atmosphere without crowding navigation */}
         <section className="relative mb-8 overflow-hidden rounded-2xl border border-card-border bg-card px-6 py-6 shadow-card sm:px-8 sm:py-7">
           <div

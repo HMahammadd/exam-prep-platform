@@ -1,5 +1,6 @@
 "use client";
 
+import { BetaBadge } from "@/components/BetaBadge";
 import {
   CheckCircle2,
   Eye,
@@ -161,6 +162,10 @@ export default function SignupPage() {
             <p className="mt-2 text-sm text-muted">
               {t("auth.createAccountSubtitle")}
             </p>
+            <div className="mt-4 flex flex-col items-center gap-1.5">
+              <BetaBadge tone="soft" />
+              <p className="text-xs text-muted">{t("beta.signupNote")}</p>
+            </div>
           </div>
 
           <div className="mb-5 space-y-4">

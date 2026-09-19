@@ -44,8 +44,8 @@ const CARDS: FeatureCardDef[] = [
   {
     id: "books",
     icon: Library,
-    titleKey: "home.feature9Title",
-    bodyKey: "home.feature9Body",
+    titleKey: "beta.cardTitle",
+    bodyKey: "beta.cardBody",
     statKey: "home.feature9Stat",
     statValue: "40+",
     variant: "navy",
@@ -136,6 +136,7 @@ function CardVisual({
   t: ReturnType<typeof useTranslations>;
 }) {
   if (id === "books") {
+    const betaLabel = t("beta.badge");
     // Original cover shapes in Keplerly's palette — deliberately not replicas
     // of any real publisher's artwork. Depth of field: back row blurs most.
     return (
@@ -145,6 +146,7 @@ function CardVisual({
         <span className="kf-book kf-book--mid kf-book--b3" />
         <span className="kf-book kf-book--mid kf-book--b4" />
         <span className="kf-book kf-book--front kf-book--b5" />
+        <span className="kf-books-badge">{betaLabel}</span>
         <span className="kf-mini-books-mark">
           <svg viewBox="0 0 24 24" aria-hidden>
             <circle cx="12" cy="12" r="5.4" fill="currentColor" />

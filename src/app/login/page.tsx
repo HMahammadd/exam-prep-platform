@@ -163,7 +163,7 @@ function LoginForm() {
           href="/signup"
           className="font-medium text-accent hover:underline"
         >
-          {t("auth.signUpLink")}
+          {t("beta.loginCta")}
         </LocaleLink>
       </p>
     </div>

@@ -36,7 +36,8 @@
     "menu": "Menu",
     "closeMenu": "Close menu",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "signupFree": "Sign Up Free"
   },
   "hero": {
     "line1": "Practice smarter for",
@@ -303,5 +304,28 @@
     "conditionsHighlight": "real exam conditions.",
     "conditionsBody": "Timed sections, familiar tools, and a focused interface that feels like the real test.",
     "desmosTopic": "Linear equations"
+  },
+  "beta": {
+    "badge": "Free During Beta",
+    "unlimited": "Unlimited access",
+    "noCard": "No credit card required",
+    "heroSub": "Unlimited access to every feature",
+    "ctaFree": "Start Practicing Free",
+    "trustQuestions": "5,000+ questions",
+    "trustUnlimited": "Unlimited practice",
+    "trustNoCard": "No credit card",
+    "toolsCaption": "Everything shown here is currently available for free during Beta.",
+    "cardTitle": "Everything you need. One platform.",
+    "cardBody": "No need to buy multiple books, PDFs or courses. Practice, explanations, vocabulary and analytics are already included.",
+    "footerTitle": "Currently Free During Beta",
+    "footerBody": "Enjoy unlimited access while we continue building Keplerly.",
+    "signupNote": "No payment information required.",
+    "loginCta": "Create one for free.",
+    "examBadge": "Included in Free Beta",
+    "welcomeTitle": "Welcome to Keplerly!",
+    "welcomeBody": "You currently have unlimited free access during Beta.",
+    "dismiss": "Dismiss",
+    "faqQ": "Is Keplerly really free?",
+    "faqA": "Yes. Every feature currently available on Keplerly is completely free during our Beta period, and no payment information is required. Premium features may be introduced separately later, but everything available today can be used without paying."
   }
 }

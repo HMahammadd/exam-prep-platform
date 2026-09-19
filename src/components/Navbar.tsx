@@ -47,7 +47,7 @@ export function Navbar() {
           </LocaleLink>
           <LocaleLink href="/signup" className="site-header-signup">
             <UserPlus className="h-4 w-4" aria-hidden />
-            <span className="whitespace-nowrap">{t("nav.signup")}</span>
+            <span className="whitespace-nowrap">{t("nav.signupFree")}</span>
           </LocaleLink>
           <MobileNavMenu />
         </div>

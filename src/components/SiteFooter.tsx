@@ -1,5 +1,6 @@
 "use client";
 
+import { BetaBadge } from "@/components/BetaBadge";
 import { KeplerLogo } from "./KeplerLogo";
 import { LocaleLink } from "./LocaleLink";
 import { useTranslations } from "./I18nProvider";
@@ -59,6 +60,13 @@ export function SiteFooter() {
       </div>
 
       <div>
+        <div className="mx-auto max-w-6xl px-6 pt-5">
+          <div className="beta-footer-note">
+            <BetaBadge tone="soft" />
+            <p className="beta-footer-body">{t("beta.footerBody")}</p>
+          </div>
+        </div>
+
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-muted sm:flex-row">
           <p>{t("footer.rights", { year })}</p>
           <p>{t("footer.tagline")}</p>
