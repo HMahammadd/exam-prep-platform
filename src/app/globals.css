@@ -137,17 +137,10 @@ h1.hero-copy-title {
 .hero-copy-actions {
   margin-top: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-wrap: wrap;
   justify-content: flex-start;
   align-self: flex-start;
-  gap: 0;
-}
-
-/* Badge hugs its own content rather than stretching the column. */
-.hero-copy-actions .beta-badge--hero {
-  max-width: 100%;
-  width: auto;
+  gap: 0.9rem;
 }
 
 @media (max-width: 639px) {

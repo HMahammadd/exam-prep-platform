@@ -113,8 +113,6 @@ export default function Home() {
               </h1>
 
               <div className="hero-copy-actions home-reveal home-reveal-actions">
-                <BetaBadge tone="hero" withSubline className="mb-5" />
-
                 <LocaleLink
                   href="/signup"
                   className="home-hero-cta group/practice inline-flex items-center gap-2 rounded-[0.85rem] bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
@@ -122,8 +120,6 @@ export default function Home() {
                   <GraduationCapIcon className="h-4 w-4 shrink-0" />
                   {t("beta.ctaFree")}
                 </LocaleLink>
-
-                <p className="beta-cta-note">{t("beta.noCard")}</p>
               </div>
             </div>
 
