@@ -14,7 +14,15 @@
     "day": "Gündüz",
     "dark": "Gecə",
     "toDay": "İşıqlı rejimə keç",
-    "toDark": "Qaranlıq rejimə keç"
+    "toDark": "Qaranlıq rejimə keç",
+    "light": "İşıqlı",
+    "system": "Sistem",
+    "appearance": "Görünüş",
+    "colorTheme": "Rəng teması",
+    "colorDefault": "Standart",
+    "colorBlue": "Mavi",
+    "colorOrange": "Narıncı",
+    "colorNavy": "Tünd mavi"
   },
   "nav": {
     "home": "Ana səhifə",

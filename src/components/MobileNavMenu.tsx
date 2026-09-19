@@ -7,7 +7,7 @@ import { useI18n, useTranslations } from "@/components/I18nProvider";
 import { LocaleLink } from "@/components/LocaleLink";
 import { LogInIcon } from "@/components/LogInIcon";
 import { NAV_ITEMS } from "@/components/navItems";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { useSectionNav } from "@/components/useSectionNav";
 import {
   LOCALE_COOKIE,
@@ -176,7 +176,7 @@ export function MobileNavMenu() {
 
           <div className="mobile-nav-utility">
             <span className="mobile-nav-utility-label">{t("nav.theme")}</span>
-            <ThemeToggle variant="chip" />
+            <ThemeSelector variant="chip" />
           </div>
 
           <div className="mobile-nav-divider" aria-hidden />

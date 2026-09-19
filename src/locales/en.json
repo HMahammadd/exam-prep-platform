@@ -14,7 +14,15 @@
     "day": "Day",
     "dark": "Dark",
     "toDay": "Switch to light mode",
-    "toDark": "Switch to dark mode"
+    "toDark": "Switch to dark mode",
+    "light": "Light",
+    "system": "System",
+    "appearance": "Appearance",
+    "colorTheme": "Color Theme",
+    "colorDefault": "Default",
+    "colorBlue": "Blue",
+    "colorOrange": "Orange",
+    "colorNavy": "Navy"
   },
   "nav": {
     "home": "Home",

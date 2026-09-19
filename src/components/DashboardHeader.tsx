@@ -5,7 +5,7 @@ import { AdminHeaderLink } from "./AdminHeaderLink";
 import { KeplerLogo } from "./KeplerLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LocaleLink } from "./LocaleLink";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeSelector } from "./ThemeSelector";
 
 type DashboardHeaderProps = {
   title?: string;
@@ -48,7 +48,7 @@ export function DashboardHeader({
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <AdminHeaderLink />
           <LanguageSwitcher />
-          <ThemeToggle />
+          <ThemeSelector />
           <Suspense
             fallback={
               <div

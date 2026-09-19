@@ -5667,3 +5667,389 @@ html.dark .hero-celestial-face--moon {
     background: color-mix(in oklab, currentColor 72%, transparent);
   }
 }
+
+/* —— Colour themes —————————————————————————————————————————————
+   Each theme only overrides the accent tokens. Everything else in this file
+   already reads them, so buttons, cards, borders, links, icons, gradients,
+   glows, stars and rocket trails all recolor from these few lines.
+   Accents are picked so white text on --accent clears WCAG AA (4.5:1);
+   the brand hex is kept as --accent-hover / decoration where contrast allows.
+   -------------------------------------------------------------------------- */
+
+:root[data-theme="blue"] {
+  --accent: #004e72;
+  --accent-hover: #2a6ea3;
+  --accent-soft: #dbeefb;
+  --background: #f4f9fc;
+  --card-border: #b9dcef;
+  --home-band: #eef6fb;
+  --home-dot: rgb(42 110 163 / 0.14);
+  --shadow: 0 4px 24px -4px rgb(0 78 114 / 0.16);
+  --feature-accent-bg: #004e72;
+  --feature-navy-bg: #062b3f;
+  --feature-navy-border: #14496a;
+  --feature-dim-bg: #0c6a63;
+}
+
+:root[data-theme="blue"].dark,
+.dark:root[data-theme="blue"] {
+  --accent: #4ea1d3;
+  --accent-hover: #7cbde4;
+  --accent-soft: #0d3a52;
+  --background: #051620;
+  --card: #0a2231;
+  --card-border: #143a52;
+  --home-band: #061c28;
+  --home-dot: rgb(126 190 224 / 0.1);
+  --feature-accent-bg: #00587f;
+  --feature-navy-bg: #030f17;
+}
+
+:root[data-theme="orange"] {
+  /* #FF6E42 fails AA under white text, so the button fill is a shade deeper
+     and the brand hex carries the hover/decoration roles. */
+  --accent: #c2410c;
+  --accent-hover: #ff6e42;
+  --accent-soft: #ffe6d8;
+  --background: #fff8f4;
+  --card-border: #ffd2bd;
+  --home-band: #fff3ec;
+  --home-dot: rgb(194 65 12 / 0.12);
+  --shadow: 0 4px 24px -4px rgb(194 65 12 / 0.16);
+  --feature-accent-bg: #c2410c;
+  --feature-navy-bg: #3b1707;
+  --feature-navy-border: #6b2a12;
+  --feature-dim-bg: #9a3412;
+}
+
+:root[data-theme="orange"].dark,
+.dark:root[data-theme="orange"] {
+  --accent: #ff935d;
+  --accent-hover: #ffc58f;
+  --accent-soft: #4a1d0b;
+  --background: #160b06;
+  --card: #241009;
+  --card-border: #3d1d0f;
+  --home-band: #1b0d07;
+  --home-dot: rgb(255 197 143 / 0.1);
+  --feature-accent-bg: #b83d0b;
+  --feature-navy-bg: #0f0603;
+}
+
+:root[data-theme="navy"] {
+  --accent: #133b52;
+  --accent-hover: #2a6f8f;
+  --accent-soft: #dbe8ef;
+  --background: #f5f8fa;
+  --card-border: #c2d5e0;
+  --home-band: #eff4f7;
+  --home-dot: rgb(19 59 82 / 0.13);
+  --shadow: 0 4px 24px -4px rgb(9 38 52 / 0.18);
+  --feature-accent-bg: #133b52;
+  --feature-navy-bg: #092634;
+  --feature-navy-border: #1d5069;
+  --feature-dim-bg: #0f5c56;
+}
+
+:root[data-theme="navy"].dark,
+.dark:root[data-theme="navy"] {
+  --accent: #2a6f8f;
+  --accent-hover: #4e9cbd;
+  --accent-soft: #0f3345;
+  --background: #050f16;
+  --card: #092634;
+  --card-border: #133b52;
+  --home-band: #061620;
+  --home-dot: rgb(120 175 200 / 0.1);
+  --feature-accent-bg: #16455e;
+  --feature-navy-bg: #030c12;
+}
+
+/* Interpolate tokens only while a switch is in flight. */
+.theme-transition,
+.theme-transition body,
+.theme-transition .site-header,
+.theme-transition .kepler-feature-card,
+.theme-transition .tools-media-frame,
+.theme-transition .home-below {
+  transition:
+    background-color 400ms ease,
+    border-color 400ms ease,
+    color 400ms ease,
+    box-shadow 400ms ease;
+}
+
+/* —— Theme selector panel —————————————————————————————————————— */
+
+.theme-selector {
+  position: relative;
+  display: inline-flex;
+}
+
+.theme-panel-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgb(4 10 20 / 0.32);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 240ms ease, visibility 0s linear 240ms;
+}
+
+.theme-panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  z-index: 61;
+  width: 19.5rem;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgb(255 255 255 / 0.07);
+  background: color-mix(in oklab, var(--card) 86%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  box-shadow:
+    0 24px 60px -24px rgb(4 12 24 / 0.45),
+    0 0 0 1px rgb(255 255 255 / 0.05),
+    0 0 40px -18px color-mix(in oklab, var(--accent) 60%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96) translateY(-4px);
+  transform-origin: top right;
+  transition:
+    opacity 250ms cubic-bezier(0.22, 1.2, 0.36, 1),
+    transform 250ms cubic-bezier(0.22, 1.2, 0.36, 1),
+    visibility 0s linear 250ms;
+}
+
+.theme-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateY(0);
+  transition-delay: 0s;
+}
+
+.theme-panel-grabber {
+  display: none;
+}
+
+.theme-panel-section + .theme-panel-section {
+  margin-top: 0.15rem;
+}
+
+.theme-panel-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+}
+
+.theme-panel-divider {
+  height: 1px;
+  margin: 0.9rem 0;
+  background: color-mix(in oklab, var(--card-border) 70%, transparent);
+}
+
+/* Appearance row */
+
+.theme-appearance-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.theme-appearance-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.7rem 0.3rem;
+  border-radius: 0.95rem;
+  border: 1px solid var(--card-border);
+  background: color-mix(in oklab, var(--background) 60%, transparent);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.theme-appearance-btn:hover {
+  transform: translateY(-2px);
+  color: var(--foreground);
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--card-border));
+}
+
+.theme-appearance-btn.is-active {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 65%, transparent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 20px -8px color-mix(in oklab, var(--accent) 75%, transparent);
+}
+
+.theme-appearance-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Colour cards */
+
+.theme-color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.55rem;
+}
+
+.theme-color-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.theme-color-swatch {
+  position: relative;
+  display: block;
+  height: 3.1rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: linear-gradient(135deg, var(--swatch-a) 0%, var(--swatch-b) 100%);
+  box-shadow: 0 6px 16px -10px rgb(4 12 24 / 0.5);
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms ease;
+}
+
+.theme-color-card:hover .theme-color-swatch {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 24px -12px rgb(4 12 24 / 0.55),
+    0 0 22px -8px var(--swatch-b);
+}
+
+.theme-color-card:focus-visible .theme-color-swatch {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-color-card.is-active .theme-color-swatch {
+  border-color: color-mix(in oklab, var(--accent) 80%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--accent) 70%, transparent),
+    0 10px 22px -12px rgb(4 12 24 / 0.5);
+  animation: theme-card-pulse 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes theme-card-pulse {
+  0% {
+    transform: scale(0.965);
+  }
+  55% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.theme-color-check {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  color: #fff;
+  background: color-mix(in oklab, var(--accent) 90%, transparent);
+  box-shadow: 0 2px 8px -2px rgb(0 0 0 / 0.5);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 220ms ease,
+    transform 240ms cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+
+.theme-color-card.is-active .theme-color-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.theme-color-name {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--foreground);
+  padding-left: 0.15rem;
+}
+
+/* Mobile — bottom sheet */
+
+@media (max-width: 639px) {
+  .theme-panel-scrim.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .theme-panel {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: none;
+    padding: 0.85rem 1.1rem calc(1.4rem + env(safe-area-inset-bottom));
+    border-radius: 1.5rem 1.5rem 0 0;
+    transform-origin: bottom center;
+    transform: translateY(14px) scale(1);
+  }
+
+  .theme-panel.is-open {
+    transform: translateY(0) scale(1);
+  }
+
+  .theme-panel-grabber {
+    display: block;
+    width: 2.4rem;
+    height: 0.25rem;
+    margin: 0 auto 0.9rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--muted) 45%, transparent);
+  }
+
+  .theme-appearance-btn {
+    padding: 0.85rem 0.3rem;
+    font-size: 0.78rem;
+  }
+
+  .theme-color-swatch {
+    height: 3.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-panel,
+  .theme-panel-scrim,
+  .theme-appearance-btn,
+  .theme-color-swatch,
+  .theme-color-check,
+  .theme-transition,
+  .theme-transition body {
+    transition-duration: 1ms !important;
+  }
+
+  .theme-color-card.is-active .theme-color-swatch {
+    animation: none !important;
+  }
+}

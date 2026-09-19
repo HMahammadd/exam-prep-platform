@@ -47,8 +47,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const themeScript = `
   (function () {
-    var theme = localStorage.getItem("theme");
-    if (theme === "dark") document.documentElement.classList.add("dark");
+    try {
+      var root = document.documentElement;
+      var mode = localStorage.getItem("theme");
+      var dark =
+        mode === "dark" ||
+        (mode === "system" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches);
+      if (dark) root.classList.add("dark");
+      var color = localStorage.getItem("color-theme");
+      if (color && color !== "default") root.setAttribute("data-theme", color);
+    } catch (e) {}
   })();
 `;
 

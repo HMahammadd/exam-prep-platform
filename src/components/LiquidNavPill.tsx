@@ -10,7 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useI18n } from "@/components/I18nProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { NAV_ITEMS } from "@/components/navItems";
 import { useSectionNav } from "@/components/useSectionNav";
 import { withLocale } from "@/lib/i18n/config";
@@ -325,7 +325,7 @@ export function LiquidNavPill({
         })}
 
         <span className="liquid-nav-divider" aria-hidden />
-        <ThemeToggle variant="nav" />
+        <ThemeSelector variant="nav" />
       </div>
     </nav>
   );

@@ -2,7 +2,7 @@
 
 import { KeplerLogo } from "./KeplerLogo";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeSelector } from "./ThemeSelector";
 
 export function AuthHeader() {
   return (
@@ -11,7 +11,7 @@ export function AuthHeader() {
         <KeplerLogo />
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageSwitcher />
-          <ThemeToggle />
+          <ThemeSelector />
         </div>
       </div>
     </header>
