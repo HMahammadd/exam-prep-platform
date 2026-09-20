@@ -141,8 +141,6 @@ export function SatShell({
             </button>
           </div>
 
-          <div className="sat-rail-divider" aria-hidden />
-
           <nav
             className="sat-nav"
             style={{ "--active-row": activeIndex } as CSSProperties}
@@ -154,7 +152,9 @@ export function SatShell({
               const active = Boolean(href) && pathname.endsWith(href as string);
               const content = (
                 <>
-                  <Icon className="sat-nav-icon" aria-hidden />
+                  <span className="sat-nav-slot">
+                    <Icon className="sat-nav-icon" aria-hidden />
+                  </span>
                   <span className="sat-nav-label">{label}</span>
                   {!href ? <span className="sat-nav-soon" aria-hidden /> : null}
                 </>
@@ -195,7 +195,9 @@ export function SatShell({
               data-tip={t("nav.logout") === "nav.logout" ? "Log out" : t("nav.logout")}
               title={t("nav.logout") === "nav.logout" ? "Log out" : t("nav.logout")}
             >
-              <LogOut className="sat-nav-icon" aria-hidden />
+              <span className="sat-nav-slot">
+                <LogOut className="sat-nav-icon" aria-hidden />
+              </span>
               <span className="sat-nav-label">Log out</span>
             </LocaleLink>
           </div>

@@ -24,6 +24,7 @@ import type {
 
 const LANGUAGES: TranslationLanguage[] = ["AZE", "RUS"];
 const NOTE_SAVE_DELAY_MS = 700;
+const SAVE_FAILED = "Couldn't save to your account — changes may not stick.";
 
 const COLUMN_LABEL: Record<VocabularyColumnId, string> = {
   star: "",
@@ -81,12 +82,57 @@ export function VocabularyTable({
   );
   const [dragOverColumn, setDragOverColumn] =
     useState<VocabularyColumnId | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const langMenuRef = useRef<HTMLDivElement>(null);
   const noteTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   // The drop handler must read the drag source synchronously — a state value
   // would still be the pre-render one if both events land in the same tick.
   const dragColumnRef = useRef<VocabularyColumnId | null>(null);
+
+  const noteInputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  /**
+   * Sizes the note editor to its own content. A textarea never shrinks on its
+   * own, so the height is cleared first and `scrollHeight` then reports what
+   * the text actually needs. Borders are outside `scrollHeight` but inside the
+   * border-box height being set, so they are added back — otherwise the box
+   * lands two pixels short and a scrollbar flickers in at every line break.
+   */
+  const fitNoteInput = (input: HTMLTextAreaElement | null) => {
+    if (!input) return;
+    input.style.height = "auto";
+    const borders = input.offsetHeight - input.clientHeight;
+    input.style.height = `${input.scrollHeight + borders}px`;
+  };
+
+  // Fits on mount, so an already-long note opens at full height rather than
+  // one row. Typing is handled in onDraftNoteChange, which is also what makes
+  // it shrink back down when text is deleted.
+  const attachNoteInput = (input: HTMLTextAreaElement | null) => {
+    noteInputRef.current = input;
+    fitNoteInput(input);
+  };
+
+  // A height measured at one width is wrong at another, and the notes column
+  // is sized by its own contents — so a note long enough to widen the column
+  // changes the very width its height was just measured against. Same story
+  // when the window resizes or the rail collapses mid-edit. Width-only, since
+  // reacting to our own height write would just re-measure what we set.
+  useEffect(() => {
+    const input = noteInputRef.current;
+    if (!input) return;
+
+    let lastWidth = input.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (input.clientWidth === lastWidth) return;
+      lastWidth = input.clientWidth;
+      fitNoteInput(input);
+    });
+
+    observer.observe(input);
+    return () => observer.disconnect();
+  }, [editingWordId]);
 
   useEffect(() => {
     if (!langMenuOpen) return;
@@ -112,19 +158,35 @@ export function VocabularyTable({
     };
   }, []);
 
-  const toggleStar = (wordId: string) => {
-    setStarred((prev) => {
-      const next = { ...prev, [wordId]: !prev[wordId] };
-      void setWordStarred(wordId, Boolean(next[wordId]));
-      return next;
-    });
+  const toggleStar = async (wordId: string) => {
+    const next = !starred[wordId];
+    setStarred((prev) => ({ ...prev, [wordId]: next }));
+
+    const result = await setWordStarred(wordId, next);
+    if (result.success) {
+      setSaveError(null);
+      return;
+    }
+
+    // A star's whole meaning is "this is saved", so put it back rather than
+    // leaving the row claiming a write that never landed. Skip the revert if
+    // the student has toggled it again in the meantime.
+    setStarred((prev) =>
+      prev[wordId] === next ? { ...prev, [wordId]: !next } : prev
+    );
+    setSaveError(result.error ?? SAVE_FAILED);
   };
 
-  const chooseLanguage = (lang: TranslationLanguage) => {
+  // Notes and preferences keep the student's local change even when the write
+  // fails — the value is still useful for this session — but they say so
+  // instead of pretending it persisted.
+  const chooseLanguage = async (lang: TranslationLanguage) => {
     setLangMenuOpen(false);
     if (lang === translationLanguage) return;
     setTranslationLanguage(lang);
-    void saveVocabularyPrefs({ translationLanguage: lang });
+
+    const result = await saveVocabularyPrefs({ translationLanguage: lang });
+    setSaveError(result.success ? null : result.error ?? SAVE_FAILED);
   };
 
   const openNoteEditor = (wordId: string) => {
@@ -132,9 +194,14 @@ export function VocabularyTable({
     setDraftNote(notes[wordId] ?? "");
   };
 
+  const persistNote = async (wordId: string, value: string) => {
+    const result = await saveWordNote(wordId, value);
+    setSaveError(result.success ? null : result.error ?? SAVE_FAILED);
+  };
+
   const flushNoteSave = (wordId: string, value: string) => {
     if (noteTimerRef.current) clearTimeout(noteTimerRef.current);
-    void saveWordNote(wordId, value);
+    void persistNote(wordId, value);
   };
 
   const onDraftNoteChange = (
@@ -142,12 +209,15 @@ export function VocabularyTable({
     event: ChangeEvent<HTMLTextAreaElement>
   ) => {
     const value = event.target.value;
+    fitNoteInput(event.currentTarget);
     setDraftNote(value);
     setNotes((prev) => ({ ...prev, [wordId]: value }));
 
+    // One write per pause in typing, not one per keystroke. Closing the editor
+    // (onBlur) flushes whatever is still pending.
     if (noteTimerRef.current) clearTimeout(noteTimerRef.current);
     noteTimerRef.current = setTimeout(() => {
-      void saveWordNote(wordId, value);
+      void persistNote(wordId, value);
     }, NOTE_SAVE_DELAY_MS);
   };
 
@@ -156,18 +226,23 @@ export function VocabularyTable({
     setEditingWordId(null);
   };
 
-  const reorderColumns = (from: VocabularyColumnId, to: VocabularyColumnId) => {
+  const reorderColumns = async (
+    from: VocabularyColumnId,
+    to: VocabularyColumnId
+  ) => {
     if (from === to) return;
-    setColumnOrder((prev) => {
-      const next = [...prev];
-      const fromIndex = next.indexOf(from);
-      const toIndex = next.indexOf(to);
-      if (fromIndex === -1 || toIndex === -1) return prev;
-      next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, from);
-      void saveVocabularyPrefs({ columnOrder: next });
-      return next;
-    });
+
+    const next = [...columnOrder];
+    const fromIndex = next.indexOf(from);
+    const toIndex = next.indexOf(to);
+    if (fromIndex === -1 || toIndex === -1) return;
+    next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, from);
+
+    setColumnOrder(next);
+
+    const result = await saveVocabularyPrefs({ columnOrder: next });
+    setSaveError(result.success ? null : result.error ?? SAVE_FAILED);
   };
 
   const onHeaderDragStart = (colId: VocabularyColumnId) => (
@@ -190,7 +265,7 @@ export function VocabularyTable({
   ) => {
     event.preventDefault();
     const source = dragColumnRef.current;
-    if (source) reorderColumns(source, colId);
+    if (source) void reorderColumns(source, colId);
     dragColumnRef.current = null;
     setDragColumn(null);
     setDragOverColumn(null);
@@ -252,7 +327,7 @@ export function VocabularyTable({
                     <button
                       type="button"
                       className={`vocab-lang-option${active ? " is-active" : ""}`}
-                      onClick={() => chooseLanguage(lang)}
+                      onClick={() => void chooseLanguage(lang)}
                     >
                       <span>{lang}</span>
                       {active ? (
@@ -279,7 +354,7 @@ export function VocabularyTable({
           <button
             type="button"
             className={`vocab-star-toggle${isStarred ? " is-starred" : ""}`}
-            onClick={() => toggleStar(word.id)}
+            onClick={() => void toggleStar(word.id)}
             aria-pressed={isStarred}
             aria-label={isStarred ? `Unsave ${word.word}` : `Save ${word.word}`}
           >
@@ -301,6 +376,7 @@ export function VocabularyTable({
           return (
             <textarea
               autoFocus
+              ref={attachNoteInput}
               className="vocab-note-input"
               rows={1}
               value={draftNote}
@@ -351,6 +427,15 @@ export function VocabularyTable({
 
   return (
     <div className="vocab-table-scroll">
+      {saveError ? (
+        <p
+          role="status"
+          className="mb-3 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400"
+        >
+          {saveError}
+        </p>
+      ) : null}
+
       <table
         className="vocab-table"
         style={{ "--vocab-cols": gridTemplate } as CSSProperties}
