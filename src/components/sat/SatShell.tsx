@@ -27,6 +27,7 @@ import { useTranslations } from "@/components/I18nProvider";
 import { KeplerLogo } from "@/components/KeplerLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LocaleLink } from "@/components/LocaleLink";
+import { SatBackdrop } from "@/components/sat/SatBackdrop";
 import { ThemeSelector } from "@/components/ThemeSelector";
 
 type NavItem = {
@@ -101,6 +102,8 @@ export function SatShell({
 
   return (
     <div className={`sat-shell${collapsed ? " is-collapsed" : ""}`}>
+      <SatBackdrop />
+
       <div
         className={`sat-drawer-scrim${drawerOpen ? " is-open" : ""}`}
         aria-hidden

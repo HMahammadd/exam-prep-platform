@@ -7196,14 +7196,14 @@ a:hover .kepler-logo-mark {
   --sat-gap: 24px;
   position: relative;
   min-height: 100dvh;
-  background: var(--home-band);
+  background: var(--sat-canvas);
 }
 
 .sat-shell.is-collapsed {
   --sat-rail: 74px;
 }
 
-/* subtle dotted texture + radial glow, same language as the homepage */
+/* Canvas + dotted texture; the richer layers live in SatBackdrop. */
 .sat-shell::before {
   content: "";
   position: fixed;
@@ -7212,28 +7212,8 @@ a:hover .kepler-logo-mark {
   pointer-events: none;
   background-image: radial-gradient(circle, var(--home-dot) 0.75px, transparent 1px);
   background-size: var(--home-dot-gap) var(--home-dot-gap);
-}
-
-.sat-shell::after {
-  content: "";
-  position: fixed;
-  top: -10%;
-  left: 18%;
-  width: 48rem;
-  height: 32rem;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--accent) 14%, transparent) 0%,
-    transparent 70%
-  );
-  filter: blur(60px);
   opacity: 0.55;
 }
-
-/* Sidebar */
 
 .sat-sidebar {
   position: fixed;
@@ -7950,5 +7930,234 @@ a:hover .kepler-logo-mark {
 @media (prefers-reduced-motion: reduce) {
   .sat-shell.is-collapsed .sat-nav-item {
     transition: none !important;
+  }
+}
+
+/* —— SAT backdrop ——————————————————————————————————————————————
+   Six layers, none above 8% opacity: canvas, dust, stars, orbits, academic
+   line art, ambient glow. Decorative and inert. */
+
+:root {
+  --sat-canvas: #f8fbff;
+  --sat-ink: #2563eb;
+}
+
+.dark {
+  --sat-canvas: #070d18;
+  --sat-ink: #93c5fd;
+}
+
+.sat-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Layer 2 — galaxy dust, corners only */
+
+.sat-bd-dust {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.sat-bd-dust--tl {
+  top: -18%;
+  left: -12%;
+  width: 46rem;
+  height: 34rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--sat-ink) 22%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.06;
+  animation: sat-bd-drift 52s ease-in-out infinite;
+}
+
+.sat-bd-dust--br {
+  right: -14%;
+  bottom: -20%;
+  width: 52rem;
+  height: 36rem;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, #7c5cff 20%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.05;
+  animation: sat-bd-drift 64s ease-in-out infinite reverse;
+}
+
+@keyframes sat-bd-drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 2.5% -2%;
+  }
+}
+
+/* Layer 6 — ambient glow behind the working column */
+
+.sat-bd-glow {
+  position: absolute;
+  top: -8%;
+  left: 20%;
+  width: 54rem;
+  height: 30rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--sat-ink) 26%, transparent) 0%,
+    transparent 72%
+  );
+  filter: blur(70px);
+  opacity: 0.05;
+  animation: sat-bd-breathe 26s ease-in-out infinite;
+}
+
+@keyframes sat-bd-breathe {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.07;
+  }
+}
+
+/* Layers 3–5 — one SVG of line art */
+
+.sat-bd-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--sat-ink);
+}
+
+.sat-bd-art g {
+  stroke: currentColor;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+/* orbital curves + Saturn silhouette */
+.sat-bd-orbits {
+  stroke-width: 1.1;
+  opacity: 0.055;
+}
+
+.sat-bd-constellation {
+  stroke-width: 1;
+  opacity: 0.07;
+}
+
+.sat-bd-constellation circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* academic texture sits lowest — 2–4% */
+.sat-bd-paper,
+.sat-bd-bubbles,
+.sat-bd-calc {
+  stroke-width: 1.2;
+  opacity: 0.035;
+}
+
+.sat-bd-graph {
+  opacity: 0.04;
+}
+
+.sat-bd-grid {
+  stroke-width: 0.8;
+  opacity: 0.6;
+}
+
+.sat-bd-axis {
+  stroke-width: 1.3;
+}
+
+.sat-bd-curve {
+  stroke-width: 1.6;
+}
+
+.sat-bd-rings {
+  stroke-width: 1.4;
+  opacity: 0.045;
+}
+
+.sat-bd-ring-arc {
+  stroke-width: 3;
+}
+
+/* stars + particles */
+.sat-bd-stars {
+  opacity: 0.075;
+}
+
+.sat-bd-star {
+  fill: currentColor;
+  stroke: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sat-bd-twinkle 7s ease-in-out infinite;
+}
+
+@keyframes sat-bd-twinkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    scale: 0.9;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.12;
+  }
+}
+
+.sat-bd-particles {
+  opacity: 0.05;
+}
+
+.sat-bd-particles circle {
+  fill: currentColor;
+  stroke: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sat-bd-float 22s ease-in-out infinite;
+}
+
+@keyframes sat-bd-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+/* The art is margin decoration; drop the busiest pieces on small screens. */
+@media (max-width: 899px) {
+  .sat-bd-paper,
+  .sat-bd-calc,
+  .sat-bd-graph,
+  .sat-bd-rings {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sat-bd-dust,
+  .sat-bd-glow,
+  .sat-bd-star,
+  .sat-bd-particles circle {
+    animation: none !important;
   }
 }
