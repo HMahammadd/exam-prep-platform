@@ -2,8 +2,10 @@
 
 import { createClient } from "@/lib/supabaseServer";
 import { getCachedUser } from "@/lib/cached-auth";
+import { VOCABULARY_WORDS } from "@/lib/vocabulary-words";
 import {
   DEFAULT_VOCABULARY_COLUMN_ORDER,
+  isVocabularyColumnId,
   mapVocabularyUserState,
   type TranslationLanguage,
   type UserVocabularyPrefsRow,
@@ -18,6 +20,27 @@ const EMPTY_STATE: VocabularyUserState = {
   translationLanguage: "AZE",
   columnOrder: DEFAULT_VOCABULARY_COLUMN_ORDER,
 };
+
+/**
+ * Server Actions are a public endpoint, so the word id is checked against the
+ * static list rather than trusted from the client. RLS already stops a student
+ * writing someone else's rows; this stops them filling their own with ids that
+ * match no word. When "Your Words" lands, student-authored words get their own
+ * table instead of being smuggled in here — see the migration's header note.
+ */
+const KNOWN_WORD_IDS = new Set(VOCABULARY_WORDS.map((word) => word.id));
+
+function isKnownWordId(wordId: string): boolean {
+  return KNOWN_WORD_IDS.has(wordId);
+}
+
+function isValidColumnOrder(order: VocabularyColumnId[]): boolean {
+  return (
+    order.length === DEFAULT_VOCABULARY_COLUMN_ORDER.length &&
+    new Set(order).size === order.length &&
+    order.every(isVocabularyColumnId)
+  );
+}
 
 export async function getMyVocabularyState(): Promise<VocabularyUserState> {
   const user = await getCachedUser();
@@ -56,8 +79,11 @@ export async function setWordStarred(
 ): Promise<{ success: boolean; error?: string }> {
   const user = await getCachedUser();
   if (!user) return { success: false, error: "Not authenticated" };
+  if (!isKnownWordId(wordId)) return { success: false, error: "Unknown word." };
 
   const supabase = await createClient();
+  // Partial upsert: only the columns in this payload are written, so starring
+  // a word never clobbers the note attached to the same row.
   const { error } = await supabase.from("user_vocabulary_words").upsert(
     {
       user_id: user.id,
@@ -82,8 +108,10 @@ export async function saveWordNote(
 ): Promise<{ success: boolean; error?: string }> {
   const user = await getCachedUser();
   if (!user) return { success: false, error: "Not authenticated" };
+  if (!isKnownWordId(wordId)) return { success: false, error: "Unknown word." };
 
   const supabase = await createClient();
+  // Same partial upsert in reverse: saving a note leaves `starred` alone.
   const { error } = await supabase.from("user_vocabulary_words").upsert(
     {
       user_id: user.id,
@@ -108,6 +136,9 @@ export async function saveVocabularyPrefs(input: {
 }): Promise<{ success: boolean; error?: string }> {
   const user = await getCachedUser();
   if (!user) return { success: false, error: "Not authenticated" };
+  if (input.columnOrder && !isValidColumnOrder(input.columnOrder)) {
+    return { success: false, error: "Invalid column order." };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.from("user_vocabulary_prefs").upsert(

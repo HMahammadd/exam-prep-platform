@@ -62,7 +62,7 @@ export function KeplerLogo({
         className={`kepler-logo-mark ${markClass} hidden object-contain dark:block`}
       />
       <span
-        className={`font-heading ${wordmarkClass} font-semibold leading-none tracking-tight text-foreground`}
+        className={`kepler-logo-word font-heading ${wordmarkClass} font-semibold leading-none tracking-tight text-foreground`}
       >
         Keplerly
       </span>

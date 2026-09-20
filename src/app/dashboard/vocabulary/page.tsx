@@ -1,15 +1,14 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 import { SatShell } from "@/components/sat/SatShell";
 import { VocabularyPage } from "@/components/vocabulary/VocabularyPage";
 import { VOCABULARY_WORDS } from "@/lib/vocabulary-words";
 import { getMyVocabularyState } from "./actions";
 
 export default async function DashboardVocabularyPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getCachedUser is request-memoized, so this guard and the getUser() inside
+  // getMyVocabularyState below share a single auth round-trip.
+  const user = await getCachedUser();
 
   if (!user) {
     redirect("/login");

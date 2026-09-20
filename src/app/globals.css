@@ -7187,13 +7187,30 @@ a:hover .kepler-logo-mark {
 }
 
 /* —— SAT workspace shell ————————————————————————————————————————
-   Floating sidebar + minimal topbar, built on the same tokens as the rest of
-   the site so it reads as Keplerly rather than a second design language. */
+   Full-height navigation rail + minimal topbar, built on the same tokens as
+   the rest of the site so it reads as Keplerly rather than a second design
+   language. */
 
 .sat-shell {
-  --sat-rail: 260px;
-  --sat-rail-collapsed: 80px;
-  --sat-row: 46px;
+  /* Rail geometry. Collapsing changes exactly one of these — --sat-rail —
+     and every row, icon slot, divider and indicator is expressed in terms of
+     it, so both states are one layout at two widths rather than two layouts
+     that have to be kept in sync. The collapsed width is, by construction,
+     one icon slot plus the rail's own padding: that is what keeps the icons
+     on the same vertical axis in both states. */
+  --sat-pad: 16px;
+  --sat-tile: 40px;
+  --sat-rail: 240px;
+  /* +1px for the rail's own right border, so the icon slot inside still
+     measures a full tile and the indicator lines up with it exactly. */
+  --sat-rail-collapsed: calc(var(--sat-tile) + var(--sat-pad) * 2 + 1px);
+  --sat-row: 40px;
+  --sat-row-gap: 4px;
+  --sat-head: 44px;
+  --sat-radius: 11px;
+  --sat-anim: 260ms;
+  --sat-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Gutter for the content column only — the rail sits flush to the edges. */
   --sat-gap: 24px;
   position: relative;
   min-height: 100dvh;
@@ -7214,80 +7231,100 @@ a:hover .kepler-logo-mark {
 
 .sat-sidebar {
   position: fixed;
-  top: var(--sat-gap);
-  left: var(--sat-gap);
-  bottom: var(--sat-gap);
+  top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 40;
   width: var(--sat-rail);
-  border-radius: 26px;
-  border: 1px solid var(--card-border);
+  border-right: 1px solid var(--card-border);
   background: var(--card);
-  box-shadow:
-    0 20px 50px -28px rgb(15 30 60 / 0.35),
-    0 0 0 1px rgb(255 255 255 / 0.04) inset;
-  /* visible so collapsed tooltips can escape the rail; the inner column and
-     each label clip their own overflow during the width animation */
+  box-shadow: 18px 0 40px -34px rgb(15 30 60 / 0.45);
+  /* Visible so the collapsed tooltips can escape the rail; the labels clip
+     themselves during the width animation instead (see .sat-nav-label). */
   overflow: visible;
   transition:
-    width 300ms ease-in-out,
+    width var(--sat-anim) var(--sat-ease),
     background 300ms ease,
-    box-shadow 300ms ease;
+    border-color 300ms ease;
 }
 
 .sat-sidebar-inner {
-  border-radius: inherit;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1.1rem 0.85rem 1rem;
+  min-height: 0;
+  padding: 10px var(--sat-pad) 12px;
+  overflow: visible;
 }
 
+/* Header — logo + collapse toggle, closed by the rail's single top divider.
+   The border is pulled full-bleed so the line spans the rail at both
+   widths; nothing else in here draws one. */
 .sat-sidebar-head {
+  position: relative;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.35rem 0.9rem;
-  margin-bottom: 0.65rem;
+  height: var(--sat-head);
+  margin: 0 calc(var(--sat-pad) * -1) 10px;
+  padding: 0 var(--sat-pad);
   border-bottom: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
 }
 
 .sat-sidebar-brand {
+  /* flex rather than the default inline box, so the brand's height is the
+     logo's and it centres on the head's axis instead of on a line box. */
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  /* The brand's box is its clip edge, so it is sized to stop 4px short of
+     the toggle's lane — reserving that lane with padding instead would not
+     work, since `overflow` clips at the padding box and the wordmark would
+     still paint over the toggle mid-animation. It never drops below one
+     tile, so the mark itself is never clipped once the rail is narrow. */
+  width: max(var(--sat-tile), calc(100% - var(--sat-tile) - 4px));
   min-width: 0;
   overflow: hidden;
-  transition: opacity 260ms ease;
+  transition: opacity 200ms ease;
 }
 
-.is-collapsed .sat-sidebar-brand {
-  opacity: 0;
-  pointer-events: none;
+/* The planet fills the same slot the nav icons use, so it stays on the
+   rail's icon axis — and at its own size — when the labels go. */
+.sat-sidebar-brand .kepler-logo-mark {
+  width: var(--sat-tile);
+  height: var(--sat-tile);
 }
 
+.sat-sidebar-brand .kepler-logo-word {
+  /* Delayed on the way in so the rail has already widened underneath it;
+     the collapsed block drops the delay for the way out. */
+  transition: opacity 180ms ease 110ms;
+}
+
+/* Parked against the head's right edge, which in the collapsed state is the
+   icon axis itself: the toggle glides there with the rail rather than being
+   re-anchored mid-animation. */
 .sat-collapse-btn {
-  margin-left: auto;
+  position: absolute;
+  top: 50%;
+  right: var(--sat-pad);
+  translate: 0 -50%;
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 0.7rem;
+  width: var(--sat-tile);
+  height: var(--sat-tile);
+  border-radius: var(--sat-radius);
   color: var(--muted);
   background: color-mix(in oklab, var(--muted) 10%, transparent);
   transition:
-    background 250ms ease,
-    color 250ms ease,
-    translate 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    background 200ms ease,
+    color 200ms ease,
+    opacity 200ms ease;
 }
 
 .sat-collapse-btn:hover {
   color: var(--foreground);
   background: color-mix(in oklab, var(--muted) 18%, transparent);
-}
-
-.is-collapsed .sat-collapse-btn {
-  margin: 0 auto;
 }
 
 /* Nav + sliding indicator */
@@ -7297,33 +7334,24 @@ a:hover .kepler-logo-mark {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  /* Must stay fully visible: a scrolling axis forces the other axis to `auto`,
-     which would clip the collapsed tooltips. Short viewports scroll the rail
-     itself instead (below). */
+  gap: var(--sat-row-gap);
+  /* Must stay fully visible: a scrolling axis forces the other axis to
+     `auto`, which would clip the collapsed tooltips. Short viewports scroll
+     the rail itself instead (below). */
   overflow: visible;
 }
 
-@media (max-height: 720px) {
-  .sat-sidebar-inner {
-    overflow-y: auto;
-    scrollbar-width: none;
-  }
-
-  .sat-sidebar-inner::-webkit-scrollbar {
-    display: none;
-  }
-}
-
+/* Stretched to the nav's own box, so its width is whatever the rail is
+   mid-animation — no second width transition to drift out of step with. */
 .sat-nav-indicator {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   height: var(--sat-row);
-  border-radius: 0.85rem;
+  border-radius: var(--sat-radius);
   background: var(--accent-soft);
-  translate: 0 calc(var(--active-row, 0) * (var(--sat-row) + 2px));
+  translate: 0 calc(var(--active-row, 0) * (var(--sat-row) + var(--sat-row-gap)));
   transition: translate 380ms cubic-bezier(0.34, 1.16, 0.42, 1);
   pointer-events: none;
 }
@@ -7335,9 +7363,10 @@ a:hover .kepler-logo-mark {
   left: 0;
   translate: 0 -50%;
   width: 3px;
-  height: 18px;
+  height: 16px;
   border-radius: 0 3px 3px 0;
   background: var(--accent);
+  transition: opacity 160ms ease;
 }
 
 .sat-nav-item {
@@ -7345,24 +7374,30 @@ a:hover .kepler-logo-mark {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  /* never squeezed: the indicator's offset is computed from --sat-row, so a
+     row that shrank to fit would slide out from under it */
+  flex: 0 0 auto;
   height: var(--sat-row);
-  padding: 0 0.7rem;
-  border-radius: 0.85rem;
+  padding: 0;
+  border-radius: var(--sat-radius);
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 500;
   white-space: nowrap;
-  transition: color 240ms ease, background 240ms ease;
+  transition: color 200ms ease, background 200ms ease;
 }
 
 .sat-nav-item:hover {
   color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
 }
 
-.sat-nav-item.is-active {
+.sat-nav-item.is-active,
+.sat-nav-item.is-active:hover {
   color: var(--accent);
   font-weight: 600;
+  /* the indicator paints the active fill, at both widths */
+  background: transparent;
 }
 
 .sat-nav-item.is-upcoming {
@@ -7370,10 +7405,26 @@ a:hover .kepler-logo-mark {
   cursor: default;
 }
 
+/* Upcoming rows keep the dot and take no hover feedback, so they never read
+   as enabled. */
+.sat-nav-item.is-upcoming:hover {
+  color: var(--muted);
+  background: transparent;
+}
+
+/* Fixed slot rather than a padded row: the icon sits on the same axis at
+   both rail widths, so nothing slides sideways when the labels go. */
+.sat-nav-slot {
+  flex: 0 0 var(--sat-tile);
+  display: grid;
+  place-items: center;
+  width: var(--sat-tile);
+  height: 100%;
+}
+
 .sat-nav-icon {
-  flex: 0 0 auto;
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.05rem;
+  height: 1.05rem;
   stroke-width: 2;
   transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -7382,35 +7433,31 @@ a:hover .kepler-logo-mark {
   transform: scale(1.08);
 }
 
+.sat-nav-item.is-upcoming:hover .sat-nav-icon {
+  transform: none;
+}
+
+/* Clips itself as its own box narrows with the rail, so the text is never
+   re-wrapped or re-laid-out — it just fades and is cut off. */
 .sat-nav-label {
   flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  transition: opacity 220ms ease;
+  transition: opacity 180ms ease 110ms;
 }
 
+/* Out of flow, so the row's flex layout is the icon slot plus the label and
+   nothing else. */
 .sat-nav-soon {
-  flex: 0 0 auto;
-  width: 0.35rem;
-  height: 0.35rem;
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  translate: 0 -50%;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: color-mix(in oklab, var(--muted) 60%, transparent);
-}
-
-.is-collapsed .sat-nav-label,
-.is-collapsed .sat-nav-soon {
-  opacity: 0;
-  width: 0;
-  pointer-events: none;
-}
-
-.is-collapsed .sat-nav-item {
-  justify-content: center;
-  padding: 0;
-}
-
-.is-collapsed .sat-nav-item .sat-nav-icon {
-  margin: 0 auto;
+  transition: opacity 180ms ease 110ms;
 }
 
 /* Tooltip when collapsed */
@@ -7418,7 +7465,7 @@ a:hover .kepler-logo-mark {
 .is-collapsed .sat-nav-item::after {
   content: attr(data-tip);
   position: absolute;
-  left: calc(100% + 0.9rem);
+  left: calc(100% + 0.75rem);
   top: 50%;
   translate: 0 -50%;
   padding: 0.3rem 0.6rem;
@@ -7439,14 +7486,32 @@ a:hover .kepler-logo-mark {
   translate: 2px -50%;
 }
 
-.sat-sidebar-inner::-webkit-scrollbar {
-  display: none;
+/* Short viewports: the nav list alone scrolls, so the header and Log out
+   stay pinned where they are instead of being pushed off the end of the
+   rail. A scrolling axis clips the other one, so the collapsed tooltips are
+   traded away at these heights only. */
+@media (max-height: 640px) {
+  .sat-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: clip;
+    scrollbar-width: none;
+  }
+
+  .sat-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sat-rail-spacer {
+    display: none;
+  }
 }
 
 .sat-sidebar-foot {
   flex: 0 0 auto;
-  padding-top: 0.6rem;
-  margin-top: 0.4rem;
+  margin: 8px calc(var(--sat-pad) * -1) 0;
+  padding: 8px var(--sat-pad) 0;
   border-top: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
 }
 
@@ -7456,8 +7521,10 @@ a:hover .kepler-logo-mark {
   position: relative;
   z-index: 1;
   min-height: 100dvh;
-  padding-left: calc(var(--sat-rail) + var(--sat-gap) * 2);
-  transition: padding-left 300ms ease-in-out;
+  /* Tracks the rail with the rail's own timing, so the content column glides
+     into the reclaimed space instead of snapping after it. */
+  padding-left: var(--sat-rail);
+  transition: padding-left var(--sat-anim) var(--sat-ease);
 }
 
 .sat-topbar {
@@ -7699,33 +7766,21 @@ a:hover .kepler-logo-mark {
 
 @media (max-width: 767px) {
   .sat-shell {
-    --sat-gap: 14px;
+    --sat-gap: 16px;
   }
 
+  /* Off-canvas drawer: always the full-width layout, even while the desktop
+     rail is stored collapsed (the collapsed block below is desktop-only). */
   .sat-sidebar {
     --sat-rail: 248px;
     width: var(--sat-rail);
-    translate: calc(-100% - var(--sat-gap) * 2) 0;
-    transition: translate 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    translate: -100% 0;
+    box-shadow: 18px 0 44px -28px rgb(4 10 20 / 0.45);
+    transition: translate 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .sat-sidebar.is-open {
     translate: 0 0;
-  }
-
-  .sat-sidebar .sat-nav-label,
-  .sat-sidebar .sat-nav-soon {
-    opacity: 1;
-    width: auto;
-  }
-
-  .sat-sidebar .sat-nav-item {
-    justify-content: flex-start;
-    padding: 0 0.7rem;
-  }
-
-  .sat-sidebar-brand {
-    opacity: 1;
   }
 
   .sat-collapse-btn {
@@ -7772,6 +7827,13 @@ a:hover .kepler-logo-mark {
 
 @media (prefers-reduced-motion: reduce) {
   .sat-sidebar,
+  .sat-sidebar-brand,
+  .sat-sidebar-brand .kepler-logo-word,
+  .sat-collapse-btn,
+  .sat-nav-item,
+  .sat-nav-icon,
+  .sat-nav-label,
+  .sat-nav-soon,
   .sat-main,
   .sat-nav-indicator,
   .sat-card,
@@ -7783,139 +7845,81 @@ a:hover .kepler-logo-mark {
 }
 
 /* —— Collapsed rail —————————————————————————————————————————————
-   Shrinks the rail from 260px to 80px (border, radius, shadow, and top/
-   bottom inset stay the same). .sat-main's padding-left tracks the same
-   --sat-rail value with its own transition, so the content column glides
-   into the reclaimed space in step with the rail instead of snapping. */
+   Desktop only — below 768px the rail is a drawer and always full width.
+   Collapsing swaps --sat-rail for one icon slot plus the rail's padding and
+   fades the text; rows, icon slots, gaps and the indicator are all sized off
+   that one value, so the icons hold their axis and their vertical rhythm
+   while the width animates, and .sat-main's padding-left rides the same
+   value with the same timing. */
 
-.sat-shell.is-collapsed {
-  --sat-rail: var(--sat-rail-collapsed);
-  --sat-tile: 48px;
-  --sat-step: 8px;
-  --sat-row: calc(var(--sat-tile) + var(--sat-step));
+@media (min-width: 768px) {
+  .sat-shell.is-collapsed {
+    --sat-rail: var(--sat-rail-collapsed);
+  }
+
+  /* Out fast and without the delay used on the way in, so the text is gone
+     well before its box has finished narrowing onto it. */
+  .sat-shell.is-collapsed .sat-nav-label,
+  .sat-shell.is-collapsed .sat-nav-soon,
+  .sat-shell.is-collapsed .sat-sidebar-brand .kepler-logo-word {
+    opacity: 0;
+    pointer-events: none;
+    transition-duration: 120ms;
+    transition-delay: 0s;
+  }
+
+  /* The wordmark's clip edge arrives sooner than the labels' — it is the
+     lane the toggle is gliding into — so it leaves a little sooner too. */
+  .sat-shell.is-collapsed .sat-sidebar-brand .kepler-logo-word {
+    transition-duration: 90ms;
+  }
+
+  /* A 3px stub beside a centred icon reads as a rendering glitch, so the
+     active bar goes with the labels and the tile carries the active state. */
+  .sat-shell.is-collapsed .sat-nav-indicator::after {
+    opacity: 0;
+  }
+
+  /* Once the rail is one slot wide the logo and the toggle want the same
+     spot, so they cross-fade in place: neither ever moves to make room. */
+  .sat-shell.is-collapsed .sat-collapse-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sat-shell.is-collapsed .sat-sidebar-head:focus-within .sat-collapse-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sat-shell.is-collapsed .sat-sidebar-head:focus-within .sat-sidebar-brand {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
-.sat-shell.is-collapsed .sat-sidebar-inner {
-  align-items: center;
+@media (hover: hover) and (min-width: 768px) {
+  .sat-shell.is-collapsed .sat-sidebar:hover .sat-collapse-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sat-shell.is-collapsed .sat-sidebar:hover .sat-sidebar-brand {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
-.sat-shell.is-collapsed .sat-sidebar-head {
-  justify-content: center;
-}
-
-.sat-shell.is-collapsed .sat-sidebar-brand {
-  display: none;
-}
-
-.sat-shell.is-collapsed .sat-collapse-btn {
-  margin: 0;
-  width: var(--sat-tile);
-  height: var(--sat-tile);
-  border-radius: 14px;
-}
-
-.sat-shell.is-collapsed .sat-nav {
-  align-items: center;
-  gap: var(--sat-step);
-}
-
-.sat-shell.is-collapsed .sat-nav-item {
-  width: var(--sat-tile);
-  height: var(--sat-tile);
-  padding: 0;
-  justify-content: center;
-  border-radius: 14px;
-  transition:
-    color 220ms ease,
-    background 220ms ease,
-    scale 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.sat-shell.is-collapsed .sat-nav-item:hover {
-  scale: 1.04;
-  background: color-mix(in oklab, var(--muted) 10%, transparent);
-}
-
-.sat-shell.is-collapsed .sat-nav-item:hover .sat-nav-icon {
-  transform: none;
-}
-
-.sat-shell.is-collapsed .sat-nav-label,
-.sat-shell.is-collapsed .sat-nav-soon {
-  display: none;
-}
-
-/* Active tile hugs the icon and stays on the rail's centre line */
-.sat-shell.is-collapsed .sat-nav-indicator {
-  left: 50%;
-  right: auto;
-  width: var(--sat-tile);
-  height: var(--sat-tile);
-  margin-left: calc(var(--sat-tile) / -2);
-  border-radius: 14px;
-  translate: 0 calc(var(--active-row, 0) * var(--sat-row));
-  box-shadow: 0 0 18px -6px color-mix(in oklab, var(--accent) 65%, transparent);
-}
-
-.sat-shell.is-collapsed .sat-nav-indicator::after {
-  display: none;
-}
-
-/* —— Rail furniture shared by both states ——————————————————————— */
-
-.sat-rail-divider {
-  width: 100%;
-  height: 1px;
-  margin: 0.55rem 0;
-  background: color-mix(in oklab, var(--card-border) 70%, transparent);
-}
+/* —— Rail furniture ————————————————————————————————————————————— */
 
 /* Pins log out to the bottom at any height */
 .sat-rail-spacer {
   flex: 1 1 auto;
-  min-height: 0.5rem;
+  min-height: 8px;
 }
 
-/* Profile + Appearance now live in the topbar (see .sat-topbar-profile
-   below) — the sidebar only holds section navigation and Log out. */
-
-@media (max-width: 767px) {
-  .sat-shell.is-collapsed .sat-sidebar-inner,
-  .sat-shell.is-collapsed .sat-sidebar-head {
-    align-items: stretch;
-    justify-content: flex-start;
-  }
-
-  .sat-shell.is-collapsed .sat-sidebar-brand,
-  .sat-shell.is-collapsed .sat-nav-label {
-    display: block;
-  }
-
-  .sat-shell.is-collapsed .sat-nav-item {
-    width: auto;
-    height: var(--sat-row);
-    justify-content: flex-start;
-    padding: 0 0.7rem;
-  }
-
-  .sat-shell.is-collapsed .sat-nav-indicator {
-    left: 0;
-    right: 0;
-    width: auto;
-    margin-left: 0;
-    translate: 0 calc(var(--active-row, 0) * (var(--sat-row) + 2px));
-  }
-
-  .sat-shell.is-collapsed .sat-collapse-btn {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sat-shell.is-collapsed .sat-nav-item {
-    transition: none !important;
-  }
-}
+/* Profile + Appearance live in the topbar (see .sat-topbar-profile above) —
+   the sidebar only holds section navigation and Log out. */
 
 /* —— SAT backdrop ——————————————————————————————————————————————
    Six layers, none above 8% opacity: canvas, dust, stars, orbits, academic
@@ -8199,6 +8203,9 @@ a:hover .kepler-logo-mark {
 }
 
 .vocab-table {
+  /* The notes column's ceiling. It has to be reachable from the cell's
+     contents as well as the column itself — see .vocab-note-cell. */
+  --vocab-notes-w: 18rem;
   width: 100%;
   min-width: 46rem;
   border-collapse: collapse;
@@ -8294,7 +8301,7 @@ a:hover .kepler-logo-mark {
 
 .vocab-col-notes {
   min-width: 12rem;
-  max-width: 18rem;
+  max-width: var(--vocab-notes-w);
 }
 
 .vocab-col-translation {
@@ -8371,6 +8378,11 @@ td.vocab-col-star {
   align-items: center;
   min-height: 1.6rem;
   width: 100%;
+  /* Caps what this cell asks of the column. Under auto table layout a cell's
+     own max-width is only a suggestion, so the ceiling has to sit on the
+     contents: without it one long note widens the column — and the table —
+     instead of wrapping inside it. */
+  max-width: var(--vocab-notes-w);
   padding: 0.15rem 0.3rem;
   border-radius: 0.5rem;
   text-align: left;
@@ -8383,9 +8395,16 @@ td.vocab-col-star {
 }
 
 .vocab-note-text {
+  display: block;
+  max-width: 100%;
   font-size: 0.85rem;
   line-height: 1.45;
-  overflow-wrap: break-word;
+  /* pre-wrap keeps the line breaks the student typed; `anywhere` is the one
+     that also lets an unbroken string wrap rather than push the column out,
+     because unlike break-word it counts towards the min-content width. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .vocab-note-hint {
@@ -8399,7 +8418,9 @@ td.vocab-col-star {
 }
 
 .vocab-note-input {
+  display: block;
   width: 100%;
+  max-width: var(--vocab-notes-w);
   min-height: 1.9rem;
   padding: 0.3rem 0.5rem;
   border-radius: 0.5rem;
@@ -8408,7 +8429,15 @@ td.vocab-col-star {
   color: var(--foreground);
   font-size: 0.85rem;
   line-height: 1.45;
-  resize: vertical;
+  /* The height is written from the textarea's own scrollHeight on every
+     keystroke (see VocabularyTable). Hiding the overflow keeps that
+     measurement honest — a scrollbar inside a box that can simply grow is
+     the thing being fixed — and resizing by hand would only be overwritten
+     by the next character typed. */
+  overflow-y: hidden;
+  resize: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   outline: none;
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
 }
