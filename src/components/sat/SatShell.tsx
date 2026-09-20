@@ -166,6 +166,7 @@ export function SatShell({
                   href={href}
                   className={`sat-nav-item${active ? " is-active" : ""}`}
                   data-tip={label}
+                  title={label}
                   aria-current={active ? "page" : undefined}
                   onClick={() => setDrawerOpen(false)}
                 >
@@ -176,6 +177,7 @@ export function SatShell({
                   key={label}
                   className="sat-nav-item is-upcoming"
                   data-tip={`${label} — soon`}
+                  title={`${label} — soon`}
                   aria-disabled="true"
                 >
                   {content}
@@ -191,6 +193,7 @@ export function SatShell({
               href="/dashboard"
               className="sat-nav-item"
               data-tip={t("nav.logout") === "nav.logout" ? "Log out" : t("nav.logout")}
+              title={t("nav.logout") === "nav.logout" ? "Log out" : t("nav.logout")}
             >
               <LogOut className="sat-nav-icon" aria-hidden />
               <span className="sat-nav-label">Log out</span>
@@ -224,11 +227,12 @@ export function SatShell({
               href="/dashboard/profile"
               className="sat-topbar-profile"
               aria-label="Profile"
+              title="Student — SAT track"
             >
               <span className="sat-avatar" aria-hidden>
                 K
               </span>
-              <span className="sat-topbar-profile-text">
+              <span className="sat-topbar-profile-text hidden min-w-0 flex-col sm:flex">
                 <span className="sat-topbar-profile-name">Student</span>
                 <span className="sat-topbar-profile-role">SAT track</span>
               </span>

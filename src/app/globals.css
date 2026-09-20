@@ -7192,6 +7192,7 @@ a:hover .kepler-logo-mark {
 
 .sat-shell {
   --sat-rail: 260px;
+  --sat-rail-collapsed: 80px;
   --sat-row: 46px;
   --sat-gap: 24px;
   position: relative;
@@ -7227,8 +7228,8 @@ a:hover .kepler-logo-mark {
   /* visible so collapsed tooltips can escape the rail; the inner column and
      each label clip their own overflow during the width animation */
   overflow: visible;
-  /* The container itself never resizes — only its contents change. */
   transition:
+    width 300ms ease-in-out,
     background 300ms ease,
     box-shadow 300ms ease;
 }
@@ -7456,6 +7457,7 @@ a:hover .kepler-logo-mark {
   z-index: 1;
   min-height: 100dvh;
   padding-left: calc(var(--sat-rail) + var(--sat-gap) * 2);
+  transition: padding-left 300ms ease-in-out;
 }
 
 .sat-topbar {
@@ -7524,31 +7526,31 @@ a:hover .kepler-logo-mark {
   background: color-mix(in oklab, var(--muted) 10%, transparent);
 }
 
+/* Visibility (hidden below sm) and flex-column layout are handled by the
+   `hidden min-w-0 flex-col sm:flex` utility classes in the JSX — matches
+   the same proven pattern ThemeSelector already uses for its own label. */
 .sat-topbar-profile-text {
-  display: none;
-  flex-direction: column;
-  min-width: 0;
   line-height: 1.2;
   text-align: left;
 }
 
 .sat-topbar-profile-name {
+  max-width: 9rem;
+  overflow: hidden;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--foreground);
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sat-topbar-profile-role {
+  max-width: 9rem;
+  overflow: hidden;
   font-size: 0.68rem;
   color: var(--muted);
   white-space: nowrap;
-}
-
-@media (min-width: 640px) {
-  .sat-topbar-profile-text {
-    display: flex;
-  }
+  text-overflow: ellipsis;
 }
 
 .sat-drawer-btn,
@@ -7781,11 +7783,13 @@ a:hover .kepler-logo-mark {
 }
 
 /* —— Collapsed rail —————————————————————————————————————————————
-   The container never resizes: 260px, same border, radius, shadow and top and
-   bottom inset in both states. Collapsing only hides labels and centres the
-   icons, so the main column never reflows. */
+   Shrinks the rail from 260px to 80px (border, radius, shadow, and top/
+   bottom inset stay the same). .sat-main's padding-left tracks the same
+   --sat-rail value with its own transition, so the content column glides
+   into the reclaimed space in step with the rail instead of snapping. */
 
 .sat-shell.is-collapsed {
+  --sat-rail: var(--sat-rail-collapsed);
   --sat-tile: 48px;
   --sat-step: 8px;
   --sat-row: calc(var(--sat-tile) + var(--sat-step));
