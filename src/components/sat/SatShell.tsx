@@ -166,6 +166,10 @@ export function SatShell({
           </nav>
 
           <div className="sat-sidebar-foot">
+            <span className="sat-theme-slot" data-tip="Theme">
+              <ThemeSelector />
+            </span>
+
             <LocaleLink
               href="/dashboard"
               className="sat-nav-item"
@@ -198,7 +202,6 @@ export function SatShell({
 
           <div className="sat-topbar-actions">
             <LanguageSwitcher />
-            <ThemeSelector />
             <LocaleLink
               href="/dashboard/profile"
               className="sat-avatar"
