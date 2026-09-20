@@ -48,7 +48,7 @@ const NAV: NavItem[] = [
   { icon: TrendingUp, label: "Progress" },
   { icon: BarChart3, label: "Analytics" },
   { icon: Star, label: "Mistakes" },
-  { icon: BookMarked, label: "Vocabulary" },
+  { icon: BookMarked, label: "Vocabulary", href: "/dashboard/vocabulary" },
   { icon: Timer, label: "Timed Practice" },
   { icon: Target, label: "Daily Goal" },
   { icon: Award, label: "Achievements" },
