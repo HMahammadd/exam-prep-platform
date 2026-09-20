@@ -71,16 +71,30 @@ export function SatShell({
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Below this width the rail is always collapsed, so the collapsed layout is
+  // one code path instead of a CSS duplicate of itself.
+  const [forced, setForced] = useState(false);
+
   useEffect(() => {
+    const media = window.matchMedia("(max-width: 1100px)");
+
     let stored = false;
     try {
       stored = localStorage.getItem(STORAGE_KEY) === "1";
     } catch {
       // storage blocked — start expanded
     }
+
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCollapsed(stored);
+    setForced(media.matches);
+
+    const onChange = (event: MediaQueryListEvent) => setForced(event.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
   }, []);
+
+  const isRailCollapsed = collapsed || forced;
 
   const toggleCollapsed = () => {
     setCollapsed((value) => {
@@ -101,7 +115,7 @@ export function SatShell({
   );
 
   return (
-    <div className={`sat-shell${collapsed ? " is-collapsed" : ""}`}>
+    <div className={`sat-shell${isRailCollapsed ? " is-collapsed" : ""}`}>
       <SatBackdrop />
 
       <div
@@ -121,7 +135,7 @@ export function SatShell({
               className="sat-collapse-btn"
               onClick={toggleCollapsed}
               aria-label="Toggle sidebar"
-              aria-expanded={!collapsed}
+              aria-expanded={!isRailCollapsed}
             >
               <PanelLeft className="h-[1.1rem] w-[1.1rem]" aria-hidden />
             </button>
@@ -170,7 +184,7 @@ export function SatShell({
 
           <div className="sat-sidebar-foot">
             <span className="sat-theme-slot" data-tip="Theme">
-              <ThemeSelector />
+              <ThemeSelector variant={isRailCollapsed ? "nav" : "chip"} />
             </span>
 
             <LocaleLink
