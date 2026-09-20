@@ -1,12 +1,26 @@
 import Link from "next/link";
-import { BookOpen, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  ClipboardList,
+  Flame,
+  Star,
+  Target,
+  Timer,
+  TrendingUp,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
-import { DashboardHeader } from "@/components/DashboardHeader";
+import { SatShell } from "@/components/sat/SatShell";
 import { SatExamList } from "@/components/sat/SatExamList";
 import { SAT_PRACTICE_EXAMS } from "@/lib/sat-exams";
 import { getSatExamSummaries } from "./actions";
 
+/**
+ * Layout prototype: the exam list below is live, everything in the summary
+ * cards is placeholder copy until the progress/analytics tables exist.
+ */
 export default async function SatDashboardPage() {
   const supabase = await createClient();
   const {
@@ -20,53 +34,223 @@ export default async function SatDashboardPage() {
   const summaries = await getSatExamSummaries();
 
   return (
-    <div className="flex flex-1 flex-col bg-background">
-      <DashboardHeader title="SAT Practice" backHref="/dashboard" />
-
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
-        <div className="mb-8 flex items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent-soft">
-            <BookOpen className="h-6 w-6 text-accent" aria-hidden />
-          </span>
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-              SAT Practice
-            </h2>
-            <p className="mt-1 text-sm text-muted">
-              Practice exams and lessons — choose a set below or study with
-              guided lessons.
-            </p>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <Link
-            href="/dashboard/sat/lessons"
-            className="group flex items-center justify-between gap-4 rounded-2xl border border-blue-200/90 bg-card p-5 shadow-[0_8px_32px_-10px_rgba(37,99,235,0.18)] transition hover:border-blue-400 hover:shadow-[0_0_0_1px_rgba(59,130,246,0.4),0_12px_40px_-12px_rgba(37,99,235,0.3)] dark:border-blue-900/80"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-950/60">
-                <BookOpen
-                  className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                  aria-hidden
-                />
-              </span>
-              <div>
-                <p className="font-semibold text-foreground">SAT Lessons</p>
-                <p className="text-sm text-muted">
-                  Build skills with structured lesson modules
-                </p>
-              </div>
+    <SatShell title="SAT Practice" breadcrumb="Dashboard / SAT">
+      <div className="sat-grid">
+        {/* Continue practice */}
+        <section className="sat-card sat-card--wide">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <ClipboardList className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Continue practice</p>
+              <p className="sat-card-sub">Pick up where you left off</p>
             </div>
-            <ArrowRight
-              className="h-5 w-5 shrink-0 text-blue-600 transition group-hover:translate-x-0.5 dark:text-blue-400"
-              aria-hidden
-            />
-          </Link>
-        </div>
+          </div>
 
-        <SatExamList exams={SAT_PRACTICE_EXAMS} serverSummaries={summaries} />
-      </main>
-    </div>
+          <p className="sat-card-body">
+            Jump straight back into a full-length exam, or start a fresh set
+            under real timing.
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/dashboard/sat/lessons"
+              className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover"
+            >
+              <BookOpen className="h-4 w-4" aria-hidden />
+              SAT Lessons
+            </Link>
+            <span className="sat-chip">
+              <Timer className="h-3.5 w-3.5" aria-hidden />
+              Timed mode
+            </span>
+          </div>
+        </section>
+
+        {/* Today's goal */}
+        <section className="sat-card">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <Target className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Today&apos;s goal</p>
+              <p className="sat-card-sub">Demo target</p>
+            </div>
+          </div>
+
+          <p className="sat-metric">12 / 20</p>
+          <p className="sat-card-sub mb-3">questions answered</p>
+          <span className="sat-bar">
+            <b style={{ width: "60%" }} />
+          </span>
+        </section>
+
+        {/* Practice modes */}
+        <section className="sat-card sat-card--full">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <Flame className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Practice modes</p>
+              <p className="sat-card-sub">Choose how you want to work</p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: Timer, name: "Timed section", hint: "Real exam pacing" },
+              { icon: ClipboardList, name: "Untimed set", hint: "Learn first" },
+              { icon: Star, name: "Mistakes only", hint: "Fix weak spots" },
+              { icon: BookOpen, name: "By topic", hint: "Target one skill" },
+            ].map(({ icon: Icon, name, hint }) => (
+              <div
+                key={name}
+                className="rounded-xl border border-card-border bg-background p-3 transition hover:-translate-y-0.5"
+              >
+                <Icon className="h-4 w-4 text-accent" aria-hidden />
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  {name}
+                </p>
+                <p className="text-xs text-muted">{hint}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Real exam list */}
+        <section className="sat-card sat-card--wide">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <ClipboardList className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Practice exams</p>
+              <p className="sat-card-sub">Full-length, scored on submit</p>
+            </div>
+          </div>
+
+          <SatExamList exams={SAT_PRACTICE_EXAMS} serverSummaries={summaries} />
+        </section>
+
+        {/* Statistics */}
+        <section className="sat-card">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <BarChart3 className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Statistics</p>
+              <p className="sat-card-sub">Demo data</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {[
+              { label: "Accuracy", value: "78%", width: "78%" },
+              { label: "Questions", value: "342", width: "52%" },
+              { label: "Study time", value: "6h 20m", width: "41%" },
+            ].map(({ label, value, width }) => (
+              <div key={label}>
+                <div className="mb-1 flex items-center justify-between text-xs">
+                  <span className="text-muted">{label}</span>
+                  <span className="font-semibold text-foreground">{value}</span>
+                </div>
+                <span className="sat-bar">
+                  <b style={{ width }} />
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Weak topics */}
+        <section className="sat-card">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <Star className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Weak topics</p>
+              <p className="sat-card-sub">Demo data</p>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-2">
+            {[
+              ["Words in Context", "42%"],
+              ["Transitions", "61%"],
+              ["Command of Evidence", "74%"],
+            ].map(([topic, score]) => (
+              <li
+                key={topic}
+                className="flex items-center justify-between rounded-lg border border-card-border px-3 py-2 text-sm"
+              >
+                <span className="text-foreground">{topic}</span>
+                <span className="text-xs font-semibold text-muted">{score}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Recent activity */}
+        <section className="sat-card">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <TrendingUp className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Recent activity</p>
+              <p className="sat-card-sub">Demo data</p>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-2 text-sm">
+            {[
+              ["Practice Exam 1", "Yesterday"],
+              ["Words in Context set", "2 days ago"],
+              ["Timed section", "4 days ago"],
+            ].map(([item, when]) => (
+              <li key={item} className="flex items-center justify-between">
+                <span className="text-foreground">{item}</span>
+                <span className="text-xs text-muted">{when}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Quick actions */}
+        <section className="sat-card">
+          <div className="sat-card-head">
+            <span className="sat-card-icon">
+              <ArrowRight className="h-[1.1rem] w-[1.1rem]" aria-hidden />
+            </span>
+            <div>
+              <p className="sat-card-title">Quick actions</p>
+              <p className="sat-card-sub">Shortcuts</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Link
+              href="/dashboard/sat/lessons"
+              className="flex items-center justify-between rounded-lg border border-card-border px-3 py-2 text-sm text-foreground transition hover:border-accent"
+            >
+              Browse lessons
+              <ArrowRight className="h-4 w-4 text-muted" aria-hidden />
+            </Link>
+            <Link
+              href="/dashboard"
+              className="flex items-center justify-between rounded-lg border border-card-border px-3 py-2 text-sm text-foreground transition hover:border-accent"
+            >
+              Back to dashboard
+              <ArrowRight className="h-4 w-4 text-muted" aria-hidden />
+            </Link>
+          </div>
+        </section>
+      </div>
+    </SatShell>
   );
 }

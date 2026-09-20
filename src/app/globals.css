@@ -7185,3 +7185,592 @@ a:hover .kepler-logo-mark {
     transform: none !important;
   }
 }
+
+/* —— SAT workspace shell ————————————————————————————————————————
+   Floating sidebar + minimal topbar, built on the same tokens as the rest of
+   the site so it reads as Keplerly rather than a second design language. */
+
+.sat-shell {
+  --sat-rail: 260px;
+  --sat-row: 46px;
+  --sat-gap: 24px;
+  position: relative;
+  min-height: 100dvh;
+  background: var(--home-band);
+}
+
+.sat-shell.is-collapsed {
+  --sat-rail: 74px;
+}
+
+/* subtle dotted texture + radial glow, same language as the homepage */
+.sat-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--home-dot) 0.75px, transparent 1px);
+  background-size: var(--home-dot-gap) var(--home-dot-gap);
+}
+
+.sat-shell::after {
+  content: "";
+  position: fixed;
+  top: -10%;
+  left: 18%;
+  width: 48rem;
+  height: 32rem;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--accent) 14%, transparent) 0%,
+    transparent 70%
+  );
+  filter: blur(60px);
+  opacity: 0.55;
+}
+
+/* Sidebar */
+
+.sat-sidebar {
+  position: fixed;
+  top: var(--sat-gap);
+  left: var(--sat-gap);
+  bottom: var(--sat-gap);
+  z-index: 40;
+  width: var(--sat-rail);
+  border-radius: 26px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  box-shadow:
+    0 20px 50px -28px rgb(15 30 60 / 0.35),
+    0 0 0 1px rgb(255 255 255 / 0.04) inset;
+  /* visible so collapsed tooltips can escape the rail; the inner column and
+     each label clip their own overflow during the width animation */
+  overflow: visible;
+  transition:
+    width 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.sat-sidebar-inner {
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.1rem 0.85rem 1rem;
+}
+
+.sat-sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.35rem 0.9rem;
+  margin-bottom: 0.65rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
+}
+
+.sat-sidebar-brand {
+  min-width: 0;
+  overflow: hidden;
+  transition: opacity 260ms ease;
+}
+
+.is-collapsed .sat-sidebar-brand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sat-collapse-btn {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.7rem;
+  color: var(--muted);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    translate 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sat-collapse-btn:hover {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 18%, transparent);
+}
+
+.is-collapsed .sat-collapse-btn {
+  margin: 0 auto;
+}
+
+/* Nav + sliding indicator */
+
+.sat-nav {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Must stay fully visible: a scrolling axis forces the other axis to `auto`,
+     which would clip the collapsed tooltips. Short viewports scroll the rail
+     itself instead (below). */
+  overflow: visible;
+}
+
+@media (max-height: 720px) {
+  .sat-sidebar-inner {
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .sat-sidebar-inner::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.sat-nav-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--sat-row);
+  border-radius: 0.85rem;
+  background: var(--accent-soft);
+  translate: 0 calc(var(--active-row, 0) * (var(--sat-row) + 2px));
+  transition: translate 380ms cubic-bezier(0.34, 1.16, 0.42, 1);
+  pointer-events: none;
+}
+
+.sat-nav-indicator::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+
+.sat-nav-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  height: var(--sat-row);
+  padding: 0 0.7rem;
+  border-radius: 0.85rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 240ms ease, background 240ms ease;
+}
+
+.sat-nav-item:hover {
+  color: var(--foreground);
+}
+
+.sat-nav-item.is-active {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sat-nav-item.is-upcoming {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.sat-nav-icon {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  stroke-width: 2;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sat-nav-item:hover .sat-nav-icon {
+  transform: scale(1.08);
+}
+
+.sat-nav-label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 220ms ease;
+}
+
+.sat-nav-soon {
+  flex: 0 0 auto;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--muted) 60%, transparent);
+}
+
+.is-collapsed .sat-nav-label,
+.is-collapsed .sat-nav-soon {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+}
+
+.is-collapsed .sat-nav-item {
+  justify-content: center;
+  padding: 0;
+}
+
+.is-collapsed .sat-nav-item .sat-nav-icon {
+  margin: 0 auto;
+}
+
+/* Tooltip when collapsed */
+
+.is-collapsed .sat-nav-item::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 0.9rem);
+  top: 50%;
+  translate: 0 -50%;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--card);
+  background: var(--foreground);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, translate 200ms ease;
+  z-index: 5;
+}
+
+.is-collapsed .sat-nav-item:hover::after {
+  opacity: 1;
+  translate: 2px -50%;
+}
+
+.sat-sidebar-foot {
+  padding-top: 0.6rem;
+  margin-top: 0.4rem;
+  border-top: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
+}
+
+/* Main column */
+
+.sat-main {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  padding-left: calc(var(--sat-rail) + var(--sat-gap) * 2);
+  transition: padding-left 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sat-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem var(--sat-gap) 1rem;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  background: color-mix(in oklab, var(--home-band) 78%, transparent);
+}
+
+.sat-topbar-title h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.sat-breadcrumb {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.sat-topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sat-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 4px 14px -6px color-mix(in oklab, var(--accent) 80%, transparent);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sat-avatar:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.sat-drawer-btn,
+.sat-drawer-scrim {
+  display: none;
+}
+
+.sat-content {
+  padding: 0.5rem var(--sat-gap) 3rem;
+  animation: sat-fade-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sat-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Cards */
+
+.sat-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sat-card {
+  grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 300ms ease;
+}
+
+.sat-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--accent) 35%, var(--card-border));
+  box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--accent) 60%, transparent);
+}
+
+.sat-card--wide {
+  grid-column: span 8;
+}
+
+.sat-card--full {
+  grid-column: span 12;
+}
+
+.sat-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+
+.sat-card-icon {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.7rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.sat-card-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.sat-card-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.sat-card-body {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.sat-metric {
+  font-family: var(--font-heading), var(--font-sans);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.sat-bar {
+  display: block;
+  width: 100%;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--muted) 16%, transparent);
+  overflow: hidden;
+}
+
+.sat-bar b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.sat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Tablet: collapse the rail */
+
+@media (max-width: 1100px) {
+  .sat-shell {
+    --sat-rail: 74px;
+  }
+
+  .sat-sidebar-brand {
+    opacity: 0;
+  }
+
+  .sat-nav-label,
+  .sat-nav-soon {
+    opacity: 0;
+    width: 0;
+  }
+
+  .sat-nav-item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sat-card {
+    grid-column: span 6;
+  }
+
+  .sat-card--wide,
+  .sat-card--full {
+    grid-column: span 12;
+  }
+}
+
+/* Mobile: sidebar becomes a drawer */
+
+@media (max-width: 767px) {
+  .sat-shell {
+    --sat-gap: 14px;
+  }
+
+  .sat-sidebar {
+    --sat-rail: 248px;
+    width: var(--sat-rail);
+    translate: calc(-100% - var(--sat-gap) * 2) 0;
+    transition: translate 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sat-sidebar.is-open {
+    translate: 0 0;
+  }
+
+  .sat-sidebar .sat-nav-label,
+  .sat-sidebar .sat-nav-soon {
+    opacity: 1;
+    width: auto;
+  }
+
+  .sat-sidebar .sat-nav-item {
+    justify-content: flex-start;
+    padding: 0 0.7rem;
+  }
+
+  .sat-sidebar-brand {
+    opacity: 1;
+  }
+
+  .sat-collapse-btn {
+    display: none;
+  }
+
+  .sat-main {
+    padding-left: 0;
+  }
+
+  .sat-drawer-btn {
+    display: grid;
+    place-items: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 0.7rem;
+    color: var(--muted);
+    background: color-mix(in oklab, var(--muted) 12%, transparent);
+  }
+
+  .sat-drawer-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: rgb(4 10 20 / 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 260ms ease, visibility 0s linear 260ms;
+  }
+
+  .sat-drawer-scrim.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .sat-card,
+  .sat-card--wide,
+  .sat-card--full {
+    grid-column: span 12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sat-sidebar,
+  .sat-main,
+  .sat-nav-indicator,
+  .sat-card,
+  .sat-content,
+  .sat-avatar {
+    transition: none !important;
+    animation: none !important;
+  }
+}
