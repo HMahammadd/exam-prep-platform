@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type CSSProperties,
   type DragEvent,
 } from "react";
 import {
@@ -42,6 +43,22 @@ const COLUMN_CLASS: Record<VocabularyColumnId, string> = {
   translation: "vocab-col-translation",
 };
 
+/**
+ * One template, shared by the header row and every body row, so columns can
+ * never drift apart. Reordering re-serialises it in the new order.
+ */
+const COLUMN_TEMPLATE: Record<VocabularyColumnId, string> = {
+  star: "56px",
+  no: "70px",
+  word: "170px",
+  definition: "minmax(300px, 1.4fr)",
+  notes: "minmax(220px, 1fr)",
+  translation: "minmax(250px, 1fr)",
+};
+
+/** Star and No. stay pinned — keeping them fixed reads better than free reorder. */
+const FIXED_COLUMNS: VocabularyColumnId[] = ["star", "no"];
+
 export function VocabularyTable({
   words,
   initialState,
@@ -67,6 +84,9 @@ export function VocabularyTable({
 
   const langMenuRef = useRef<HTMLDivElement>(null);
   const noteTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // The drop handler must read the drag source synchronously — a state value
+  // would still be the pre-render one if both events land in the same tick.
+  const dragColumnRef = useRef<VocabularyColumnId | null>(null);
 
   useEffect(() => {
     if (!langMenuOpen) return;
@@ -153,6 +173,7 @@ export function VocabularyTable({
   const onHeaderDragStart = (colId: VocabularyColumnId) => (
     event: DragEvent<HTMLTableCellElement>
   ) => {
+    dragColumnRef.current = colId;
     setDragColumn(colId);
     event.dataTransfer.effectAllowed = "move";
   };
@@ -168,12 +189,15 @@ export function VocabularyTable({
     event: DragEvent<HTMLTableCellElement>
   ) => {
     event.preventDefault();
-    if (dragColumn) reorderColumns(dragColumn, colId);
+    const source = dragColumnRef.current;
+    if (source) reorderColumns(source, colId);
+    dragColumnRef.current = null;
     setDragColumn(null);
     setDragOverColumn(null);
   };
 
   const onHeaderDragEnd = () => {
+    dragColumnRef.current = null;
     setDragColumn(null);
     setDragOverColumn(null);
   };
@@ -181,6 +205,11 @@ export function VocabularyTable({
   const visibleWords = useMemo(
     () => (starFilterOn ? words.filter((word) => starred[word.id]) : words),
     [words, starred, starFilterOn]
+  );
+
+  const gridTemplate = useMemo(
+    () => columnOrder.map((colId) => COLUMN_TEMPLATE[colId]).join(" "),
+    [columnOrder]
   );
 
   const renderHeaderContent = (colId: VocabularyColumnId) => {
@@ -296,11 +325,15 @@ export function VocabularyTable({
             type="button"
             className="vocab-note-cell"
             onClick={() => openNoteEditor(word.id)}
+            aria-label={value ? `Edit note for ${word.word}` : `Add note for ${word.word}`}
           >
             {value ? (
               <span className="vocab-note-text">{value}</span>
             ) : (
-              <Pencil className="vocab-note-hint h-3.5 w-3.5" aria-hidden />
+              <span className="vocab-note-hint">
+                Add note
+                <Pencil className="h-3.5 w-3.5" aria-hidden />
+              </span>
             )}
           </button>
         );
@@ -318,31 +351,39 @@ export function VocabularyTable({
 
   return (
     <div className="vocab-table-scroll">
-      <table className="vocab-table">
+      <table
+        className="vocab-table"
+        style={{ "--vocab-cols": gridTemplate } as CSSProperties}
+      >
         <thead>
           <tr>
-            {columnOrder.map((colId) => (
-              <th
-                key={colId}
-                scope="col"
-                className={`${COLUMN_CLASS[colId]}${
-                  dragOverColumn === colId ? " is-drag-over" : ""
-                }${dragColumn === colId ? " is-dragging" : ""}`}
-                draggable
-                onDragStart={onHeaderDragStart(colId)}
-                onDragOver={onHeaderDragOver(colId)}
-                onDrop={onHeaderDrop(colId)}
-                onDragEnd={onHeaderDragEnd}
-              >
-                <span className="vocab-th-inner">
-                  <GripVertical
-                    className="vocab-drag-handle h-3.5 w-3.5"
-                    aria-hidden
-                  />
+            {columnOrder.map((colId) => {
+              const reorderable = !FIXED_COLUMNS.includes(colId);
+              return (
+                <th
+                  key={colId}
+                  scope="col"
+                  className={`${COLUMN_CLASS[colId]}${
+                    reorderable ? " is-reorderable" : ""
+                  }${dragOverColumn === colId ? " is-drag-over" : ""}${
+                    dragColumn === colId ? " is-dragging" : ""
+                  }`}
+                  draggable={reorderable}
+                  onDragStart={reorderable ? onHeaderDragStart(colId) : undefined}
+                  onDragOver={reorderable ? onHeaderDragOver(colId) : undefined}
+                  onDrop={reorderable ? onHeaderDrop(colId) : undefined}
+                  onDragEnd={reorderable ? onHeaderDragEnd : undefined}
+                >
                   {renderHeaderContent(colId)}
-                </span>
-              </th>
-            ))}
+                  {reorderable ? (
+                    <GripVertical
+                      className="vocab-drag-handle h-3.5 w-3.5"
+                      aria-hidden
+                    />
+                  ) : null}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>

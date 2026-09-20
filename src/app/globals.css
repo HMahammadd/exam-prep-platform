@@ -8185,7 +8185,7 @@ a:hover .kepler-logo-mark {
 }
 
 .vocab-description {
-  max-width: 46rem;
+  max-width: 56rem;
   margin: 0.9rem 0 1.5rem;
   font-size: 0.88rem;
   line-height: 1.6;
@@ -8198,28 +8198,58 @@ a:hover .kepler-logo-mark {
   overflow-x: auto;
 }
 
+/* Header and every body row are grids driven by the same --vocab-cols
+   template (serialised from the live column order in VocabularyTable), so
+   the columns physically cannot drift apart when they are reordered. */
 .vocab-table {
+  --vocab-cols: 56px 70px 170px minmax(300px, 1.4fr) minmax(220px, 1fr)
+    minmax(250px, 1fr);
+  display: block;
   width: 100%;
-  min-width: 46rem;
-  border-collapse: collapse;
+  min-width: 1066px;
   text-align: left;
 }
 
-.vocab-table thead {
-  background: color-mix(in oklab, var(--muted) 7%, transparent);
+.vocab-table thead,
+.vocab-table tbody {
+  display: block;
+}
+
+.vocab-table tr {
+  display: grid;
+  grid-template-columns: var(--vocab-cols);
+  align-items: stretch;
+}
+
+.vocab-table th,
+.vocab-table td {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+}
+
+.vocab-table thead tr {
+  min-height: 3.5rem;
+  border-bottom: 1px solid var(--card-border);
+  background: color-mix(in oklab, var(--muted) 8%, transparent);
+  border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .vocab-table th {
-  position: relative;
-  padding: 0.75rem 0.9rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--muted);
-  border-bottom: 1px solid var(--card-border);
-  cursor: grab;
   transition: background 180ms ease;
+}
+
+.vocab-table th.is-reorderable {
+  cursor: grab;
+}
+
+.vocab-table th.is-reorderable:active {
+  cursor: grabbing;
 }
 
 .vocab-table th.is-drag-over {
@@ -8230,97 +8260,72 @@ a:hover .kepler-logo-mark {
   opacity: 0.45;
 }
 
-.vocab-th-inner {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
 .vocab-drag-handle {
   flex: 0 0 auto;
+  margin-left: auto;
   color: var(--muted);
   opacity: 0;
   transition: opacity 180ms ease;
 }
 
 .vocab-table th:hover .vocab-drag-handle {
-  opacity: 0.55;
+  opacity: 0.65;
 }
 
-.vocab-table td {
-  padding: 0.7rem 0.9rem;
-  font-size: 0.86rem;
+.vocab-table tbody td {
+  min-height: 3.5rem;
+  font-size: 0.88rem;
   color: var(--foreground);
-  border-bottom: 1px solid color-mix(in oklab, var(--card-border) 60%, transparent);
-  vertical-align: top;
 }
 
 .vocab-table tbody tr {
+  border-bottom: 1px solid color-mix(in oklab, var(--card-border) 60%, transparent);
   transition: background 160ms ease;
 }
 
 .vocab-table tbody tr:hover {
-  background: color-mix(in oklab, var(--muted) 6%, transparent);
+  background: color-mix(in oklab, var(--accent) 7%, transparent);
 }
 
-.vocab-table tbody tr:last-child td {
+.vocab-table tbody tr:last-child {
   border-bottom: 0;
 }
 
-/* Column widths — star/no narrow and fixed, the rest flexible */
+/* Per-column treatment — widths come from the grid template above */
 
 .vocab-col-star {
-  width: 2.75rem;
-  text-align: center;
+  justify-content: center;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
 }
 
 .vocab-col-no {
-  width: 3.25rem;
+  justify-content: center;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
-.vocab-col-word {
-  min-width: 9rem;
-  font-weight: 700;
+.vocab-table tbody td.vocab-col-word {
+  font-weight: 600;
+  color: var(--foreground);
 }
 
-.vocab-col-defn {
-  min-width: 16rem;
-  max-width: 26rem;
+.vocab-table tbody td.vocab-col-defn {
   line-height: 1.5;
   color: var(--muted);
 }
 
-.vocab-col-notes {
-  min-width: 12rem;
-  max-width: 18rem;
-}
-
-.vocab-col-translation {
-  min-width: 9rem;
-}
-
-td.vocab-col-star {
-  text-align: center;
-}
-
-.vocab-no {
-  display: inline-block;
-}
-
+.vocab-defn,
+.vocab-translation,
 .vocab-word {
-  color: var(--foreground);
-}
-
-.vocab-defn {
-  display: block;
+  min-width: 0;
   white-space: normal;
   overflow-wrap: break-word;
 }
 
 .vocab-translation {
   color: var(--foreground);
+  line-height: 1.5;
 }
 
 /* Star filter (header) + per-row star toggle */
@@ -8389,13 +8394,18 @@ td.vocab-col-star {
 }
 
 .vocab-note-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
   color: var(--muted);
   opacity: 0;
   transition: opacity 160ms ease;
 }
 
-.vocab-note-cell:hover .vocab-note-hint {
-  opacity: 0.6;
+.vocab-note-cell:hover .vocab-note-hint,
+.vocab-note-cell:focus-visible .vocab-note-hint {
+  opacity: 0.75;
 }
 
 .vocab-note-input {
@@ -8423,19 +8433,19 @@ td.vocab-col-star {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  height: 1.7rem;
-  padding: 0 0.55rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  height: 1.85rem;
+  padding: 0 0.5rem;
+  margin-left: -0.5rem;
+  border-radius: 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--accent);
-  background: var(--accent-soft);
+  background: transparent;
   transition: background 160ms ease;
 }
 
 .vocab-lang-trigger:hover {
-  background: color-mix(in oklab, var(--accent) 22%, var(--accent-soft));
+  background: var(--accent-soft);
 }
 
 .vocab-lang-menu {
