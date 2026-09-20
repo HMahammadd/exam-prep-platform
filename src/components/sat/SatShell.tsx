@@ -141,6 +141,28 @@ export function SatShell({
             </button>
           </div>
 
+          <div className="sat-rail-divider" aria-hidden />
+
+          <LocaleLink
+            href="/dashboard/profile"
+            className="sat-profile"
+            data-tip="Profile"
+          >
+            <span className="sat-profile-avatar" aria-hidden>
+              K
+            </span>
+            <span className="sat-profile-text">
+              <span className="sat-profile-name">Student</span>
+              <span className="sat-profile-role">SAT track</span>
+            </span>
+          </LocaleLink>
+
+          <span className="sat-theme-slot" data-tip="Appearance">
+            <ThemeSelector variant={isRailCollapsed ? "nav" : "chip"} />
+          </span>
+
+          <div className="sat-rail-divider" aria-hidden />
+
           <nav
             className="sat-nav"
             style={{ "--active-row": activeIndex } as CSSProperties}
@@ -182,11 +204,9 @@ export function SatShell({
             })}
           </nav>
 
-          <div className="sat-sidebar-foot">
-            <span className="sat-theme-slot" data-tip="Theme">
-              <ThemeSelector variant={isRailCollapsed ? "nav" : "chip"} />
-            </span>
+          <span className="sat-rail-spacer" aria-hidden />
 
+          <div className="sat-sidebar-foot">
             <LocaleLink
               href="/dashboard"
               className="sat-nav-item"
@@ -219,13 +239,6 @@ export function SatShell({
 
           <div className="sat-topbar-actions">
             <LanguageSwitcher />
-            <LocaleLink
-              href="/dashboard/profile"
-              className="sat-avatar"
-              aria-label="Profile"
-            >
-              <span aria-hidden>K</span>
-            </LocaleLink>
           </div>
         </header>
 

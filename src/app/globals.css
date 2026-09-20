@@ -7199,10 +7199,6 @@ a:hover .kepler-logo-mark {
   background: var(--sat-canvas);
 }
 
-.sat-shell.is-collapsed {
-  --sat-rail: 74px;
-}
-
 /* Canvas + dotted texture; the richer layers live in SatBackdrop. */
 .sat-shell::before {
   content: "";
@@ -7231,14 +7227,17 @@ a:hover .kepler-logo-mark {
   /* visible so collapsed tooltips can escape the rail; the inner column and
      each label clip their own overflow during the width animation */
   overflow: visible;
+  /* The container itself never resizes — only its contents change. */
   transition:
-    width 400ms cubic-bezier(0.22, 1, 0.36, 1),
     background 300ms ease,
     box-shadow 300ms ease;
 }
 
 .sat-sidebar-inner {
   border-radius: inherit;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -7294,7 +7293,7 @@ a:hover .kepler-logo-mark {
 
 .sat-nav {
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -7439,7 +7438,12 @@ a:hover .kepler-logo-mark {
   translate: 2px -50%;
 }
 
+.sat-sidebar-inner::-webkit-scrollbar {
+  display: none;
+}
+
 .sat-sidebar-foot {
+  flex: 0 0 auto;
   padding-top: 0.6rem;
   margin-top: 0.4rem;
   border-top: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
@@ -7452,7 +7456,6 @@ a:hover .kepler-logo-mark {
   z-index: 1;
   min-height: 100dvh;
   padding-left: calc(var(--sat-rail) + var(--sat-gap) * 2);
-  transition: padding-left 400ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sat-topbar {
@@ -7636,28 +7639,9 @@ a:hover .kepler-logo-mark {
   background: var(--accent-soft);
 }
 
-/* Tablet: collapse the rail */
+/* Tablet: the rail collapses via state (matchMedia); only cards reflow here */
 
 @media (max-width: 1100px) {
-  .sat-shell {
-    --sat-rail: 74px;
-  }
-
-  .sat-sidebar-brand {
-    opacity: 0;
-  }
-
-  .sat-nav-label,
-  .sat-nav-soon {
-    opacity: 0;
-    width: 0;
-  }
-
-  .sat-nav-item {
-    justify-content: center;
-    padding: 0;
-  }
-
   .sat-card {
     grid-column: span 6;
   }
@@ -7756,37 +7740,21 @@ a:hover .kepler-logo-mark {
 }
 
 /* —— Collapsed rail —————————————————————————————————————————————
-   Not the expanded sidebar with labels hidden: its own grid. 48px icon tiles
-   on an 8px rhythm, centred in a 76px rail, equal padding top and bottom, and
-   the active state is a tile around the icon rather than a full-width band.
-   Tablet widths use this same layout via state, so there is one definition. */
+   The container never resizes: 260px, same border, radius, shadow and top and
+   bottom inset in both states. Collapsing only hides labels and centres the
+   icons, so the main column never reflows. */
 
 .sat-shell.is-collapsed {
-  --sat-rail: 76px;
   --sat-tile: 48px;
   --sat-step: 8px;
-  /* pitch the indicator travels between rows */
   --sat-row: calc(var(--sat-tile) + var(--sat-step));
-}
-
-.sat-shell.is-collapsed .sat-sidebar {
-  top: 50%;
-  bottom: auto;
-  height: auto;
-  max-height: calc(100dvh - var(--sat-gap) * 2);
-  translate: 0 -50%;
 }
 
 .sat-shell.is-collapsed .sat-sidebar-inner {
   align-items: center;
-  /* (76 - 48) / 2 = 14px side gutter; equal 16px top and bottom */
-  padding: 16px 14px;
 }
 
-/* Head: the toggle is just another tile, brand removed entirely */
 .sat-shell.is-collapsed .sat-sidebar-head {
-  padding: 0 0 var(--sat-step);
-  margin: 0 0 var(--sat-step);
   justify-content: center;
 }
 
@@ -7801,9 +7769,7 @@ a:hover .kepler-logo-mark {
   border-radius: 14px;
 }
 
-/* Nav: fixed tiles on the 8px grid, no flex growth to push the foot away */
 .sat-shell.is-collapsed .sat-nav {
-  flex: 0 0 auto;
   align-items: center;
   gap: var(--sat-step);
 }
@@ -7830,11 +7796,12 @@ a:hover .kepler-logo-mark {
 }
 
 .sat-shell.is-collapsed .sat-nav-label,
-.sat-shell.is-collapsed .sat-nav-soon {
+.sat-shell.is-collapsed .sat-nav-soon,
+.sat-shell.is-collapsed .sat-profile-text {
   display: none;
 }
 
-/* Active: a tile the size of the icon box, not a band across the rail */
+/* Active tile hugs the icon and stays on the rail's centre line */
 .sat-shell.is-collapsed .sat-nav-indicator {
   left: 50%;
   right: auto;
@@ -7850,45 +7817,80 @@ a:hover .kepler-logo-mark {
   display: none;
 }
 
-/* Foot: appearance and logout are tiles on the same rhythm */
-.sat-shell.is-collapsed .sat-sidebar-foot {
+/* —— Rail furniture shared by both states ——————————————————————— */
+
+.sat-rail-divider {
+  width: 100%;
+  height: 1px;
+  margin: 0.55rem 0;
+  background: color-mix(in oklab, var(--card-border) 70%, transparent);
+}
+
+/* Pins log out to the bottom at any height */
+.sat-rail-spacer {
+  flex: 1 1 auto;
+  min-height: 0.5rem;
+}
+
+.sat-profile {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--sat-step);
-  padding-top: var(--sat-step);
-  margin-top: var(--sat-step);
+  gap: 0.7rem;
+  width: 100%;
+  height: var(--sat-row);
+  padding: 0 0.6rem;
+  border-radius: 0.85rem;
+  transition: background 220ms ease;
 }
 
-.sat-shell.is-collapsed .sat-theme-slot,
-.sat-shell.is-collapsed .sat-theme-slot .theme-selector {
-  display: block;
-  width: var(--sat-tile);
-  height: var(--sat-tile);
-}
-
-.sat-shell.is-collapsed .sat-theme-slot .theme-toggle {
-  display: grid;
-  place-items: center;
-  width: var(--sat-tile);
-  height: var(--sat-tile);
-  padding: 0;
-  gap: 0;
-  border: 0;
-  border-radius: 14px;
-  background: transparent;
-  box-shadow: none;
-  color: var(--muted);
-}
-
-.sat-shell.is-collapsed .sat-theme-slot .theme-toggle:hover {
-  color: var(--foreground);
+.sat-profile:hover {
   background: color-mix(in oklab, var(--muted) 10%, transparent);
 }
 
-/* Expanded foot: theme control reads as a normal row */
+.sat-profile-avatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 4px 12px -6px color-mix(in oklab, var(--accent) 80%, transparent);
+}
+
+.sat-profile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.sat-profile-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.sat-profile-role {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.sat-shell.is-collapsed .sat-profile {
+  width: var(--sat-tile);
+  height: var(--sat-tile);
+  padding: 0;
+  justify-content: center;
+}
+
+/* Appearance control */
+
 .sat-theme-slot {
   display: block;
+  width: 100%;
 }
 
 .sat-theme-slot .theme-toggle {
@@ -7906,44 +7908,56 @@ a:hover .kepler-logo-mark {
 
 .sat-theme-slot .theme-toggle:hover {
   color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
 }
 
-/* Phones keep the full-height drawer with labels */
+.sat-shell.is-collapsed .sat-theme-slot,
+.sat-shell.is-collapsed .sat-theme-slot .theme-selector {
+  width: var(--sat-tile);
+  height: var(--sat-tile);
+}
+
+.sat-shell.is-collapsed .sat-theme-slot .theme-toggle {
+  display: grid;
+  place-items: center;
+  width: var(--sat-tile);
+  height: var(--sat-tile);
+  padding: 0;
+  gap: 0;
+  border-radius: 14px;
+}
+
+/* The popover belongs to the icon, not the rail: open beside it, top-aligned */
+.sat-theme-slot .theme-panel {
+  top: 0;
+  right: auto;
+  left: calc(100% + 0.65rem);
+  transform-origin: left top;
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
+}
+
 @media (max-width: 767px) {
-  .sat-shell.is-collapsed .sat-sidebar {
-    top: var(--sat-gap);
-    bottom: var(--sat-gap);
-    height: auto;
-    translate: calc(-100% - var(--sat-gap) * 2) 0;
-  }
-
-  .sat-shell.is-collapsed .sat-sidebar.is-open {
-    translate: 0 0;
-  }
-
-  .sat-shell.is-collapsed {
-    --sat-rail: 248px;
-    --sat-row: 46px;
-  }
-
-  .sat-shell.is-collapsed .sat-sidebar-inner {
+  .sat-shell.is-collapsed .sat-sidebar-inner,
+  .sat-shell.is-collapsed .sat-sidebar-head {
     align-items: stretch;
-    padding: 1.1rem 0.85rem 1rem;
+    justify-content: flex-start;
   }
 
-  .sat-shell.is-collapsed .sat-sidebar-brand {
+  .sat-shell.is-collapsed .sat-sidebar-brand,
+  .sat-shell.is-collapsed .sat-nav-label,
+  .sat-shell.is-collapsed .sat-profile-text {
     display: block;
   }
 
-  .sat-shell.is-collapsed .sat-nav-item {
+  .sat-shell.is-collapsed .sat-nav-item,
+  .sat-shell.is-collapsed .sat-profile,
+  .sat-shell.is-collapsed .sat-theme-slot,
+  .sat-shell.is-collapsed .sat-theme-slot .theme-toggle {
     width: auto;
     height: var(--sat-row);
     justify-content: flex-start;
     padding: 0 0.7rem;
-  }
-
-  .sat-shell.is-collapsed .sat-nav-label {
-    display: block;
   }
 
   .sat-shell.is-collapsed .sat-nav-indicator {
@@ -7956,6 +7970,12 @@ a:hover .kepler-logo-mark {
 
   .sat-shell.is-collapsed .sat-collapse-btn {
     display: none;
+  }
+
+  /* Bottom sheet on phones, as elsewhere in the app */
+  .sat-theme-slot .theme-panel {
+    left: 0;
+    top: auto;
   }
 }
 
