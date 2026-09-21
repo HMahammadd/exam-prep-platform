@@ -30,6 +30,22 @@
   --feature-navy-border: #1c3a63;
   --feature-dim-bg: #0c7a69;
   --feature-dim-text: #ffffff;
+  /* Palette identity — overridden per data-theme. */
+  --theme-primary: #00246b;
+  --theme-secondary: #cadcfc;
+}
+
+/*
+ * Semantic aliases for the theme API. They resolve through the same tokens the
+ * rest of this file already uses, so either name works and a palette only ever
+ * has to set one of them.
+ */
+:root {
+  --page-bg: var(--background);
+  --surface: var(--card);
+  --text-primary: var(--foreground);
+  --text-muted: var(--muted);
+  --border: var(--card-border);
 }
 
 .dark {
@@ -66,6 +82,7 @@
   --color-muted: var(--muted);
   --font-sans: var(--font-inter);
   --font-heading: var(--font-space-grotesk);
+  --font-display: var(--font-source-serif);
   --font-mono: var(--font-geist-mono);
   --shadow-card: var(--shadow);
 }
@@ -92,6 +109,45 @@ h6 {
     sans-serif;
 }
 
+/*
+ * Editorial display type — the marketing surfaces (hero + section titles).
+ * A high-readability transitional serif with an optical-size axis: contrast
+ * opens up at hero sizes and settles down at section sizes, which is what
+ * makes the type feel set rather than scaled. Buttons, labels and body copy
+ * stay on the sans — the contrast between the two is the point.
+ */
+h1.hero-copy-title,
+.section-display-title,
+.exam-conditions-title,
+.tools-title,
+.tools-copy-title,
+.kepler-feature-title {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Section titles on the marketing pages — the hero's type, one step down.
+ * Replaces the ad-hoc `text-3xl font-bold` pairs so every section title on the
+ * landing page shares one scale.
+ */
+.section-display-title {
+  font-size: clamp(1.9rem, 3.4vw, 2.35rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+/* Lets the sans paragraph settle under the serif title instead of crowding it. */
+.section-display-title + p {
+  margin-top: 1.1rem;
+  line-height: 1.62;
+}
+
 h1 {
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -105,10 +161,17 @@ h1.text-5xl {
 }
 
 h1.hero-copy-title {
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  /* ~10% larger than the previous text-4xl / sm:text-5xl pair, fluid between. */
-  font-size: clamp(2.5rem, 1.7rem + 2.6vw, 3.3rem);
+  /*
+   * The serif carries its own width, so it needs far less negative tracking
+   * than the geometric sans did (-0.03em). Anything tighter starts closing up
+   * the counters at display size.
+   */
+  letter-spacing: -0.012em;
+  line-height: 1.02;
+  /* Semibold, not bold: high-contrast serifs get muddy at 700. */
+  font-weight: 600;
+  /* ~12% larger than the previous clamp, fluid between. */
+  font-size: clamp(2.8rem, 1.9rem + 2.9vw, 3.75rem);
 }
 
 .hero-copy {
@@ -124,16 +187,21 @@ h1.hero-copy-title {
 
 .hero-copy-line {
   display: block;
+  /* Evens out the rag now that the serif sets wider than the sans did. */
+  text-wrap: balance;
 }
 
 .hero-copy-line + .hero-copy-line {
-  margin-top: 0.28em;
+  /* Clears the .hero-emphasis underline without reopening the leading. */
+  margin-top: 0.16em;
 }
 
 .hero-copy-exams {
   color: var(--accent);
-  padding-inline: 0.06em 0.12em;
-  letter-spacing: -0.018em;
+  /* Trimmed from 0.06/0.12em — the serif already carries its own sidebearings,
+     so the old padding read as a double space before "exams". */
+  padding-inline: 0.03em 0.04em;
+  letter-spacing: -0.008em;
 }
 
 .hero-copy-actions {
@@ -152,7 +220,8 @@ h1.hero-copy-title {
 }
 
 .home-hero-cta {
-  border-radius: 0.85rem;
+  /* Square 90° corners, matching the deck cards. */
+  border-radius: 0;
   box-shadow: 0 8px 22px -12px color-mix(in oklab, var(--accent) 48%, transparent);
 }
 
@@ -1050,7 +1119,7 @@ html.dark .hero-celestial-face--moon {
   display: none;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 0.45rem 0.7rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1070,7 +1139,7 @@ html.dark .hero-celestial-face--moon {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--accent);
   padding: 0.45rem 0.85rem;
   font-size: 0.875rem;
@@ -1895,10 +1964,10 @@ html.dark .hero-celestial-face--moon {
 
 .exam-conditions-title {
   margin: 0;
-  font-size: clamp(1.85rem, 4.2vw, 2.65rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.12;
+  font-size: clamp(1.95rem, 4.4vw, 2.8rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
   color: var(--foreground);
   text-wrap: balance;
 }
@@ -2027,7 +2096,8 @@ html.dark .hero-celestial-face--moon {
   height: 100%;
   min-height: 24.5rem;
   padding: 1.15rem 1.15rem 1.25rem;
-  border-radius: 1.35rem;
+  /* Square 90° corners — the deck's cards are true rectangles. */
+  border-radius: 0;
   border: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
   background: color-mix(in oklab, var(--card) 88%, white 12%);
   box-shadow:
@@ -3339,7 +3409,10 @@ html.dark .hero-celestial-face--moon {
   height: 2.25rem;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 999px;
+  border-radius: 0;
+  /* No outline on the language chip — the shared glass-chip border is
+     cancelled here so the theme toggle keeps its own. */
+  border: 0;
   padding: 0 0.7rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -3371,7 +3444,7 @@ html.dark .hero-celestial-face--moon {
   list-style: none;
   margin: 0;
   padding: 0.35rem;
-  border-radius: 1rem;
+  border-radius: 0;
   border: 1px solid color-mix(in oklab, var(--card-border) 90%, #93c5fd);
   background: color-mix(in oklab, var(--card) 78%, transparent);
   box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--foreground) 45%, transparent);
@@ -4335,9 +4408,10 @@ html.dark .hero-celestial-face--moon {
 
 .kepler-feature-title {
   margin-top: 1.5rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.003em;
+  line-height: 1.28;
 }
 
 .kepler-feature-body {
@@ -4743,10 +4817,10 @@ html.dark .hero-celestial-face--moon {
 }
 
 .tools-title {
-  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-size: clamp(2rem, 4.4vw, 3.05rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
   color: var(--foreground);
 }
 
@@ -4799,10 +4873,10 @@ html.dark .hero-celestial-face--moon {
 }
 
 .tools-copy-title {
-  font-size: clamp(1.4rem, 2.6vw, 1.95rem);
-  font-weight: 800;
-  line-height: 1.22;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.45rem, 2.7vw, 2.05rem);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.008em;
   color: var(--foreground);
 }
 
@@ -4840,18 +4914,29 @@ html.dark .hero-celestial-face--moon {
 .tools-media-frame {
   position: relative;
   overflow: hidden;
-  border-radius: 1.1rem;
+  border-radius: 0;
   border: 1px solid var(--card-border);
   background: var(--card);
   /* Clip ratio (1920x1022) plus the surrounding padding, so the whole app
      window fits inside without ever being cropped. */
   aspect-ratio: 1.62 / 1;
-  padding: clamp(1.5rem, 2.4vw, 2.5rem);
+  /* Full-bleed: the inner UI meets the frame edge, no surrounding gap. */
+  padding: 0;
   box-shadow: 0 18px 40px -22px color-mix(in oklab, var(--tools-accent) 55%, transparent);
   transition:
     transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 320ms ease;
+}
+
+/*
+ * Real product captures size themselves: the frame drops the fixed ratio and
+ * takes its height from the 1920x1022 clip plus padding, so the whole app
+ * window is always shown edge to edge with no letterbox and no crop.
+ */
+.tools-media-frame--capture {
+  aspect-ratio: auto;
+  padding: 0;
 }
 
 .tools-media-frame::after {
@@ -4880,8 +4965,8 @@ html.dark .hero-celestial-face--moon {
 
 /*
  * The clips were re-encoded to drop the baked-in step caption that used to sit
- * along the bottom edge, so the whole frame is now app UI and can be shown in
- * full. `contain` guarantees nothing is ever cropped at any viewport.
+ * along the bottom edge, so the whole frame is now app UI and is shown in full,
+ * edge to edge inside its frame.
  */
 .tools-media-video {
   width: 100%;
@@ -4889,15 +4974,20 @@ html.dark .hero-celestial-face--moon {
   object-fit: contain;
   object-position: center;
   display: block;
-  border-radius: 1.3rem;
-  border: 1px solid color-mix(in oklab, var(--tools-accent) 20%, var(--card-border));
+  border-radius: 0;
+  border: 0;
   background: #0f1420;
-  box-shadow:
-    0 18px 40px -22px rgb(5 10 20 / 0.55),
-    0 0 0 1px rgb(255 255 255 / 0.04);
-  animation: tools-float 8s ease-in-out infinite;
-  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tools-media-frame--capture .tools-media-video {
+  /* The ratio stays so the frame reserves its height before metadata loads
+     (no layout shift); `cover` then guarantees the clip fills it edge to edge.
+     The clips are not all exactly 1920x1022 — 03-practice is 1920x1028 — and
+     that 0.6% difference showed up as a hairline letterbox under `contain`. */
+  height: auto;
+  aspect-ratio: 1920 / 1022;
+  object-fit: cover;
 }
 
 .tools-media:hover .tools-media-video {
@@ -4913,9 +5003,9 @@ html.dark .hero-celestial-face--moon {
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-radius: 1rem;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid var(--card-border);
+  border: 0;
   background: var(--card);
 }
 
@@ -5770,100 +5860,215 @@ html.dark .hero-celestial-face--moon {
 }
 
 /* —— Colour themes —————————————————————————————————————————————
-   Each theme only overrides the accent tokens. Everything else in this file
-   already reads them, so buttons, cards, borders, links, icons, gradients,
-   glows, stars and rocket trails all recolor from these few lines.
-   Accents are picked so white text on --accent clears WCAG AA (4.5:1);
-   the brand hex is kept as --accent-hover / decoration where contrast allows.
+   Four two-colour palettes x day/night = 8 token sets. Each block only
+   overrides tokens; everything else in this file already reads them, so
+   buttons, cards, borders, links, icons, gradients, glows, stars and rocket
+   trails all recolor from these few lines.
+
+   Role split, so a palette never flattens the whole UI into one colour:
+     - the palette's PRIMARY drives structure — text, surfaces, page tone;
+     - the palette's SECONDARY tints — soft fills, borders, highlights, dots;
+     - --accent is whichever half actually carries chroma (a near-white
+       secondary like #FBEAEB has no usable hue), pinned to a lightness where
+       white button text still clears WCAG AA 4.5:1 while the same colour
+       stays >= 3:1 against its own surface for icons and bold labels.
+   Every pair in all 8 sets was checked against those thresholds.
    -------------------------------------------------------------------------- */
 
-:root[data-theme="blue"] {
-  --accent: #004e72;
-  --accent-hover: #2a6ea3;
-  --accent-soft: #dbeefb;
-  --background: #f4f9fc;
-  --card-border: #b9dcef;
-  --home-band: #eef6fb;
-  --home-dot: rgb(42 110 163 / 0.14);
-  --shadow: 0 4px 24px -4px rgb(0 78 114 / 0.16);
-  --feature-accent-bg: #004e72;
-  --feature-navy-bg: #062b3f;
-  --feature-navy-border: #14496a;
-  --feature-dim-bg: #0c6a63;
+/* Charcoal Coral — #212B3A / #FBA580 · day */
+:root[data-theme="charcoal-coral"] {
+  --theme-primary: #212B3A;
+  --theme-secondary: #FBA580;
+  --background: #FCF6F3;
+  --card: #FFFFFF;
+  --foreground: #263142;
+  --muted: #636C7B;
+  --card-border: #EDD5CA;
+  --accent: #212B3A;
+  --accent-hover: #4C6285;
+  --accent-soft: #FBEBE3;
+  --home-band: #FAF1EE;
+  --home-dot: rgb(33 43 58 / 0.13);
+  --shadow: 0 4px 24px -4px rgb(33 43 58 / 0.16);
+  --page-tone-a: #FFFFFF;
+  --page-tone-b: #FDFAF8;
+  --page-tone-c: #FCF6F3;
+  --feature-accent-bg: #212B3A;
+  --feature-navy-bg: #151C26;
+  --feature-navy-border: #49515D;
+  --feature-dim-bg: #514649;
 }
 
-:root[data-theme="blue"].dark,
-.dark:root[data-theme="blue"] {
-  --accent: #4ea1d3;
-  --accent-hover: #7cbde4;
-  --accent-soft: #0d3a52;
-  --background: #051620;
-  --card: #0a2231;
-  --card-border: #143a52;
-  --home-band: #061c28;
-  --home-dot: rgb(126 190 224 / 0.1);
-  --feature-accent-bg: #00587f;
-  --feature-navy-bg: #030f17;
+/* Charcoal Coral — #212B3A / #FBA580 · night */
+:root[data-theme="charcoal-coral"].dark,
+.dark:root[data-theme="charcoal-coral"] {
+  --theme-primary: #212B3A;
+  --theme-secondary: #FBA580;
+  --background: #0E1621;
+  --card: #161E2C;
+  --foreground: #F2EEEB;
+  --muted: #8C95A4;
+  --card-border: #273549;
+  --accent: #B64B1E;
+  --accent-hover: #C55220;
+  --accent-soft: #341B11;
+  --home-band: #111A26;
+  --home-dot: rgb(251 165 128 / 0.10);
+  --shadow: 0 4px 24px -4px rgb(33 43 58 / 0.45);
+  --page-tone-a: #0B121B;
+  --page-tone-b: #0E1621;
+  --page-tone-c: #111A26;
+  --feature-accent-bg: #923C18;
+  --feature-navy-bg: #0D1016;
+  --feature-navy-border: #49515D;
+  --feature-dim-bg: #403C44;
 }
 
-:root[data-theme="orange"] {
-  /* #FF6E42 fails AA under white text, so the button fill is a shade deeper
-     and the brand hex carries the hover/decoration roles. */
-  --accent: #c2410c;
-  --accent-hover: #ff6e42;
-  --accent-soft: #ffe6d8;
-  --background: #fff8f4;
-  --card-border: #ffd2bd;
-  --home-band: #fff3ec;
-  --home-dot: rgb(194 65 12 / 0.12);
-  --shadow: 0 4px 24px -4px rgb(194 65 12 / 0.16);
-  --feature-accent-bg: #c2410c;
-  --feature-navy-bg: #3b1707;
-  --feature-navy-border: #6b2a12;
-  --feature-dim-bg: #9a3412;
+/* Royal Blush — #2F3C7E / #FBEAEB · day */
+:root[data-theme="royal-blush"] {
+  --theme-primary: #2F3C7E;
+  --theme-secondary: #FBEAEB;
+  --background: #FCF5F5;
+  --card: #FFFFFF;
+  --foreground: #232D5D;
+  --muted: #676B81;
+  --card-border: #F0D3D5;
+  --accent: #2F3C7E;
+  --accent-hover: #5C6DC2;
+  --accent-soft: #FBEAEB;
+  --home-band: #FBF2F2;
+  --home-dot: rgb(47 60 126 / 0.13);
+  --shadow: 0 4px 24px -4px rgb(47 60 126 / 0.16);
+  --page-tone-a: #FFFFFF;
+  --page-tone-b: #FDFAFA;
+  --page-tone-c: #FCF5F5;
+  --feature-accent-bg: #2F3C7E;
+  --feature-navy-bg: #1F2752;
+  --feature-navy-border: #545F95;
+  --feature-dim-bg: #5C6296;
 }
 
-:root[data-theme="orange"].dark,
-.dark:root[data-theme="orange"] {
-  --accent: #ff935d;
-  --accent-hover: #ffc58f;
-  --accent-soft: #4a1d0b;
-  --background: #160b06;
-  --card: #241009;
-  --card-border: #3d1d0f;
-  --home-band: #1b0d07;
-  --home-dot: rgb(255 197 143 / 0.1);
-  --feature-accent-bg: #b83d0b;
-  --feature-navy-bg: #0f0603;
+/* Royal Blush — #2F3C7E / #FBEAEB · night */
+:root[data-theme="royal-blush"].dark,
+.dark:root[data-theme="royal-blush"] {
+  --theme-primary: #2F3C7E;
+  --theme-secondary: #FBEAEB;
+  --background: #101425;
+  --card: #181D31;
+  --foreground: #F4EEEE;
+  --muted: #9194A8;
+  --card-border: #2B3251;
+  --accent: #5265C2;
+  --accent-hover: #5E6FC7;
+  --accent-soft: #192042;
+  --home-band: #14182D;
+  --home-dot: rgb(251 234 235 / 0.10);
+  --shadow: 0 4px 24px -4px rgb(47 60 126 / 0.45);
+  --page-tone-a: #0D101E;
+  --page-tone-b: #101425;
+  --page-tone-c: #14182D;
+  --feature-accent-bg: #42519B;
+  --feature-navy-bg: #121730;
+  --feature-navy-border: #545F95;
+  --feature-dim-bg: #4C548D;
 }
 
-:root[data-theme="navy"] {
-  --accent: #133b52;
-  --accent-hover: #2a6f8f;
-  --accent-soft: #dbe8ef;
-  --background: #f5f8fa;
-  --card-border: #c2d5e0;
-  --home-band: #eff4f7;
-  --home-dot: rgb(19 59 82 / 0.13);
-  --shadow: 0 4px 24px -4px rgb(9 38 52 / 0.18);
-  --feature-accent-bg: #133b52;
-  --feature-navy-bg: #092634;
-  --feature-navy-border: #1d5069;
-  --feature-dim-bg: #0f5c56;
+/* Deep Blue Sky — #00246B / #CADCFC · day */
+:root[data-theme="deep-blue-sky"] {
+  --theme-primary: #00246B;
+  --theme-secondary: #CADCFC;
+  --background: #F3F7FC;
+  --card: #FFFFFF;
+  --foreground: #1A2F5A;
+  --muted: #646C7D;
+  --card-border: #CFDAEF;
+  --accent: #00246B;
+  --accent-hover: #2F5DBA;
+  --accent-soft: #E7EEFC;
+  --home-band: #F0F4FB;
+  --home-dot: rgb(0 36 107 / 0.13);
+  --shadow: 0 4px 24px -4px rgb(0 36 107 / 0.16);
+  --page-tone-a: #FFFFFF;
+  --page-tone-b: #F8FBFD;
+  --page-tone-c: #F3F7FC;
+  --feature-accent-bg: #00246B;
+  --feature-navy-bg: #001746;
+  --feature-navy-border: #2E4B86;
+  --feature-dim-bg: #2C4C8B;
 }
 
-:root[data-theme="navy"].dark,
-.dark:root[data-theme="navy"] {
-  --accent: #2a6f8f;
-  --accent-hover: #4e9cbd;
-  --accent-soft: #0f3345;
-  --background: #050f16;
-  --card: #092634;
-  --card-border: #133b52;
-  --home-band: #061620;
-  --home-dot: rgb(120 175 200 / 0.1);
-  --feature-accent-bg: #16455e;
-  --feature-navy-bg: #030c12;
+/* Deep Blue Sky — #00246B / #CADCFC · night */
+:root[data-theme="deep-blue-sky"].dark,
+.dark:root[data-theme="deep-blue-sky"] {
+  --theme-primary: #00246B;
+  --theme-secondary: #CADCFC;
+  --background: #0F1522;
+  --card: #171E2E;
+  --foreground: #ECEFF3;
+  --muted: #8D95A6;
+  --card-border: #28334A;
+  --accent: #2965DC;
+  --accent-hover: #3970DF;
+  --accent-soft: #14223C;
+  --home-band: #121A28;
+  --home-dot: rgb(202 220 252 / 0.10);
+  --shadow: 0 4px 24px -4px rgb(0 36 107 / 0.45);
+  --page-tone-a: #0C111C;
+  --page-tone-b: #0F1522;
+  --page-tone-c: #121A28;
+  --feature-accent-bg: #2151B0;
+  --feature-navy-bg: #000E29;
+  --feature-navy-border: #2E4B86;
+  --feature-dim-bg: #1C3E7F;
+}
+
+/* Crimson Ivory — #990011 / #FCF6F5 · day */
+:root[data-theme="crimson-ivory"] {
+  --theme-primary: #990011;
+  --theme-secondary: #FCF6F5;
+  --background: #FCF5F4;
+  --card: #FFFFFF;
+  --foreground: #591A21;
+  --muted: #7F6568;
+  --card-border: #EFD4D0;
+  --accent: #990011;
+  --accent-hover: #CF3D4D;
+  --accent-soft: #F9EBE9;
+  --home-band: #FAF1F0;
+  --home-dot: rgb(153 0 17 / 0.13);
+  --shadow: 0 4px 24px -4px rgb(153 0 17 / 0.16);
+  --page-tone-a: #FFFFFF;
+  --page-tone-b: #FDFAF9;
+  --page-tone-c: #FCF5F4;
+  --feature-accent-bg: #990011;
+  --feature-navy-bg: #63000B;
+  --feature-navy-border: #AB2E3C;
+  --feature-dim-bg: #AF3643;
+}
+
+/* Crimson Ivory — #990011 / #FCF6F5 · night */
+:root[data-theme="crimson-ivory"].dark,
+.dark:root[data-theme="crimson-ivory"] {
+  --theme-primary: #990011;
+  --theme-secondary: #FCF6F5;
+  --background: #240F11;
+  --card: #30171A;
+  --foreground: #F3EEED;
+  --muted: #A78F92;
+  --card-border: #4D292D;
+  --accent: #D22236;
+  --accent-hover: #DE3144;
+  --accent-soft: #3E1519;
+  --home-band: #2A1315;
+  --home-dot: rgb(252 246 245 / 0.10);
+  --shadow: 0 4px 24px -4px rgb(153 0 17 / 0.45);
+  --page-tone-a: #1E0C0E;
+  --page-tone-b: #240F11;
+  --page-tone-c: #2A1315;
+  --feature-accent-bg: #A81B2B;
+  --feature-navy-bg: #3A0006;
+  --feature-navy-border: #AB2E3C;
+  --feature-dim-bg: #A72231;
 }
 
 /* Interpolate tokens only while a switch is in flight. */
@@ -5957,7 +6162,7 @@ html.dark .hero-celestial-face--moon {
 
 .theme-appearance-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.4rem;
 }
 
@@ -6026,7 +6231,11 @@ html.dark .hero-celestial-face--moon {
   height: 3.1rem;
   border-radius: 0.85rem;
   border: 1px solid rgb(255 255 255 / 0.1);
-  background: linear-gradient(135deg, var(--swatch-a) 0%, var(--swatch-b) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--swatch-a) 0 50%,
+    var(--swatch-b) 50% 100%
+  );
   box-shadow: 0 6px 16px -10px rgb(4 12 24 / 0.5);
   transition:
     transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -6602,8 +6811,8 @@ html.dark .hero-celestial-face--moon {
   gap: 0.8rem;
   height: 100%;
   padding: 1rem;
-  border-radius: 1rem;
-  border: 1px solid var(--card-border);
+  border-radius: 0;
+  border: 0;
   background: linear-gradient(
     150deg,
     color-mix(in oklab, var(--tools-accent) 8%, var(--card)) 0%,
@@ -6817,8 +7026,8 @@ html.dark .hero-celestial-face--moon {
   flex-direction: column;
   height: 100%;
   padding: 1rem 1.1rem;
-  border-radius: 1rem;
-  border: 1px solid var(--card-border);
+  border-radius: 0;
+  border: 0;
   background: linear-gradient(
     150deg,
     color-mix(in oklab, var(--tools-accent) 7%, var(--card)) 0%,
@@ -7460,6 +7669,36 @@ a:hover .kepler-logo-mark {
   transition: opacity 180ms ease 110ms;
 }
 
+/*
+ * Navigation feedback. The in-shell routes have no loading.js skeleton any
+ * more, so this marks the row being opened while its data is in flight. It is
+ * invisible until the link reports `pending`, and never affects layout.
+ */
+.sat-nav-pending {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  translate: 0 -50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  border-top-color: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sat-nav-pending.is-pending {
+  opacity: 1;
+  animation: sat-nav-spin 620ms linear infinite;
+}
+
+@keyframes sat-nav-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
 /* Tooltip when collapsed */
 
 .is-collapsed .sat-nav-item::after {
@@ -7634,6 +7873,31 @@ a:hover .kepler-logo-mark {
   from {
     opacity: 0;
     transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Per-navigation swap. `.sat-content` is mounted once by the shell layout and
+ * fades in with the app; this wrapper is keyed on the route, so it is the only
+ * node that re-runs its animation when a section changes. It must not
+ * introduce a box of its own, or the content column would shift on every swap.
+ */
+.sat-route {
+  display: contents;
+}
+
+.sat-route > * {
+  animation: sat-route-in 200ms ease-out both;
+}
+
+@keyframes sat-route-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -7838,6 +8102,8 @@ a:hover .kepler-logo-mark {
   .sat-nav-indicator,
   .sat-card,
   .sat-content,
+  .sat-route > *,
+  .sat-nav-pending,
   .sat-avatar {
     transition: none !important;
     animation: none !important;
@@ -8559,5 +8825,296 @@ a:hover .kepler-logo-mark {
   .vocab-lang-menu {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* —— Exam selection cards ————————————————————————————————————————
+   One component, three fills. Every card shares the same ratio, padding, type
+   scale, icon placement and timing; only --track-accent changes. Two layers
+   sit absolutely inside a fixed-ratio box, so the hover swap cannot resize a
+   card or reflow the grid.
+   -------------------------------------------------------------------------- */
+
+.track-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1023px) {
+  .track-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 639px) {
+  .track-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.track-card {
+  --track-accent: #315de7;
+  --track-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  isolation: isolate;
+  /* Fixed ratio holds the height, so swapping layers cannot shift layout. */
+  aspect-ratio: 0.72;
+  border-radius: 0;
+  border: 1px solid var(--track-accent);
+  background: var(--track-accent);
+  overflow: hidden;
+  transition:
+    transform 400ms var(--track-ease),
+    box-shadow 400ms var(--track-ease);
+}
+
+.track-card[data-exam="toefl"] {
+  --track-accent: #7046d9;
+}
+
+.track-card[data-exam="dim"] {
+  --track-accent: #087f5b;
+}
+
+.track-card:hover,
+.track-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgb(20 45 90 / 0.12);
+}
+
+.dark .track-card:hover,
+.dark .track-card:focus-within {
+  box-shadow: 0 18px 45px rgb(0 0 0 / 0.45);
+}
+
+/* —— the two layers —— */
+
+.track-card-cover,
+.track-card-detail {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  transition:
+    opacity 300ms var(--track-ease),
+    transform 400ms var(--track-ease);
+}
+
+/*
+ * Hand the layers over rather than cross-fading them: the outgoing layer
+ * clears first, the incoming one follows. A straight cross-fade leaves both
+ * sets of text legible at 50% for a moment, which reads as a glitch.
+ */
+.track-card-cover {
+  transition-delay: 120ms; /* on leave: returns after the detail has gone */
+}
+
+.track-card-detail {
+  transition-delay: 0ms;
+}
+
+.track-card:hover .track-card-cover,
+.track-card:focus-within .track-card-cover {
+  transition-delay: 0ms;
+}
+
+.track-card:hover .track-card-detail,
+.track-card:focus-within .track-card-detail {
+  transition-delay: 120ms;
+}
+
+.track-card-cover {
+  opacity: 1;
+  transform: none;
+  align-items: center;
+  justify-content: center;
+  gap: 1.35rem;
+  color: #fff;
+  overflow: hidden;
+}
+
+.track-card-detail {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  background: var(--card);
+}
+
+.track-card:hover .track-card-cover,
+.track-card:focus-within .track-card-cover {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  pointer-events: none;
+}
+
+.track-card:hover .track-card-detail,
+.track-card:focus-within .track-card-detail {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* —— cover —— */
+
+.track-card-arcs {
+  position: absolute;
+  inset: auto auto -14% -20%;
+  width: 116%;
+  color: rgb(255 255 255 / 0.14);
+  pointer-events: none;
+}
+
+.track-card-icon {
+  display: grid;
+  place-items: center;
+}
+
+.track-card-cover .track-card-icon {
+  color: #fff;
+}
+
+.track-card-cover .track-card-icon > svg {
+  width: 3.25rem;
+  height: 3.25rem;
+  stroke-width: 1.5;
+}
+
+.track-card-wordmark {
+  font-size: clamp(2.6rem, 4.6vw, 3.9rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-align: center;
+  color: #fff;
+}
+
+/* —— detail —— */
+
+.track-card-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.track-card-detail .track-card-icon {
+  color: var(--track-accent);
+}
+
+.track-card-detail .track-card-icon > svg {
+  width: 1.9rem;
+  height: 1.9rem;
+  stroke-width: 1.75;
+}
+
+.track-card-soon {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--track-accent);
+}
+
+.track-card-title {
+  margin: 1.4rem 0 0;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--foreground);
+}
+
+.track-card-subtitle {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.track-card-list {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.track-card-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+
+.track-card-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--track-accent);
+  flex-shrink: 0;
+}
+
+.track-card-note {
+  margin: auto 0 0.9rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.track-card-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--track-accent);
+  color: #fff;
+  transition: background 220ms ease;
+}
+
+.track-card-cta:hover {
+  background: color-mix(in oklab, var(--track-accent) 84%, #000);
+}
+
+.track-card-cta.is-disabled {
+  background: color-mix(in oklab, var(--track-accent) 12%, var(--card));
+  color: color-mix(in oklab, var(--track-accent) 78%, var(--foreground));
+  cursor: default;
+}
+
+/* Touch devices cannot hover, so the details are shown outright. */
+@media (hover: none) {
+  .track-card {
+    aspect-ratio: auto;
+    min-height: 24rem;
+  }
+
+  .track-card-cover {
+    display: none;
+  }
+
+  .track-card-detail {
+    position: relative;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track-card,
+  .track-card-cover,
+  .track-card-detail {
+    transition-duration: 1ms !important;
+  }
+
+  .track-card:hover,
+  .track-card:focus-within {
+    transform: none;
   }
 }

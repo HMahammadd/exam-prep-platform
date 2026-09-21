@@ -1,66 +1,88 @@
 /**
- * Single source of truth for the theme selector.
+ * Single source of truth for the appearance selector.
  *
- * Appearance (light / dark / system) stays on the existing `.dark` class, so
- * every rule already written against `.dark` keeps working untouched. A colour
- * theme is a separate axis: it sets `data-theme` on <html> and overrides only
- * the accent tokens, which the rest of globals.css already reads. Adding a
- * theme means adding one entry here plus one token block in globals.css.
+ * Two independent axes:
+ *   appearanceMode — "day" | "night". Still rides the existing `.dark` class,
+ *     so every rule already written against `.dark` keeps working untouched.
+ *   colorTheme     — one of four two-colour palettes. Sets `data-theme` on
+ *     <html> and overrides only the token block in globals.css.
+ *
+ * All 4 x 2 = 8 combinations are defined; neither axis resets the other.
  */
 
-export type Appearance = "light" | "dark" | "system";
-export type ColorTheme = "default" | "blue" | "orange" | "navy";
+export type Appearance = "day" | "night";
+
+export type ColorTheme =
+  | "charcoal-coral"
+  | "royal-blush"
+  | "deep-blue-sky"
+  | "crimson-ivory";
 
 export type ThemeSwatch = {
   id: ColorTheme;
   /** i18n key for the visible name. */
   labelKey: string;
-  /** Shown on the card; the colour this theme is recognised by. */
-  hex: string;
-  /** Card gradient stops — purely decorative. */
-  preview: [string, string];
+  /** The two palette colours — rendered as a hard 50/50 split, never a blend. */
+  primary: string;
+  secondary: string;
 };
 
 export const APPEARANCES: { id: Appearance; labelKey: string }[] = [
-  { id: "light", labelKey: "theme.light" },
-  { id: "dark", labelKey: "theme.dark" },
-  { id: "system", labelKey: "theme.system" },
+  { id: "day", labelKey: "theme.day" },
+  { id: "night", labelKey: "theme.night" },
 ];
 
 export const COLOR_THEMES: ThemeSwatch[] = [
   {
-    id: "default",
-    labelKey: "theme.colorDefault",
-    hex: "#2563EB",
-    preview: ["#F9F9F9", "#2563EB"],
+    id: "charcoal-coral",
+    labelKey: "theme.colorCharcoalCoral",
+    primary: "#212B3A",
+    secondary: "#FBA580",
   },
   {
-    id: "blue",
-    labelKey: "theme.colorBlue",
-    hex: "#004E72",
-    preview: ["#004E72", "#4EA1D3"],
+    id: "royal-blush",
+    labelKey: "theme.colorRoyalBlush",
+    primary: "#2F3C7E",
+    secondary: "#FBEAEB",
   },
   {
-    id: "orange",
-    labelKey: "theme.colorOrange",
-    hex: "#FF6E42",
-    preview: ["#FF6E42", "#FFC58F"],
+    id: "deep-blue-sky",
+    labelKey: "theme.colorDeepBlueSky",
+    primary: "#00246B",
+    secondary: "#CADCFC",
   },
   {
-    id: "navy",
-    labelKey: "theme.colorNavy",
-    hex: "#092634",
-    preview: ["#092634", "#2A6F8F"],
+    id: "crimson-ivory",
+    labelKey: "theme.colorCrimsonIvory",
+    primary: "#990011",
+    secondary: "#FCF6F5",
   },
 ];
+
+export const DEFAULT_APPEARANCE: Appearance = "day";
+/** Closest to the pre-existing brand blue, so nothing jumps on first load. */
+export const DEFAULT_COLOR_THEME: ColorTheme = "deep-blue-sky";
 
 export const APPEARANCE_STORAGE_KEY = "theme";
 export const COLOR_THEME_STORAGE_KEY = "color-theme";
 
 export function isAppearance(value: unknown): value is Appearance {
-  return value === "light" || value === "dark" || value === "system";
+  return value === "day" || value === "night";
 }
 
 export function isColorTheme(value: unknown): value is ColorTheme {
   return COLOR_THEMES.some((theme) => theme.id === value);
+}
+
+/** Accepts the pre-Day/Night values so a returning visitor keeps their mode. */
+export function normalizeAppearance(value: unknown): Appearance {
+  if (isAppearance(value)) return value;
+  if (value === "dark") return "night";
+  if (value === "light" || value === "system") return "day";
+  return DEFAULT_APPEARANCE;
+}
+
+/** Old palette ids (default/blue/orange/navy) fall back to the default. */
+export function normalizeColorTheme(value: unknown): ColorTheme {
+  return isColorTheme(value) ? value : DEFAULT_COLOR_THEME;
 }

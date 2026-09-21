@@ -410,7 +410,11 @@ function ToolsBlock({ block, index }: { block: ToolBlock; index: number }) {
         }
         onPointerMove={onPointerMove}
       >
-        <div className="tools-media-frame">
+        <div
+          className={`tools-media-frame${
+            block.video && block.poster ? " tools-media-frame--capture" : ""
+          }`}
+        >
           {block.soon ? <span className="tools-soon">{t("tools.soon")}</span> : null}
 
           {block.video && block.poster ? (

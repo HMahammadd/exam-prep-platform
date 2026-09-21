@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import { ArrowLeft, Loader2, RotateCcw } from "lucide-react";
 import { SatExamAnswerReview } from "@/components/sat/SatExamAnswerReview";
 import {
@@ -49,12 +49,12 @@ export function LocalSatResults({
     return (
       <div className="rounded-2xl border border-card-border bg-card p-8 text-center shadow-card">
         <p className="text-foreground">Results not found on this device.</p>
-        <Link
+        <LocaleLink
           href={`/dashboard/sat/exam/${examId}`}
           className="mt-4 inline-flex text-sm font-medium text-accent hover:underline"
         >
           Retake exam
-        </Link>
+        </LocaleLink>
       </div>
     );
   }
@@ -70,20 +70,20 @@ export function LocalSatResults({
       />
 
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link
+        <LocaleLink
           href={`/dashboard/sat/exam/${examId}`}
           className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover"
         >
           <RotateCcw className="h-4 w-4" aria-hidden />
           Retake Exam
-        </Link>
-        <Link
+        </LocaleLink>
+        <LocaleLink
           href="/dashboard/sat"
           className="inline-flex items-center gap-2 rounded-lg border border-card-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent-soft"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Back to SAT Practice
-        </Link>
+        </LocaleLink>
       </div>
     </div>
   );

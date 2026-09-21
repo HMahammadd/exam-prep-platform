@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import { KeyRound, Loader2, Mail, Moon, Palette, Sun } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { getMyProfile } from "@/lib/services/profile";
@@ -90,13 +90,13 @@ export function SettingsContent() {
           You can reset your password via email. A link will be sent to your
           registered email address.
         </p>
-        <Link
+        <LocaleLink
           href="/forgot-password"
           className="inline-flex items-center gap-2 rounded-lg border border-card-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent-soft"
         >
           <KeyRound className="h-4 w-4 text-accent" aria-hidden />
           Reset password
-        </Link>
+        </LocaleLink>
       </div>
     </div>
   );

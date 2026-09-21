@@ -116,7 +116,7 @@ export default function Home() {
         <section id="home" className="home-hero relative overflow-hidden">
           <ParticleWaveField />
 
-          <div className="home-hero-inner relative z-10 mx-auto grid grid-cols-1 max-w-6xl gap-10 px-6 lg:grid-cols-2 lg:items-center">
+          <div className="home-hero-inner relative z-10 mx-auto grid grid-cols-1 max-w-6xl gap-10 px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.14fr)] lg:items-center">
             <div className="hero-copy w-fit max-w-full justify-self-start">
               <h1 className="hero-copy-title font-bold tracking-tight text-foreground">
                 {line1 ? (
@@ -137,7 +137,7 @@ export default function Home() {
               <div className="hero-copy-actions home-reveal home-reveal-actions">
                 <LocaleLink
                   href="/signup"
-                  className="home-hero-cta group/practice inline-flex items-center gap-2 rounded-[0.85rem] bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
+                  className="home-hero-cta group/practice inline-flex items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover"
                 >
                   <GraduationCapIcon className="h-4 w-4 shrink-0" />
                   {t("beta.ctaFree")}
@@ -177,7 +177,7 @@ export default function Home() {
 
         <section className="site-section mx-auto max-w-3xl px-6 py-16">
           <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-foreground">
+            <h2 className="section-display-title text-foreground">
               {t("home.faqTitle")}
             </h2>
           </div>
@@ -186,10 +186,10 @@ export default function Home() {
 
         <section className="site-section site-section--accent">
           <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-            <h2 className="text-3xl font-bold text-foreground">
+            <h2 className="section-display-title text-foreground">
               {t("home.finalTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-md text-muted">
+            <p className="mx-auto max-w-md text-muted">
               {t("home.finalBody")}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

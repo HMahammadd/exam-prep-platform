@@ -12,17 +12,15 @@
   },
   "theme": {
     "day": "День",
-    "dark": "Ночь",
     "toDay": "Переключить на светлую тему",
     "toDark": "Переключить на тёмную тему",
-    "light": "Светлая",
-    "system": "Система",
     "appearance": "Оформление",
     "colorTheme": "Цветовая тема",
-    "colorDefault": "Стандартная",
-    "colorBlue": "Синяя",
-    "colorOrange": "Оранжевая",
-    "colorNavy": "Тёмно-синяя"
+    "night": "Ночь",
+    "colorCharcoalCoral": "Уголь и коралл",
+    "colorRoyalBlush": "Royal и блаш",
+    "colorDeepBlueSky": "Глубокий синий и небо",
+    "colorCrimsonIvory": "Багровый и айвори"
   },
   "nav": {
     "home": "Главная",

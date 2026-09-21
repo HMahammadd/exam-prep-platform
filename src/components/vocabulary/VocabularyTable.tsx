@@ -14,7 +14,7 @@ import {
   saveVocabularyPrefs,
   saveWordNote,
   setWordStarred,
-} from "@/app/dashboard/vocabulary/actions";
+} from "@/app/dashboard/(shell)/vocabulary/actions";
 import type {
   TranslationLanguage,
   VocabularyColumnId,

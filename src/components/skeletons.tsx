@@ -22,6 +22,7 @@ function PageShell({
   backLabel = "Dashboard",
   maxWidthClass = "max-w-6xl",
   mainClassName = "px-6 py-10",
+  bare = false,
   children,
 }: {
   title?: string;
@@ -29,8 +30,29 @@ function PageShell({
   backLabel?: string;
   maxWidthClass?: string;
   mainClassName?: string;
+  /**
+   * Routes under the persistent dashboard shell already have a header and a
+   * padded content column, so their fallback must render the body only —
+   * a second header here is what made navigation look like a page swap.
+   */
+  bare?: boolean;
   children: ReactNode;
 }) {
+  if (bare) {
+    return (
+      <div
+        className={cx("mx-auto w-full", maxWidthClass)}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        aria-label="Loading page"
+      >
+        {children}
+        <span className="sr-only">Loading…</span>
+      </div>
+    );
+  }
+
   return (
     <div
       className="flex flex-1 flex-col bg-background"
@@ -82,12 +104,13 @@ function SelectionCardSkeleton() {
 
 /* ───────────────────────── Dashboard home ───────────────────────── */
 
-export function DashboardHomeSkeleton() {
+export function DashboardHomeSkeleton({ bare = false }: { bare?: boolean } = {}) {
   return (
     <PageShell
       title="Dashboard"
       maxWidthClass="max-w-6xl"
       mainClassName="px-6 py-8 sm:py-10"
+      bare={bare}
     >
       <section className="relative mb-8 overflow-hidden rounded-2xl border border-card-border bg-card px-6 py-6 shadow-card sm:px-8 sm:py-7">
         <div
@@ -169,12 +192,13 @@ export function DashboardHomeSkeleton() {
 
 /* ───────────────────────── SAT ───────────────────────── */
 
-export function SatPracticeSkeleton() {
+export function SatPracticeSkeleton({ bare = false }: { bare?: boolean } = {}) {
   return (
     <PageShell
       title="SAT Practice"
       backHref="/dashboard"
       maxWidthClass="max-w-4xl"
+      bare={bare}
     >
       <IconTitleBlock titleWidth="w-36" />
 
@@ -277,8 +301,10 @@ export function BluebookInstructionsSkeleton() {
 
 export function SatReviewSkeleton({
   title,
+  bare = false,
 }: {
   title: "Exam Results" | "Exam Details";
+  bare?: boolean;
 }) {
   return (
     <PageShell
@@ -287,6 +313,7 @@ export function SatReviewSkeleton({
       backLabel="SAT Practice"
       maxWidthClass="max-w-7xl"
       mainClassName="px-4 py-8 sm:px-6 sm:py-10"
+      bare={bare}
     >
       {title === "Exam Details" && (
         <div className="mb-4 flex justify-end">
@@ -605,13 +632,14 @@ export function ProfileSkeleton() {
   );
 }
 
-export function SettingsSkeleton() {
+export function SettingsSkeleton({ bare = false }: { bare?: boolean } = {}) {
   return (
     <PageShell
       title="Settings"
       backHref="/dashboard"
       maxWidthClass="max-w-2xl"
       mainClassName="px-6 py-8"
+      bare={bare}
     >
       <div className="space-y-6">
         <div className="rounded-2xl border border-card-border bg-card p-6 shadow-card">

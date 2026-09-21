@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import {
   ArrowRight,
   BarChart3,
@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
-import { SatShell } from "@/components/sat/SatShell";
 import { SatExamList } from "@/components/sat/SatExamList";
 import { SAT_PRACTICE_EXAMS } from "@/lib/sat-exams";
 import { getSatExamSummaries } from "./actions";
@@ -34,8 +33,7 @@ export default async function SatDashboardPage() {
   const summaries = await getSatExamSummaries();
 
   return (
-    <SatShell title="SAT Practice" breadcrumb="Dashboard / SAT">
-      <div className="sat-grid">
+    <div className="sat-grid">
         {/* Continue practice */}
         <section className="sat-card sat-card--wide">
           <div className="sat-card-head">
@@ -54,13 +52,13 @@ export default async function SatDashboardPage() {
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link
+            <LocaleLink
               href="/dashboard/sat/lessons"
               className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover"
             >
               <BookOpen className="h-4 w-4" aria-hidden />
               SAT Lessons
-            </Link>
+            </LocaleLink>
             <span className="sat-chip">
               <Timer className="h-3.5 w-3.5" aria-hidden />
               Timed mode
@@ -234,23 +232,22 @@ export default async function SatDashboardPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Link
+            <LocaleLink
               href="/dashboard/sat/lessons"
               className="flex items-center justify-between rounded-lg border border-card-border px-3 py-2 text-sm text-foreground transition hover:border-accent"
             >
               Browse lessons
               <ArrowRight className="h-4 w-4 text-muted" aria-hidden />
-            </Link>
-            <Link
+            </LocaleLink>
+            <LocaleLink
               href="/dashboard"
               className="flex items-center justify-between rounded-lg border border-card-border px-3 py-2 text-sm text-foreground transition hover:border-accent"
             >
               Back to dashboard
               <ArrowRight className="h-4 w-4 text-muted" aria-hidden />
-            </Link>
+            </LocaleLink>
           </div>
         </section>
-      </div>
-    </SatShell>
+    </div>
   );
 }

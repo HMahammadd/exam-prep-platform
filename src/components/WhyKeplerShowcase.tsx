@@ -439,7 +439,9 @@ export function WhyKeplerShowcase() {
       className="site-section kepler-feature-section mx-auto max-w-6xl px-6 py-16"
     >
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold text-foreground">{t("home.whyTitle")}</h2>
+        <h2 className="section-display-title text-foreground">
+          {t("home.whyTitle")}
+        </h2>
         <p className="mt-2 text-muted">{t("home.whySubtitle")}</p>
       </div>
 

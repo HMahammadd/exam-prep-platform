@@ -10,8 +10,10 @@ import {
 import {
   APPEARANCE_STORAGE_KEY,
   COLOR_THEME_STORAGE_KEY,
-  isAppearance,
-  isColorTheme,
+  DEFAULT_APPEARANCE,
+  DEFAULT_COLOR_THEME,
+  normalizeAppearance,
+  normalizeColorTheme,
   type Appearance,
   type ColorTheme,
 } from "@/lib/theme-config";
@@ -19,7 +21,7 @@ import {
 type Theme = "light" | "dark";
 
 type ThemeContextValue = {
-  /** Resolved appearance — "system" already collapsed to light or dark. */
+  /** Resolved appearance — "night" collapsed onto the existing `.dark` class. */
   theme: Theme;
   toggleTheme: () => void;
   appearance: Appearance;
@@ -31,21 +33,14 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue>({
   theme: "light",
   toggleTheme: () => {},
-  appearance: "light",
+  appearance: DEFAULT_APPEARANCE,
   setAppearance: () => {},
-  colorTheme: "default",
+  colorTheme: DEFAULT_COLOR_THEME,
   setColorTheme: () => {},
 });
 
-function systemPrefersDark() {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
 function resolveAppearance(appearance: Appearance): Theme {
-  if (appearance === "system") {
-    return systemPrefersDark() ? "dark" : "light";
-  }
-  return appearance;
+  return appearance === "night" ? "dark" : "light";
 }
 
 function applyTheme(theme: Theme) {
@@ -53,12 +48,7 @@ function applyTheme(theme: Theme) {
 }
 
 function applyColorTheme(colorTheme: ColorTheme) {
-  const root = document.documentElement;
-  if (colorTheme === "default") {
-    root.removeAttribute("data-theme");
-  } else {
-    root.setAttribute("data-theme", colorTheme);
-  }
+  document.documentElement.setAttribute("data-theme", colorTheme);
 }
 
 /**
@@ -74,20 +64,20 @@ function withColorTransition(apply: () => void) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [appearance, setAppearanceState] = useState<Appearance>("light");
+  const [appearance, setAppearanceState] =
+    useState<Appearance>(DEFAULT_APPEARANCE);
   const [theme, setTheme] = useState<Theme>("light");
-  const [colorTheme, setColorThemeState] = useState<ColorTheme>("default");
+  const [colorTheme, setColorThemeState] =
+    useState<ColorTheme>(DEFAULT_COLOR_THEME);
 
   useEffect(() => {
     const storedAppearance = localStorage.getItem(APPEARANCE_STORAGE_KEY);
     const storedColor = localStorage.getItem(COLOR_THEME_STORAGE_KEY);
 
-    const initialAppearance: Appearance = isAppearance(storedAppearance)
-      ? storedAppearance
-      : "light";
-    const initialColor: ColorTheme = isColorTheme(storedColor)
-      ? storedColor
-      : "default";
+    // normalize* also migrates the pre-Day/Night values (light/dark/system)
+    // and the retired palette ids, so an existing visitor keeps their mode.
+    const initialAppearance = normalizeAppearance(storedAppearance);
+    const initialColor = normalizeColorTheme(storedColor);
 
     setAppearanceState(initialAppearance);
     setColorThemeState(initialColor);
@@ -97,23 +87,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyTheme(resolved);
     applyColorTheme(initialColor);
   }, []);
-
-  // Follow the OS while (and only while) the user is on "system".
-  useEffect(() => {
-    if (appearance !== "system") return;
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      const resolved: Theme = media.matches ? "dark" : "light";
-      withColorTransition(() => {
-        setTheme(resolved);
-        applyTheme(resolved);
-      });
-    };
-
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, [appearance]);
 
   const setAppearance = useCallback((next: Appearance) => {
     localStorage.setItem(APPEARANCE_STORAGE_KEY, next);
@@ -135,7 +108,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   /** Preserved for the existing nav/auth/dashboard toggles. */
   const toggleTheme = useCallback(() => {
-    setAppearance(theme === "light" ? "dark" : "light");
+    setAppearance(theme === "light" ? "night" : "day");
   }, [setAppearance, theme]);
 
   return (

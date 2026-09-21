@@ -460,18 +460,18 @@ function cardStyle(
   const spacing =
     layout === "mobile" ? 48 : layout === "tablet" ? 70 : 92;
   const depth = layout === "mobile" ? 70 : layout === "tablet" ? 105 : 135;
-  const rot = layout === "mobile" ? 11 : layout === "tablet" ? 20 : 26;
   const scaleFalloff =
     layout === "mobile" ? 0.085 : layout === "tablet" ? 0.1 : 0.11;
   const scale = Math.max(0.7, 1 - abs * scaleFalloff);
   const opacity = Math.max(0.22, 1 - abs * 0.28);
   const x = d * spacing;
   const z = -abs * depth;
-  const ry = -d * rot;
 
   return {
     opacity,
-    transform: `translate3d(${x}%, -50%, ${z}px) rotateY(${ry}deg) scale(${scale})`,
+    // Depth comes from translateZ + scale only. No rotateY: a rotated plane
+    // under the stage's perspective is what made side cards look trapezoidal.
+    transform: `translate3d(${x}%, -50%, ${z}px) scale(${scale})`,
     zIndex: Math.round(40 - abs * 12),
     filter: abs > 0.55 ? "brightness(0.96)" : "none",
     // Keep all nearby cards clickable (including ±2 in a 5-card deck)
@@ -709,7 +709,7 @@ export function ExamFeatureDeck() {
               ? cardStyle(d, reduced, layout)
               : {
                   opacity: 0,
-                  transform: `translate3d(${d * (mobile ? 18 : 28)}%, -50%, ${-90 - Math.abs(d) * 40}px) rotateY(${-d * 18}deg) scale(0.88)`,
+                  transform: `translate3d(${d * (mobile ? 18 : 28)}%, -50%, ${-90 - Math.abs(d) * 40}px) scale(0.88)`,
                   zIndex: Math.round(20 - Math.abs(d) * 8),
                   pointerEvents: "none" as const,
                 };

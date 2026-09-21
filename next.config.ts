@@ -46,6 +46,13 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    // Keep visited dashboard sections in the client router cache, so moving
+    // back to a section you already opened is served from memory instead of
+    // another Supabase round-trip. `dynamic` defaults to 0 (no caching).
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
     serverActions: {
       // Server Actions are state-changing RPCs; this list is the CSRF origin
       // allowlist. *.app.github.dev is a Codespaces domain anyone can claim,

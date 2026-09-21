@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
+import {
+  Geist_Mono,
+  Inter,
+  Source_Serif_4,
+  Space_Grotesk,
+} from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { getMessages } from "@/lib/i18n/dictionary";
@@ -17,6 +22,15 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin", "latin-ext"],
   variable: "--font-space-grotesk",
   display: "swap",
+});
+
+// Editorial display serif for the marketing headings. The `opsz` axis lets the
+// same family run high-contrast at hero sizes and steady at section sizes.
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  variable: "--font-source-serif",
+  display: "swap",
+  axes: ["opsz"],
 });
 
 const geistMono = Geist_Mono({
@@ -50,13 +64,14 @@ const themeScript = `
     try {
       var root = document.documentElement;
       var mode = localStorage.getItem("theme");
-      var dark =
-        mode === "dark" ||
-        (mode === "system" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches);
-      if (dark) root.classList.add("dark");
+      // "dark" is the pre-Day/Night value; "system" now resolves to day.
+      if (mode === "night" || mode === "dark") root.classList.add("dark");
+      var themes = ["charcoal-coral","royal-blush","deep-blue-sky","crimson-ivory"];
       var color = localStorage.getItem("color-theme");
-      if (color && color !== "default") root.setAttribute("data-theme", color);
+      root.setAttribute(
+        "data-theme",
+        themes.indexOf(color) >= 0 ? color : "deep-blue-sky"
+      );
     } catch (e) {}
   })();
 `;
@@ -72,7 +87,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${spaceGrotesk.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${sourceSerif.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

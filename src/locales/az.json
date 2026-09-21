@@ -12,17 +12,15 @@
   },
   "theme": {
     "day": "Gündüz",
-    "dark": "Gecə",
     "toDay": "İşıqlı rejimə keç",
     "toDark": "Qaranlıq rejimə keç",
-    "light": "İşıqlı",
-    "system": "Sistem",
     "appearance": "Görünüş",
     "colorTheme": "Rəng teması",
-    "colorDefault": "Standart",
-    "colorBlue": "Mavi",
-    "colorOrange": "Narıncı",
-    "colorNavy": "Tünd mavi"
+    "night": "Gecə",
+    "colorCharcoalCoral": "Kömür & Mərcan",
+    "colorRoyalBlush": "Kral & Çəhrayı",
+    "colorDeepBlueSky": "Dərin Mavi & Səma",
+    "colorCrimsonIvory": "Al Qırmızı & Fil Dişi"
   },
   "nav": {
     "home": "Ana səhifə",

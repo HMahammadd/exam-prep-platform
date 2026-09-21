@@ -1,10 +1,11 @@
 "use client";
 
 import { BetaBadge } from "@/components/BetaBadge";
+import { useI18n } from "@/components/I18nProvider";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { submitSatExam } from "../../actions";
+import { submitSatExam } from "@/app/dashboard/(shell)/sat/actions";
 import { SatInstructionsScreen } from "@/components/sat/bluebook/SatInstructionsScreen";
 import { SatModuleOverScreen } from "@/components/sat/bluebook/SatModuleOverScreen";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/sat/bluebook/SatQuestionScreen";
 import { SatReviewScreen } from "@/components/sat/bluebook/SatReviewScreen";
 import { saveLocalSatAttempt, updateLocalExamSummary } from "@/lib/sat-local-attempt";
+import { withLocale } from "@/lib/i18n/config";
 import { formatSeconds } from "@/lib/sat-utils";
 import type {
   SatChoiceLabel,
@@ -88,6 +90,7 @@ export function ExamInterface({
   studentName,
 }: ExamInterfaceProps) {
   const router = useRouter();
+  const { locale } = useI18n();
   const moduleSeconds = exam.timeLimitMinutes * 60;
   const expiryHandledRef = useRef(false);
 
@@ -246,14 +249,20 @@ export function ExamInterface({
 
     setSubmitted(true);
     sessionStorage.removeItem(storageKey(exam.id));
+    // Locale-prefixed so the proxy serves the route directly instead of
+    // answering the navigation with a redirect (which forces a full reload).
     router.push(
-      `/dashboard/sat/exam/${exam.id}/results?attemptId=${result.attemptId}`
+      withLocale(
+        `/dashboard/sat/exam/${exam.id}/results?attemptId=${result.attemptId}`,
+        locale
+      )
     );
   }, [
     answers,
     elapsedSeconds,
     exam.id,
     isSubmitting,
+    locale,
     marked,
     moduleSeconds,
     questions,
@@ -359,7 +368,7 @@ export function ExamInterface({
           <BetaBadge tone="soft" />
         </span>
         <SatInstructionsScreen
-          onBack={() => router.push("/dashboard/sat")}
+          onBack={() => router.push(withLocale("/dashboard/sat", locale))}
           onNext={() => startModule(1)}
         />
       </div>

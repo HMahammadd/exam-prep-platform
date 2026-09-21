@@ -1,5 +1,5 @@
 import { ArrowRight, Clock, FileText, RotateCcw } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import type { SatExamAttemptSummary, SatPracticeExam } from "@/types/sat-exam";
 
 type SatExamRowProps = {
@@ -58,7 +58,7 @@ export function SatExamRow({ exam, summary }: SatExamRowProps) {
         )}
 
         {isAvailable && hasAttempt && summary?.lastAttemptId && (
-          <Link
+          <LocaleLink
             href={
               summary.lastAttemptId.startsWith("local-")
                 ? `/dashboard/sat/exam/${exam.id}/results?attemptId=${summary.lastAttemptId}`
@@ -68,11 +68,11 @@ export function SatExamRow({ exam, summary }: SatExamRowProps) {
           >
             <FileText className="h-4 w-4 text-accent" aria-hidden />
             Details
-          </Link>
+          </LocaleLink>
         )}
 
         {isAvailable ? (
-          <Link
+          <LocaleLink
             href={`/dashboard/sat/exam/${exam.id}`}
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover"
           >
@@ -87,7 +87,7 @@ export function SatExamRow({ exam, summary }: SatExamRowProps) {
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </>
             )}
-          </Link>
+          </LocaleLink>
         ) : (
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-card-border px-4 py-2 text-sm font-medium text-muted">
             <Clock className="h-4 w-4" aria-hidden />

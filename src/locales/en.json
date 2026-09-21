@@ -12,17 +12,15 @@
   },
   "theme": {
     "day": "Day",
-    "dark": "Dark",
     "toDay": "Switch to light mode",
     "toDark": "Switch to dark mode",
-    "light": "Light",
-    "system": "System",
     "appearance": "Appearance",
     "colorTheme": "Color Theme",
-    "colorDefault": "Default",
-    "colorBlue": "Blue",
-    "colorOrange": "Orange",
-    "colorNavy": "Navy"
+    "night": "Night",
+    "colorCharcoalCoral": "Charcoal Coral",
+    "colorRoyalBlush": "Royal Blush",
+    "colorDeepBlueSky": "Deep Blue Sky",
+    "colorCrimsonIvory": "Crimson Ivory"
   },
   "nav": {
     "home": "Home",

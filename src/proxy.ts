@@ -46,6 +46,21 @@ function needsAuthRefresh(pathname: string): boolean {
   );
 }
 
+/**
+ * True for the RSC fetches Next makes during a client-side navigation or a
+ * prefetch, as opposed to a document request.
+ *
+ * The username gate below costs a `profiles` round-trip on every protected
+ * request, which is the bulk of the latency when moving between dashboard
+ * sections. A client navigation can only happen after a document request that
+ * already passed that gate, and a redirect returned to an RSC fetch cannot
+ * drive the browser anyway — so the check is skipped here and still enforced
+ * on every document load, deep link and refresh.
+ */
+function isClientNavigation(request: NextRequest): boolean {
+  return request.headers.get("RSC") === "1";
+}
+
 function resolvePreferredLocale(request: NextRequest): Locale {
   const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
   if (isLocale(cookieLocale)) return cookieLocale;
@@ -166,6 +181,7 @@ export async function proxy(request: NextRequest) {
 
     const shouldCheckUsername =
       Boolean(user) &&
+      !isClientNavigation(request) &&
       (isProtectedPath(barePath) || isOnboardingPath(barePath));
 
     if (shouldCheckUsername && user) {
@@ -245,7 +261,9 @@ export async function proxy(request: NextRequest) {
   }
 
   const shouldCheckUsername =
-    Boolean(user) && (isProtectedPath(pathname) || isOnboardingPath(pathname));
+    Boolean(user) &&
+    !isClientNavigation(request) &&
+    (isProtectedPath(pathname) || isOnboardingPath(pathname));
 
   if (shouldCheckUsername && user) {
     const { data: profile } = await supabase

@@ -1,5 +1,0 @@
-import { SatPracticeSkeleton } from "@/components/skeletons";
-
-export default function Loading() {
-  return <SatPracticeSkeleton />;
-}

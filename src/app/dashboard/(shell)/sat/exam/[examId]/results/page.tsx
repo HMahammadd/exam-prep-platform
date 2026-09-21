@@ -2,10 +2,9 @@ import {
   ArrowLeft,
   RotateCcw,
 } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabaseServer";
-import { DashboardHeader } from "@/components/DashboardHeader";
 import { LocalSatResults } from "@/components/sat/LocalSatResults";
 import { SatExamAnswerReview } from "@/components/sat/SatExamAnswerReview";
 import { getSatExamById } from "@/lib/sat-exams";
@@ -48,21 +47,14 @@ export default async function SatExamResultsPage({
 
   if (attemptId.startsWith("local-")) {
     return (
-      <div className="flex flex-1 flex-col bg-background">
-        <DashboardHeader
-          title="Exam Results"
-          backHref="/dashboard/sat"
-          backLabel="SAT Practice"
-        />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto w-full max-w-7xl">
           <LocalSatResults
             examId={examId}
             examName={exam.name}
             attemptId={attemptId}
             questions={questions}
           />
-        </main>
-      </div>
+        </div>
     );
   }
 
@@ -75,14 +67,7 @@ export default async function SatExamResultsPage({
   const { attempt, answers } = result;
 
   return (
-    <div className="flex flex-1 flex-col bg-background">
-      <DashboardHeader
-        title="Exam Results"
-        backHref="/dashboard/sat"
-        backLabel="SAT Practice"
-      />
-
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+    <div className="mx-auto w-full max-w-7xl">
         <SatExamAnswerReview
           answers={answers}
           examName={exam.name}
@@ -92,22 +77,21 @@ export default async function SatExamResultsPage({
         />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link
+          <LocaleLink
             href={`/dashboard/sat/exam/${examId}`}
             className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover"
           >
             <RotateCcw className="h-4 w-4" aria-hidden />
             Retake Exam
-          </Link>
-          <Link
+          </LocaleLink>
+          <LocaleLink
             href="/dashboard/sat"
             className="inline-flex items-center gap-2 rounded-lg border border-card-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-accent-soft"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
             Back to SAT Practice
-          </Link>
+          </LocaleLink>
         </div>
-      </main>
-    </div>
+      </div>
   );
 }

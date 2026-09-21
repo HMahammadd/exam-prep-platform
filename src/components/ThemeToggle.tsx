@@ -41,7 +41,7 @@ export function ThemeToggle({ variant = "chip" }: ThemeToggleProps) {
       type="button"
       onClick={toggleTheme}
       aria-label={isDark ? t("theme.toDay") : t("theme.toDark")}
-      title={isDark ? t("theme.day") : t("theme.dark")}
+      title={isDark ? t("theme.day") : t("theme.night")}
       className={
         isNav
           ? "liquid-nav-theme theme-toggle"
@@ -70,7 +70,7 @@ export function ThemeToggle({ variant = "chip" }: ThemeToggleProps) {
       </span>
       {!isNav ? (
         <span className="hidden sm:inline">
-          {isDark ? t("theme.day") : t("theme.dark")}
+          {isDark ? t("theme.day") : t("theme.night")}
         </span>
       ) : null}
     </button>

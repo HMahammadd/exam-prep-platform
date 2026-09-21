@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { Check, Moon, Sun } from "lucide-react";
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { useTranslations } from "@/components/I18nProvider";
 import { useTheme } from "@/components/ThemeProvider";
@@ -11,9 +11,8 @@ import {
 } from "@/lib/theme-config";
 
 const APPEARANCE_ICON = {
-  light: Sun,
-  dark: Moon,
-  system: Monitor,
+  day: Sun,
+  night: Moon,
 } as const;
 
 type ThemeSelectorProps = {
@@ -178,7 +177,7 @@ export function ThemeSelector({ variant = "chip" }: ThemeSelectorProps) {
         <section className="theme-panel-section">
           <h3 className="theme-panel-title">{t("theme.colorTheme")}</h3>
           <div className="theme-color-grid" role="radiogroup">
-            {COLOR_THEMES.map(({ id, labelKey, hex, preview }) => {
+            {COLOR_THEMES.map(({ id, labelKey, primary, secondary }) => {
               const active = colorTheme === id;
               return (
                 <button
@@ -188,11 +187,11 @@ export function ThemeSelector({ variant = "chip" }: ThemeSelectorProps) {
                   aria-checked={active}
                   className={`theme-color-card${active ? " is-active" : ""}`}
                   onClick={() => setColorTheme(id)}
-                  title={`${t(labelKey)} — ${hex}`}
+                  title={`${t(labelKey)} — ${primary} / ${secondary}`}
                   style={
                     {
-                      "--swatch-a": preview[0],
-                      "--swatch-b": preview[1],
+                      "--swatch-a": primary,
+                      "--swatch-b": secondary,
                     } as CSSProperties
                   }
                 >

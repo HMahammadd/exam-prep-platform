@@ -1,5 +1,5 @@
 import { ArrowRight, BookOpen, Calculator, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import { SAT_LESSONS } from "@/lib/sat-lessons";
 
 export default function SatLessonsPage() {
@@ -23,7 +23,7 @@ export default function SatLessonsPage() {
         </header>
 
         <div className="mt-10 grid gap-5 md:grid-cols-2">
-          <Link
+          <LocaleLink
             href={`/dashboard/sat/lessons/${SAT_LESSONS[0].slug}`}
             className="group relative overflow-hidden rounded-2xl border border-blue-300 bg-card p-6 shadow-card transition hover:-translate-y-1 hover:border-accent hover:shadow-[0_16px_40px_-16px_rgba(37,99,235,0.4)] sm:p-8 dark:border-blue-800"
           >
@@ -58,7 +58,7 @@ export default function SatLessonsPage() {
                 />
               </span>
             </div>
-          </Link>
+          </LocaleLink>
 
           <div
             className="relative overflow-hidden rounded-2xl border border-card-border bg-card/70 p-6 shadow-card sm:p-8"
