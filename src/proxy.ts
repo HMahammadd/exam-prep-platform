@@ -83,7 +83,7 @@ function withLocaleCookie(response: NextResponse, locale: Locale) {
  * - Refreshes the auth session cookies
  * - Blocks the app until the user has chosen a username
  */
-export async function proxy(request: NextRequest) {
+async function handleProxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const code = searchParams.get("code");
 
@@ -166,9 +166,20 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // getClaims() verifies the JWT locally (this project uses asymmetric ES256
+    // keys) instead of calling the Auth server, which measured ~460-670ms per
+    // request and ran on every single protected navigation. Identity is still
+    // cryptographically verified, and an expiring session is still refreshed
+    // through the cookie handlers above.
+    /* TEMPORARY PROFILING — dev only. */
+    const tClaims = performance.now();
+    const { data: claims } = await supabase.auth.getClaims();
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        `[perf]   proxy.getClaims ${(performance.now() - tClaims).toFixed(0)}ms`
+      );
+    }
+    const user = claims?.claims?.sub ? { id: claims.claims.sub } : null;
 
     // Fail closed: protected areas must never render for an anonymous caller,
     // even if a page below forgets its own guard.
@@ -185,11 +196,18 @@ export async function proxy(request: NextRequest) {
       (isProtectedPath(barePath) || isOnboardingPath(barePath));
 
     if (shouldCheckUsername && user) {
+      /* TEMPORARY PROFILING — dev only. */
+      const tProfile = performance.now();
       const { data: profile } = await supabase
         .from("profiles")
         .select("username")
         .eq("id", user.id)
         .maybeSingle();
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `[perf]   proxy.profiles ${(performance.now() - tProfile).toFixed(0)}ms`
+        );
+      }
 
       const needsSetup = needsUsernameSetup(profile?.username);
 
@@ -248,9 +266,8 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claims } = await supabase.auth.getClaims();
+  const user = claims?.claims?.sub ? { id: claims.claims.sub } : null;
 
   if (!user && isProtectedPath(pathname)) {
     const locale = resolvePreferredLocale(request);
@@ -291,6 +308,25 @@ export async function proxy(request: NextRequest) {
   }
 
   return supabaseResponse;
+}
+
+/* TEMPORARY PROFILING — dev only, remove once the slow path is identified. */
+export async function proxy(request: NextRequest) {
+  if (process.env.NODE_ENV !== "development") {
+    return handleProxy(request);
+  }
+  const started = performance.now();
+  const response = await handleProxy(request);
+  const ms = performance.now() - started;
+  const { pathname } = request.nextUrl;
+  if (pathname.includes("/dashboard")) {
+    console.log(
+      `[perf] proxy ${ms.toFixed(0).padStart(5)}ms  ` +
+        `${request.headers.get("RSC") ? "RSC " : "DOC "}` +
+        `${response.status}  ${pathname}`
+    );
+  }
+  return response;
 }
 
 export const config = {

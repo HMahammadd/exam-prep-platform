@@ -43,11 +43,19 @@ export async function getSatExamSummaries(): Promise<
   }
 
   const supabase = await createClient();
+  /* TEMPORARY PROFILING — dev only. */
+  const started = performance.now();
   const { data, error } = await supabase
     .from("sat_exam_attempts")
     .select("id, exam_id, score, total_questions, completed_at")
     .eq("user_id", user.id)
     .order("completed_at", { ascending: false });
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(
+      `[perf] sat_exam_attempts query ${(performance.now() - started).toFixed(0)}ms`
+    );
+  }
 
   if (error || !data) {
     return {};
@@ -104,10 +112,7 @@ export async function submitSatExam(
     };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     return { success: false, error: "You must be logged in." };
@@ -231,15 +236,13 @@ export async function submitSatExam(
 }
 
 export async function getSatExamAttempt(attemptId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     return null;
   }
 
+  const supabase = await createClient();
   const { data: attempt, error } = await supabase
     .from("sat_exam_attempts")
     .select("*")
@@ -261,15 +264,13 @@ export async function getSatExamAttempt(attemptId: string) {
 }
 
 export async function getLatestSatExamAttempt(examId: number) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     return null;
   }
 
+  const supabase = await createClient();
   const { data: attempt, error } = await supabase
     .from("sat_exam_attempts")
     .select("*")

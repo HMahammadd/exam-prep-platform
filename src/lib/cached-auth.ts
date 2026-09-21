@@ -5,14 +5,47 @@ import { DEFAULT_AVATAR_ID } from "@/lib/avatars";
 import type { Profile } from "@/lib/profile-types";
 
 /**
- * Request-memoized auth user. Multiple RSC calls in one render share one getUser().
+ * Request-memoized auth user.
+ *
+ * Backed by `getClaims()`, not `getUser()`. This project signs its JWTs with
+ * asymmetric ES256 keys, so `getClaims()` verifies the token's signature
+ * locally through WebCrypto against a cached JWKS — no call to the Auth
+ * server. `getUser()` always went over the network, which measured ~460-670ms
+ * per call from here and ran on every dashboard navigation (once in the proxy,
+ * once again in the page), so it dominated the time to render a section.
+ *
+ * The identity is still cryptographically verified, which is what Supabase
+ * recommends this method for. Claims carry everything the callers use (`id`
+ * from `sub`, `email`); fields that only exist on the full Auth record are
+ * filled from the claims where present and left null otherwise. Anything that
+ * needs the authoritative row should query `profiles` (see getCachedProfile).
  */
 export const getCachedUser = cache(async (): Promise<User | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  /* TEMPORARY PROFILING — dev only. */
+  const started = performance.now();
+  const { data, error } = await supabase.auth.getClaims();
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[perf] getClaims ${(performance.now() - started).toFixed(0)}ms`);
+  }
+
+  if (error || !data?.claims?.sub) {
+    return null;
+  }
+
+  const claims = data.claims;
+
+  return {
+    id: claims.sub,
+    aud: Array.isArray(claims.aud) ? claims.aud[0] : (claims.aud ?? ""),
+    role: claims.role,
+    email: claims.email,
+    phone: claims.phone,
+    app_metadata: claims.app_metadata ?? {},
+    user_metadata: claims.user_metadata ?? {},
+    is_anonymous: claims.is_anonymous,
+    created_at: "",
+  } satisfies User as User;
 });
 
 /**

@@ -13,7 +13,12 @@ import type {
 
 type SatExamListProps = {
   exams: SatPracticeExam[];
-  serverSummaries: Record<string, SatExamAttemptSummary>;
+  /**
+   * `null` while the attempt query is still in flight. The rows render
+   * immediately either way — only the score cells wait, so opening the section
+   * never blocks on the database.
+   */
+  serverSummaries: Record<string, SatExamAttemptSummary> | null;
 };
 
 function mergeSummaries(
@@ -72,11 +77,11 @@ export function SatExamList({ exams, serverSummaries }: SatExamListProps) {
 
   const summaries = useMemo(() => {
     const merged: Record<string, SatExamAttemptSummary> = {
-      ...serverSummaries,
+      ...(serverSummaries ?? {}),
     };
 
     for (const [examId, localSummary] of Object.entries(localSummaries)) {
-      const combined = mergeSummaries(serverSummaries[examId], localSummary);
+      const combined = mergeSummaries(serverSummaries?.[examId], localSummary);
       if (combined) {
         merged[examId] = combined;
       }
@@ -92,6 +97,7 @@ export function SatExamList({ exams, serverSummaries }: SatExamListProps) {
           key={exam.id}
           exam={exam}
           summary={summaries[String(exam.id)]}
+          pending={serverSummaries === null && !summaries[String(exam.id)]}
         />
       ))}
     </div>

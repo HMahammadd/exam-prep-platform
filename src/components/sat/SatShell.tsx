@@ -1,12 +1,12 @@
 "use client";
 
 import {
+  ArrowLeft,
   Award,
   BarChart3,
   BookMarked,
   BookOpen,
   ClipboardList,
-  LayoutGrid,
   LogOut,
   PanelLeft,
   Settings,
@@ -46,7 +46,9 @@ type NavItem = {
  * disabled rows with a "soon" dot rather than links into 404s.
  */
 const NAV: NavItem[] = [
-  { icon: LayoutGrid, label: "Dashboard", href: "/dashboard" },
+  // No "Dashboard" row: the exam-selection page is reached through "Back to
+  // exams" in the topbar, and two controls for one destination read as two
+  // different places.
   { icon: BookOpen, label: "SAT Lessons", href: "/dashboard/sat/lessons" },
   { icon: ClipboardList, label: "Practice Exams", href: "/dashboard/sat" },
   { icon: TrendingUp, label: "Progress" },
@@ -306,6 +308,20 @@ export function SatShell({ children }: { children: ReactNode }) {
             {breadcrumb ? (
               <p className="sat-breadcrumb">{breadcrumb}</p>
             ) : null}
+
+            {/*
+              Explicit route, not history.back(): the selection page must be
+              the destination however the user arrived here (direct link,
+              refresh, or deep into a lesson).
+            */}
+            <LocaleLink
+              href="/dashboard"
+              className="sat-back-exams"
+              aria-label="Back to exams"
+            >
+              <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden />
+              <span className="sat-back-exams-text">Back to exams</span>
+            </LocaleLink>
           </div>
 
           <div className="sat-topbar-actions">

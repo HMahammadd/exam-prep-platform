@@ -1,6 +1,6 @@
 import { ArrowRight, Clock } from "lucide-react";
 import { createElement } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/LocaleLink";
 import { getExamIcon } from "@/lib/exam-icons";
 import type { Exam } from "@/lib/exams";
 
@@ -97,10 +97,10 @@ export function ExamTrackCard({ exam }: { exam: Exam }) {
         <p className="track-card-note">{content.note}</p>
 
         {available ? (
-          <Link href={exam.dashboardHref} className="track-card-cta">
+          <LocaleLink href={exam.dashboardHref} className="track-card-cta">
             {content.cta}
             <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-          </Link>
+          </LocaleLink>
         ) : (
           <span className="track-card-cta is-disabled">
             <Clock className="h-4 w-4 shrink-0" aria-hidden />

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LocaleLink } from "@/components/LocaleLink";
 import {
   ArrowRight,
@@ -11,7 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 import { SatExamList } from "@/components/sat/SatExamList";
 import { SAT_PRACTICE_EXAMS } from "@/lib/sat-exams";
 import { getSatExamSummaries } from "./actions";
@@ -20,17 +21,24 @@ import { getSatExamSummaries } from "./actions";
  * Layout prototype: the exam list below is live, everything in the summary
  * cards is placeholder copy until the progress/analytics tables exist.
  */
+/**
+ * The attempt query is the only part of this page that touches the database.
+ * It streams in its own boundary so the section paints immediately and just
+ * the score cells fill in, instead of the whole page waiting on it.
+ */
+async function SatExamRows() {
+  const summaries = await getSatExamSummaries();
+  return (
+    <SatExamList exams={SAT_PRACTICE_EXAMS} serverSummaries={summaries} />
+  );
+}
+
 export default async function SatDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     redirect("/login");
   }
-
-  const summaries = await getSatExamSummaries();
 
   return (
     <div className="sat-grid">
@@ -130,7 +138,16 @@ export default async function SatDashboardPage() {
             </div>
           </div>
 
-          <SatExamList exams={SAT_PRACTICE_EXAMS} serverSummaries={summaries} />
+          <Suspense
+            fallback={
+              <SatExamList
+                exams={SAT_PRACTICE_EXAMS}
+                serverSummaries={null}
+              />
+            }
+          >
+            <SatExamRows />
+          </Suspense>
         </section>
 
         {/* Statistics */}

@@ -5,6 +5,8 @@ import type { SatExamAttemptSummary, SatPracticeExam } from "@/types/sat-exam";
 type SatExamRowProps = {
   exam: SatPracticeExam;
   summary?: SatExamAttemptSummary;
+  /** Scores are still streaming in; the rest of the row is already usable. */
+  pending?: boolean;
 };
 
 function formatScore(score: number | null | undefined, total: number | null | undefined) {
@@ -14,7 +16,7 @@ function formatScore(score: number | null | undefined, total: number | null | un
   return `${score}/${total}`;
 }
 
-export function SatExamRow({ exam, summary }: SatExamRowProps) {
+export function SatExamRow({ exam, summary, pending }: SatExamRowProps) {
   const isAvailable = exam.status === "available";
   const hasAttempt =
     summary?.lastScore !== null && summary?.lastScore !== undefined;
@@ -44,15 +46,23 @@ export function SatExamRow({ exam, summary }: SatExamRowProps) {
           <>
             <p className="text-sm text-muted">
               Last Score:{" "}
-              <span className="font-semibold text-foreground">
-                {lastScoreText}
-              </span>
+              {pending ? (
+                <span className="sat-score-pending" aria-hidden />
+              ) : (
+                <span className="font-semibold text-foreground">
+                  {lastScoreText}
+                </span>
+              )}
             </p>
             <p className="text-sm text-muted">
               Best Score:{" "}
-              <span className="font-semibold text-foreground">
-                {bestScoreText}
-              </span>
+              {pending ? (
+                <span className="sat-score-pending" aria-hidden />
+              ) : (
+                <span className="font-semibold text-foreground">
+                  {bestScoreText}
+                </span>
+              )}
             </p>
           </>
         )}

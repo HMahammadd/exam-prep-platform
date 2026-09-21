@@ -4,7 +4,7 @@ import {
 } from "lucide-react";
 import { LocaleLink } from "@/components/LocaleLink";
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/supabaseServer";
+import { getCachedUser } from "@/lib/cached-auth";
 import { LocalSatResults } from "@/components/sat/LocalSatResults";
 import { SatExamAnswerReview } from "@/components/sat/SatExamAnswerReview";
 import { getSatExamById } from "@/lib/sat-exams";
@@ -28,10 +28,7 @@ export default async function SatExamResultsPage({
     notFound();
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCachedUser();
 
   if (!user) {
     redirect("/login");
