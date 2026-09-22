@@ -197,7 +197,16 @@ h1.hero-copy-title {
 }
 
 .hero-copy-exams {
-  color: var(--accent);
+  /*
+   * --accent-hover, not --accent: in day mode every palette's --accent sits
+   * within ~1.1-1.5:1 of --foreground (both are the dark half of the pair), so
+   * the exam names were the same colour as the sentence around them.
+   * --accent-hover is the lifted tone of the same palette colour, which
+   * separates them in both modes while staying readable on the page:
+   *   day   4.4-5.8:1 on background, 2.1-2.8:1 against the sentence
+   *   night 4.0:1     on background, 4.0:1     against the sentence
+   */
+  color: var(--accent-hover);
   /* Trimmed from 0.06/0.12em — the serif already carries its own sidebearings,
      so the old padding read as a double space before "exams". */
   padding-inline: 0.03em 0.04em;
@@ -1119,7 +1128,7 @@ html.dark .hero-celestial-face--moon {
   display: none;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 0;
+  border-radius: 0.5rem;
   padding: 0.45rem 0.7rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1139,7 +1148,7 @@ html.dark .hero-celestial-face--moon {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 0;
+  border-radius: 0.5rem;
   background: var(--accent);
   padding: 0.45rem 0.85rem;
   font-size: 0.875rem;
@@ -3367,9 +3376,8 @@ html.dark .hero-celestial-face--moon {
   }
 }
 
-/* —— Shared glass chip (lang / theme) —— */
-.glass-chip,
-.language-switcher-trigger {
+/* —— Shared glass chip (theme toggle) —— */
+.glass-chip {
   border: 1px solid color-mix(in oklab, var(--card-border) 90%, #93c5fd);
   background:
     linear-gradient(
@@ -3384,8 +3392,7 @@ html.dark .hero-celestial-face--moon {
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
 }
 
-.dark .glass-chip,
-.dark .language-switcher-trigger {
+.dark .glass-chip {
   border-color: color-mix(in oklab, #93c5fd 24%, transparent);
   background:
     linear-gradient(
@@ -3409,11 +3416,14 @@ html.dark .hero-celestial-face--moon {
   height: 2.25rem;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 0;
-  /* No outline on the language chip — the shared glass-chip border is
-     cancelled here so the theme toggle keeps its own. */
+  /* Bare control: no frame, fill or shadow — just the icon and its code. */
   border: 0;
-  padding: 0 0.7rem;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0 0.35rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--foreground);
@@ -3426,8 +3436,7 @@ html.dark .hero-celestial-face--moon {
 
 .language-switcher-trigger:hover,
 .language-switcher-trigger:focus-visible {
-  transform: translateY(-1px);
-  border-color: color-mix(in oklab, var(--accent) 48%, var(--card-border));
+  color: var(--accent);
   outline: none;
 }
 
@@ -6022,17 +6031,20 @@ html.dark .hero-celestial-face--moon {
   --feature-dim-bg: #1C3E7F;
 }
 
-/* Crimson Ivory — #990011 / #FCF6F5 · day */
+/* Crimson Ivory — #E60000 / #FCF6F5 · day
+   #E60000 is the most saturated red that still clears AA for white button
+   text (4.81:1); pure #FF0000 only reaches 4.00:1. Hover goes deeper rather
+   than lighter — at this lightness a lighter hover just desaturates. */
 :root[data-theme="crimson-ivory"] {
-  --theme-primary: #990011;
+  --theme-primary: #E60000;
   --theme-secondary: #FCF6F5;
   --background: #FCF5F4;
   --card: #FFFFFF;
-  --foreground: #591A21;
-  --muted: #7F6568;
+  --foreground: #5B1A1A;
+  --muted: #806666;
   --card-border: #EFD4D0;
-  --accent: #990011;
-  --accent-hover: #CF3D4D;
+  --accent: #E60000;
+  --accent-hover: #B80000;
   --accent-soft: #F9EBE9;
   --home-band: #FAF1F0;
   --home-dot: rgb(153 0 17 / 0.13);
@@ -6040,26 +6052,26 @@ html.dark .hero-celestial-face--moon {
   --page-tone-a: #FFFFFF;
   --page-tone-b: #FDFAF9;
   --page-tone-c: #FCF5F4;
-  --feature-accent-bg: #990011;
+  --feature-accent-bg: #E60000;
   --feature-navy-bg: #63000B;
   --feature-navy-border: #AB2E3C;
   --feature-dim-bg: #AF3643;
 }
 
-/* Crimson Ivory — #990011 / #FCF6F5 · night */
+/* Crimson Ivory — #E60000 / #FCF6F5 · night */
 :root[data-theme="crimson-ivory"].dark,
 .dark:root[data-theme="crimson-ivory"] {
-  --theme-primary: #990011;
+  --theme-primary: #E60000;
   --theme-secondary: #FCF6F5;
-  --background: #240F11;
-  --card: #30171A;
+  --background: #240F0F;
+  --card: #301717;
   --foreground: #F3EEED;
-  --muted: #A78F92;
-  --card-border: #4D292D;
-  --accent: #D22236;
-  --accent-hover: #DE3144;
-  --accent-soft: #3E1519;
-  --home-band: #2A1315;
+  --muted: #A78F8F;
+  --card-border: #4D2929;
+  --accent: #D32222;
+  --accent-hover: #DE3232;
+  --accent-soft: #3E1515;
+  --home-band: #2A1313;
   --home-dot: rgb(252 246 245 / 0.10);
   --shadow: 0 4px 24px -4px rgb(153 0 17 / 0.45);
   --page-tone-a: #1E0C0E;
@@ -7988,7 +8000,9 @@ a:hover .kepler-logo-mark {
 }
 
 .sat-card--wide {
-  grid-column: span 8;
+  /* 9 + the progress rail's 3 = 12. Widened only so the rail can be the
+     300-340px the panel is designed for; the cards themselves are unchanged. */
+  grid-column: span 9;
 }
 
 .sat-card--full {
@@ -8052,6 +8066,1532 @@ a:hover .kepler-logo-mark {
   height: 100%;
   border-radius: inherit;
   background: var(--accent);
+}
+
+/* —— Mission briefing — first visit on SAT Practice Exams ————————
+   One component for Day and Night. Every surface, rule and accent below is a
+   theme token, so the four palettes and both modes are covered without a
+   second markup path or a hardcoded colour. The right panel is drawn, not
+   photographed, for the same reason: a raster image cannot change mode.
+   -------------------------------------------------------------------------- */
+
+.brief-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  /* Neutral, so the palette never washes the page behind the modal. */
+  background: rgb(12 14 20 / 0.5);
+  backdrop-filter: blur(3px);
+  animation: brief-scrim-in 180ms ease-out both;
+}
+
+.dark .brief-scrim {
+  background: rgb(4 6 10 / 0.68);
+}
+
+.brief-scrim.is-closing {
+  animation: brief-scrim-in 160ms ease-in both reverse;
+}
+
+@keyframes brief-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.brief {
+  position: relative;
+  display: grid;
+  grid-template-columns: 45fr 55fr;
+  grid-template-rows: minmax(0, 1fr);
+  width: min(900px, 100%);
+  max-height: min(88vh, 690px);
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  border-radius: 3px;
+  background: var(--card);
+  overflow: hidden;
+  animation: brief-in 200ms ease-out both;
+}
+
+.is-closing .brief {
+  animation: brief-in 160ms ease-in both reverse;
+}
+
+@keyframes brief-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brief-scrim,
+  .brief,
+  .is-closing .brief,
+  .brief-scrim.is-closing {
+    animation-duration: 1ms;
+  }
+}
+
+/* —— left column —— */
+
+.brief-copy {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 2rem 2.1rem 1.5rem;
+  overflow-y: auto;
+}
+
+.brief-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.brief-eyebrow-rule {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in oklab, var(--accent) 45%, transparent);
+}
+
+.brief-title {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.7rem, 1.25rem + 1.1vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.brief-lede {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--foreground) 82%, var(--card));
+}
+
+.brief-lede p {
+  margin: 0;
+}
+
+/* Editorial line icons: no container, no fill, palette accent only. */
+.brief-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.brief-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.95rem;
+}
+
+.brief-fact-icon {
+  flex: none;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: 0.1rem;
+  color: var(--accent);
+  stroke-width: 1.25;
+}
+
+.brief-fact-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.brief-fact-detail {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.brief-quote {
+  margin: 1rem 0 0;
+  padding-top: 0.95rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.brief-quote blockquote {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.02rem;
+  font-style: italic;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--foreground) 74%, var(--card));
+}
+
+.brief-quote figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brief-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.brief-remember input {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 2px;
+  accent-color: var(--accent);
+}
+
+/* —— right column —— */
+
+.brief-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--card-border);
+}
+
+/* The image is full-bleed and the action floats on it — no band, so the
+   artwork runs the whole height of the panel. */
+.brief-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bottom scrim: only enough to carry the button, never a dark wash. */
+.brief-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(6 8 14 / 0.82) 0%,
+    rgb(6 8 14 / 0.45) 45%,
+    transparent 100%
+  );
+}
+
+.brief-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sits over the drawn scene once the asset exists. `cover` keeps the framing
+   at any panel size; the composition's subject is centre-right. */
+.brief-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /*
+   * The artwork is 1426x1103; this panel is tall, so `cover` shows about 70%
+   * of its width. Anchoring the crop hard right is what keeps all three
+   * subjects: the astronaut lands around 65% across the panel, the crescent
+   * stays in, and a sliver of the Earth limb holds the bottom-left corner.
+   */
+  /* Anchored right, not centred: the subject sits at ~76% of the source, so
+     centring the image crops him off. This is the furthest the crop can go
+     and still hold him, the crescent and a corner of the Earth. */
+  object-position: 100% center;
+}
+
+/*
+ * The view. Night follows the reference; Day is the same composition at
+ * dawn rather than a different picture. Tokens throughout, except the rim,
+ * which stays warm in every palette because sunrise is warm.
+ */
+.brief-space-top {
+  stop-color: color-mix(in oklab, var(--theme-secondary) 58%, var(--card));
+}
+
+.brief-space-bottom {
+  stop-color: color-mix(in oklab, var(--theme-secondary) 90%, #fff);
+}
+
+.dark .brief-space-top {
+  stop-color: #05070c;
+}
+
+.dark .brief-space-bottom {
+  stop-color: color-mix(in oklab, var(--theme-primary) 34%, #0a0d16);
+}
+
+.brief-glow-in {
+  stop-color: color-mix(in oklab, #f0a878 38%, transparent);
+}
+
+.dark .brief-glow-in {
+  stop-color: color-mix(in oklab, #c2643a 30%, transparent);
+}
+
+.brief-stars circle {
+  fill: var(--theme-primary);
+  opacity: 0.3;
+}
+
+.dark .brief-stars circle {
+  fill: #fff;
+  opacity: 0.55;
+}
+
+.brief-planet-lit {
+  stop-color: color-mix(in oklab, var(--theme-primary) 20%, var(--theme-secondary));
+}
+
+.brief-planet-mid {
+  stop-color: color-mix(in oklab, var(--theme-primary) 48%, var(--theme-secondary));
+}
+
+.brief-planet-dark {
+  stop-color: color-mix(in oklab, var(--theme-primary) 78%, var(--theme-secondary));
+}
+
+.dark .brief-planet-lit {
+  stop-color: #5b4436;
+}
+
+.dark .brief-planet-mid {
+  stop-color: #241a18;
+}
+
+.dark .brief-planet-dark {
+  stop-color: #0a0a10;
+}
+
+.brief-rim-hot {
+  stop-color: #ffd8b0;
+}
+
+.brief-rim-cool {
+  stop-color: color-mix(in oklab, #f0a878 42%, transparent);
+}
+
+.dark .brief-rim-hot {
+  stop-color: #ffcf9e;
+}
+
+.dark .brief-rim-cool {
+  stop-color: color-mix(in oklab, #d97a45 55%, transparent);
+}
+
+.brief-rim-soft {
+  opacity: 0.32;
+}
+
+.brief-rim {
+  opacity: 0.9;
+}
+
+.brief-sill {
+  fill: color-mix(in oklab, var(--theme-primary) 72%, var(--theme-secondary));
+}
+
+.dark .brief-sill {
+  fill: #08080d;
+}
+
+.brief-sill-edge {
+  fill: color-mix(in oklab, #f0a878 45%, transparent);
+}
+
+.dark .brief-sill-edge {
+  fill: color-mix(in oklab, #d97a45 42%, transparent);
+}
+
+.brief-helmet-shell {
+  fill: color-mix(in oklab, var(--theme-primary) 86%, var(--theme-secondary));
+}
+
+.dark .brief-helmet-shell {
+  fill: #101016;
+}
+
+.brief-helmet-visor {
+  fill: color-mix(in oklab, var(--theme-primary) 62%, var(--theme-secondary));
+}
+
+.dark .brief-helmet-visor {
+  fill: #1c1a20;
+}
+
+.brief-helmet-gleam {
+  fill: none;
+  stroke: color-mix(in oklab, #ffd8b0 70%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+.brief-book {
+  fill: color-mix(in oklab, var(--theme-primary) 80%, var(--theme-secondary));
+}
+
+.dark .brief-book {
+  fill: #0e0e14;
+}
+
+.brief-book-edge {
+  fill: none;
+  stroke: color-mix(in oklab, #f0a878 40%, transparent);
+  stroke-width: 1;
+}
+
+.dark .brief-book-edge {
+  stroke: color-mix(in oklab, #d97a45 34%, transparent);
+}
+
+.brief-structure path,
+.brief-structure rect {
+  fill: color-mix(in oklab, var(--theme-primary) 88%, var(--theme-secondary));
+}
+
+.dark .brief-structure path,
+.dark .brief-structure rect {
+  fill: #050508;
+}
+
+.brief-structure-edge path {
+  fill: none;
+  stroke: color-mix(in oklab, #ffd8b0 45%, transparent);
+  stroke-width: 1;
+  opacity: 0.55;
+}
+
+.dark .brief-structure-edge path {
+  stroke: color-mix(in oklab, #d97a45 50%, transparent);
+}
+
+/* —— text over the scene —— */
+
+.brief-visual-line,
+.brief-loop,
+.brief-visual-mark {
+  position: relative;
+  z-index: 1;
+}
+
+.brief-visual-line {
+  max-width: 10.5rem;
+  margin: 0 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.7;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.brief-visual-line::after {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 2px;
+  margin: 0.85rem 0 0 auto;
+  background: var(--accent);
+}
+
+.dark .brief-visual-line::after {
+  background: var(--accent);
+}
+
+.dark .brief-visual-line,
+.dark .brief-loop,
+.dark .brief-visual-mark {
+  color: #eef1f6;
+}
+
+.brief-book-label {
+  fill: color-mix(in oklab, #ffd8b0 82%, var(--foreground));
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.dark .brief-book-label {
+  fill: #e8c9ad;
+}
+
+.brief-visual-mark {
+  position: relative;
+  z-index: 1;
+}
+
+.brief-visual-line {
+  max-width: 10.5rem;
+  margin: 0 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.7;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.brief-visual-line::after {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 2px;
+  margin: 0.85rem 0 0 auto;
+  background: var(--accent);
+}
+
+.dark .brief-visual-line::after {
+  background: var(--accent);
+}
+
+.dark .brief-visual-line,
+.dark .brief-loop,
+.dark .brief-visual-mark {
+  color: #eef1f6;
+}
+
+/* These label the book spines drawn below them, so they are right-aligned
+   and tracked to the same rhythm as the stack. */
+.brief-loop {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 2.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 2.16;
+  text-transform: uppercase;
+  color: color-mix(in oklab, #ffd8b0 78%, var(--foreground));
+}
+
+.dark .brief-loop {
+  color: #e8c9ad;
+}
+
+.brief-visual-mark {
+  position: absolute;
+  right: 0.65rem;
+  top: 46%;
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%);
+  color: color-mix(in oklab, var(--foreground) 45%, transparent);
+}
+
+/* —— actions —— */
+
+.brief-actions {
+  position: absolute;
+  left: 1.75rem;
+  right: 1.75rem;
+  bottom: 1.75rem;
+  z-index: 2;
+  display: flex;
+}
+
+.brief-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  padding: 1rem 1.35rem;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  background: var(--accent);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.brief-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.brief-primary-arrow {
+  transition: transform 200ms ease;
+}
+
+.brief-primary:hover .brief-primary-arrow {
+  transform: translateX(4px);
+}
+
+.brief-close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+
+.dark .brief-close {
+  color: #eef1f6;
+}
+
+.brief-close:hover {
+  border-color: color-mix(in oklab, var(--foreground) 25%, transparent);
+  background: color-mix(in oklab, var(--card) 60%, transparent);
+}
+
+/* —— responsive —— */
+
+@media (max-width: 900px) {
+  .brief {
+    grid-template-columns: 1fr;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  .brief-copy {
+    padding: 2rem 1.5rem 1.5rem;
+    overflow: visible;
+  }
+
+  /* Text first, then a shortened view with the actions. */
+  .brief-visual {
+    min-height: 19rem;
+    border-left: 0;
+    border-top: 1px solid var(--card-border);
+    padding: 1.5rem;
+  }
+
+  .brief-visual-line {
+    max-width: 9rem;
+  }
+
+  .brief-actions {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .brief-scrim {
+    padding: 0.75rem;
+  }
+
+  .brief-visual-mark,
+  .brief-loop {
+    display: none;
+  }
+}
+
+/* —— SAT Practice Exams — mission journey ————————————————————————
+   The page is the exam list. Space is setting only: the shell backdrop
+   already supplies stars and arcs, so the orbital language here is limited to
+   the heading mark, the path running through the checkpoints, and one line
+   figure per card at 4-6% opacity. Square corners, hairline borders, no
+   shadow, no glass, no gradient fills.
+   -------------------------------------------------------------------------- */
+
+.sat-mission {
+  /* Was 62rem, which left a third of the shell column empty on a wide screen.
+     Matches the Progress and Analytics pages so the SAT pages share one
+     measure. */
+  max-width: 108rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* —— Header —— */
+
+.sat-mission-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding-block: 1rem 2.5rem;
+}
+
+.sat-mission-orbit {
+  flex: none;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin-top: 0.35rem;
+  overflow: visible;
+}
+
+.sat-mission-orbit-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.28;
+}
+
+.sat-mission-orbit-body {
+  fill: color-mix(in oklab, var(--accent) 10%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+.sat-mission-orbit-moon {
+  fill: var(--accent);
+  opacity: 0.65;
+}
+
+.sat-mission-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sat-mission-title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.9rem, 1.2rem + 2.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+}
+
+.sat-mission-tagline {
+  margin-top: 0.4rem;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: color-mix(in oklab, var(--foreground) 62%, var(--background));
+}
+
+.sat-mission-lede {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* —— Compact stats line — typography, not widgets —— */
+
+.sat-mission-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1.75rem;
+  margin: 0 0 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.sat-mission-stats > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.sat-mission-stats dd {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.sat-mission-stats dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* —— The path —— */
+
+.sat-mission-path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sat-mission-step {
+  position: relative;
+  padding-left: 3.25rem;
+  padding-bottom: 1.25rem;
+}
+
+/* The orbital line joining the checkpoints. */
+.sat-mission-step::before {
+  content: "";
+  position: absolute;
+  left: 0.6875rem;
+  top: 0.75rem;
+  bottom: -0.5rem;
+  width: 1px;
+  background: var(--card-border);
+  transition: background-color 250ms ease;
+}
+
+.sat-mission-step:last-child::before {
+  display: none;
+}
+
+.sat-mission-step[data-state="coming-soon"]::before {
+  background: none;
+  border-left: 1px dashed var(--card-border);
+}
+
+/* Path already flown — tinted, so completed milestones carry more weight. */
+.sat-mission-step[data-state="completed"]::before,
+.sat-mission-step[data-state="in-progress"]::before {
+  background: color-mix(in oklab, var(--accent) 45%, var(--card-border));
+}
+
+/* —— Rocket marker —— */
+
+.sat-mission-rocket {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  transform: translate(-50%, -50%);
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.sat-mission-rocket svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Restrained motion cue: a short fade below the nose, not a flame. */
+.sat-mission-rocket-trail {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 1.15rem;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--accent) 55%, transparent),
+    transparent
+  );
+}
+
+/* The node would read as a second marker under the rocket. Needs to outrank
+   the per-state node rules further down, hence the extra qualifier. */
+.sat-mission-step[data-current="true"] .sat-mission-checkpoint .sat-mission-node {
+  opacity: 0;
+}
+
+/* Give the marker room so the line does not cut through the fins. */
+.sat-mission-step[data-current="true"] .sat-mission-checkpoint::before {
+  content: "";
+  position: absolute;
+  inset: -0.1rem;
+  border-radius: 50%;
+  background: var(--card);
+}
+
+.sat-mission-checkpoint {
+  position: absolute;
+  left: 0;
+  top: 1.5rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.sat-mission-node {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--card-border);
+  background: var(--card);
+  transition:
+    border-color 250ms ease,
+    background-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+/* Filled once an attempt exists. */
+.sat-mission-step[data-state="completed"] .sat-mission-node {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* Partial ring while an exam is open. */
+.sat-mission-step[data-state="in-progress"] .sat-mission-node {
+  border-color: var(--accent);
+  background: var(--card);
+  box-shadow: inset 0 -4px 0 0 var(--accent);
+}
+
+.sat-mission-step[data-state="coming-soon"] .sat-mission-node {
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+/* —— Card —— */
+
+.sat-mission-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  background: var(--card);
+  transition:
+    border-color 250ms ease,
+    background-color 250ms ease;
+}
+
+.sat-mission-card-inner {
+  position: relative;
+  padding: 1.75rem 1.875rem;
+}
+
+.sat-mission-card[data-state="coming-soon"] {
+  background: color-mix(in oklab, var(--card) 55%, var(--background));
+}
+
+.sat-mission-card[data-state="coming-soon"] .sat-mission-card-title h3,
+.sat-mission-card[data-state="coming-soon"] .sat-mission-number {
+  color: var(--muted);
+}
+
+/* Hover: border, a whisper of tint, the line brightens, the arrow steps. */
+.sat-mission-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--card-border));
+  background: color-mix(in oklab, var(--accent) 2.5%, var(--card));
+}
+
+.sat-mission-step:hover::before {
+  background: color-mix(in oklab, var(--accent) 45%, var(--card-border));
+}
+
+.sat-mission-step:hover .sat-mission-node {
+  border-color: var(--accent);
+}
+
+.sat-mission-card:hover .sat-mission-arrow {
+  transform: translateX(4px);
+}
+
+.sat-mission-card[data-state="coming-soon"]:hover {
+  border-color: var(--card-border);
+  background: color-mix(in oklab, var(--card) 55%, var(--background));
+}
+
+/* The one decorative figure per card. */
+.sat-mission-mark {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  translate: 0 -50%;
+  width: 13rem;
+  height: 8.5rem;
+  fill: none;
+  stroke: var(--foreground);
+  stroke-width: 1;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.sat-mission-mark .is-solid {
+  fill: var(--foreground);
+  stroke: none;
+}
+
+/* —— Card head —— */
+
+.sat-mission-card-head {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.sat-mission-card-id {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sat-mission-number {
+  font-family: var(--font-heading), var(--font-sans), ui-sans-serif, system-ui,
+    sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+.sat-mission-state {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.sat-mission-card-title h3 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.sat-mission-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.sat-mission-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* —— Results row —— */
+
+.sat-mission-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  padding-left: 7.25rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.sat-mission-results dt {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sat-mission-results dd {
+  margin: 0.35rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.sat-mission-of {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.sat-mission-result-text {
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+}
+
+/* —— In progress —— */
+
+.sat-mission-progress {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  padding-left: 7.25rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.sat-mission-progress-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+.sat-mission-progress-rule {
+  display: block;
+  margin-top: 0.65rem;
+  height: 2px;
+  background: var(--card-border);
+}
+
+.sat-mission-progress-rule b {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.sat-mission-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  padding-left: 7.25rem;
+  border-top: 1px solid var(--card-border);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* —— Notes —— */
+
+.sat-note,
+.sat-note-add {
+  margin-top: 1.25rem;
+  margin-left: 7.25rem;
+}
+
+.sat-note {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-left: 2px solid color-mix(in oklab, var(--accent) 45%, var(--card-border));
+  background: color-mix(in oklab, var(--foreground) 3%, transparent);
+}
+
+.sat-note--editing {
+  display: block;
+}
+
+.sat-note-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sat-note-text {
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.sat-note-field {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  background: var(--card);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--foreground);
+  resize: vertical;
+}
+
+.sat-note-field:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sat-note-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.sat-note-save,
+.sat-note-cancel,
+.sat-note-edit,
+.sat-note-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    border-color 250ms ease,
+    color 250ms ease;
+}
+
+.sat-note-save {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.sat-note-edit:hover,
+.sat-note-cancel:hover,
+.sat-note-add:hover {
+  border-color: var(--accent);
+  color: var(--foreground);
+}
+
+/* —— Footer actions —— */
+
+.sat-mission-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  padding-left: 7.25rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.sat-mission-secondary {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  transition:
+    color 250ms ease,
+    border-color 250ms ease;
+}
+
+.sat-mission-secondary:hover {
+  color: var(--foreground);
+  border-bottom-color: var(--accent);
+}
+
+.sat-mission-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  background: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 250ms ease;
+}
+
+.sat-mission-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.sat-mission-primary.is-disabled {
+  border-color: var(--card-border);
+  background: transparent;
+  color: var(--muted);
+  cursor: default;
+}
+
+.sat-mission-arrow {
+  transition: transform 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sat-mission-arrow,
+  .sat-mission-node,
+  .sat-mission-card,
+  .sat-mission-step::before {
+    transition: none;
+  }
+}
+
+/* —— Narrow —— */
+
+@media (max-width: 767px) {
+  .sat-mission-head {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sat-mission-step {
+    padding-left: 2rem;
+  }
+
+  .sat-mission-checkpoint {
+    left: -0.25rem;
+  }
+
+  .sat-mission-step::before {
+    left: 0.4375rem;
+  }
+
+  .sat-mission-card-inner {
+    padding: 1.25rem;
+  }
+
+  .sat-mission-card-head {
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+  }
+
+  .sat-mission-date {
+    grid-column: 2;
+  }
+
+  .sat-mission-results,
+  .sat-mission-progress,
+  .sat-mission-sections,
+  .sat-mission-card-foot,
+  .sat-note,
+  .sat-note-add {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  .sat-mission-results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sat-mission-mark {
+    display: none;
+  }
+}
+
+/* —— Student progress rail ——————————————————————————————————————
+   One panel, not a stack of cards: square corners, a single hairline border,
+   no shadow and no hover lift. Hierarchy is carried by type size and thin
+   dividers rather than nested boxes, and --accent appears in exactly three
+   places (the headline percentage, the filled goal rule, the done dots).
+   -------------------------------------------------------------------------- */
+
+.sat-progress {
+  grid-column: span 3;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--card-border);
+  border-radius: 0;
+  background: var(--card);
+  padding: 1.5rem 1.375rem 1.25rem;
+}
+
+/* Small uppercase section labels — the one repeated device in the panel. */
+.sat-progress-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sat-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+}
+
+.sat-progress-pct {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.sat-progress-goal {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* The one large figure in the panel. */
+.sat-progress-figure {
+  font-family: var(--font-heading), var(--font-sans), ui-sans-serif, system-ui,
+    sans-serif;
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+}
+
+.sat-progress-slash {
+  margin-inline: 0.2em;
+  font-weight: 400;
+  color: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+
+.sat-progress-caption {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* Hairline, not a pill: 2px tall, square, no track shadow. */
+.sat-progress-rule {
+  display: block;
+  margin-top: 1rem;
+  height: 2px;
+  background: var(--card-border);
+}
+
+.sat-progress-rule b {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.sat-progress-block {
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Three figures on one strict row — typography, not bars. */
+.sat-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+}
+
+.sat-progress-stat {
+  display: flex;
+  flex-direction: column-reverse;
+  min-width: 0;
+}
+
+.sat-progress-stat-value {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.sat-progress-stat-label {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--muted);
+}
+
+.sat-progress-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--card-border);
+  list-style: none;
+  margin: 0;
+}
+
+.sat-progress-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sat-progress-day-name {
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.sat-progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  background: transparent;
+}
+
+.sat-progress-dot.is-done {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.sat-progress-streak {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.sat-progress-action {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+@media (max-width: 1099px) {
+  .sat-progress {
+    grid-column: span 12;
+  }
 }
 
 .sat-chip {
@@ -9232,5 +10772,1102 @@ a:hover .kepler-logo-mark {
   .track-card:hover,
   .track-card:focus-within {
     transform: none;
+  }
+}
+
+/* —— SAT → Progress ——————————————————————————————————————————————
+   Editorial layout: one statistics row (dividers, not cards), then a strict
+   65/35 grid. Surfaces are flat white with hairline borders — no gradients,
+   no glass, no glow. Space identity is carried only by thin orbital line-art
+   behind the header and the focus panel.
+   -------------------------------------------------------------------------- */
+
+.prog {
+  --prog-line: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --prog-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  /* Fills the shell column on a normal desktop and only caps on ultrawide.
+     `auto` matters as much as the number: without it the container was
+     left-aligned, so all the slack collected on the right. */
+  max-width: 108rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* —— header —— */
+
+.prog-head {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 11rem;
+  padding: 0.5rem 0 0.25rem;
+  overflow: hidden;
+}
+
+.prog-orbit {
+  position: absolute;
+  top: 50%;
+  right: -2%;
+  width: min(30rem, 46%);
+  transform: translateY(-50%);
+  color: var(--foreground);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.prog-orbit-planet {
+  fill: color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.prog-head-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.prog-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.prog-title {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+  font-size: clamp(2.4rem, 3.6vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  color: var(--foreground);
+}
+
+.prog-sub {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  color: var(--muted);
+}
+
+.prog-motto,
+.prog-focus-mark {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  flex-shrink: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.32;
+  text-align: right;
+  color: color-mix(in oklab, var(--foreground) 68%, transparent);
+}
+
+.prog-motto-rule {
+  display: block;
+  width: 2.2rem;
+  height: 1px;
+  margin: 0.7rem 0 0.45rem auto;
+  background: var(--prog-line);
+}
+
+.prog-motto-mark {
+  display: block;
+  font-family: var(--font-sans), ui-sans-serif, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* —— statistics row —— */
+
+.prog-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--prog-line);
+  border-bottom: 1px solid var(--prog-line);
+}
+
+.prog-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  padding: 1.5rem 1.75rem;
+  border-left: 1px solid var(--prog-line);
+}
+
+.prog-stat:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.prog-stat-value {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-optical-sizing: auto;
+  font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+
+.prog-stat-meta {
+  min-width: 0;
+}
+
+.prog-stat-label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.prog-stat-note,
+.prog-stat-delta {
+  margin: 0.2rem 0 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.prog-stat-delta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.dark .prog-stat-delta {
+  color: #4ade80;
+}
+
+.prog-stat-delta svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.prog-stat-delta span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* —— grid —— */
+
+.prog-grid {
+  display: grid;
+  grid-template-columns: 65fr 35fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.prog-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 1.6rem 1.75rem 1.75rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.prog-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.prog-panel-head > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.prog-panel-head h3 {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.prog-panel-head p {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.prog-panel-icon {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex-shrink: 0;
+  border-radius: var(--prog-radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.prog-panel-icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.prog-panel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: opacity 180ms ease;
+}
+
+.prog-panel-link:hover {
+  opacity: 0.72;
+}
+
+.prog-panel-link svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+/* —— chart —— */
+
+.prog-chart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11.5rem;
+  gap: 1.4rem;
+  align-items: stretch;
+}
+
+.prog-chart {
+  width: 100%;
+  height: auto;
+}
+
+.prog-chart-grid {
+  stroke: var(--prog-line);
+  stroke-width: 1;
+}
+
+.prog-chart-axis {
+  fill: var(--muted);
+  font-size: 12px;
+  font-family: var(--font-sans), sans-serif;
+}
+
+.prog-chart-area {
+  fill: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.prog-chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.prog-chart-dot {
+  fill: var(--accent);
+}
+
+.prog-chart-value {
+  fill: var(--foreground);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans), sans-serif;
+}
+
+.prog-gain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+  text-align: center;
+}
+
+.prog-gain-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-bottom: 0.6rem;
+  color: var(--accent);
+}
+
+.prog-gain-value {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 2.35rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.prog-gain-label {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--foreground);
+}
+
+.prog-gain-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* —— readiness —— */
+
+.prog-readiness-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.prog-meter {
+  position: relative;
+  width: 8rem;
+  height: 8rem;
+  flex-shrink: 0;
+}
+
+.prog-meter svg {
+  width: 100%;
+  height: 100%;
+}
+
+.prog-meter-track {
+  fill: none;
+  stroke: var(--prog-line);
+  stroke-width: 9;
+}
+
+.prog-meter-value {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 9;
+  transition: stroke-dasharray 220ms ease;
+}
+
+.prog-meter-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.prog-meter-text strong {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--foreground);
+}
+
+.prog-meter-unit {
+  font-size: 0.9rem;
+}
+
+.prog-meter-label {
+  max-width: 5.2rem;
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  line-height: 1.25;
+  color: var(--muted);
+}
+
+.prog-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.prog-bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.6rem;
+}
+
+.prog-bar-label {
+  font-size: 0.8rem;
+  color: var(--foreground);
+}
+
+.prog-bar-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.prog-bar-track {
+  grid-column: 1 / -1;
+  height: 4px;
+  background: var(--prog-line);
+}
+
+.prog-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 220ms ease;
+}
+
+.prog-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.prog-note svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.prog-note strong {
+  display: block;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* —— exam table —— */
+
+.prog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.prog-table th,
+.prog-table td {
+  text-align: left;
+  padding: 0.85rem 0.75rem;
+  font-weight: 400;
+  color: var(--foreground);
+}
+
+.prog-table th:first-child,
+.prog-table td:first-child {
+  padding-left: 0;
+}
+
+.prog-table thead th {
+  padding-top: 0;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--prog-line);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.prog-table tbody tr {
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+}
+
+.prog-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.prog-table tbody th {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 500;
+}
+
+.prog-td-strong {
+  font-weight: 600;
+}
+
+.prog-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+}
+
+.prog-dot.is-done {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.prog-status {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--prog-radius);
+  background: color-mix(in oklab, var(--foreground) 7%, transparent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.prog-status.is-done {
+  background: color-mix(in oklab, #16a34a 14%, transparent);
+  color: #15803d;
+}
+
+.dark .prog-status.is-done {
+  color: #4ade80;
+}
+
+.prog-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--foreground);
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.prog-review:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.prog-review svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.prog-muted {
+  color: var(--muted);
+}
+
+/* —— next focus —— */
+
+.prog-panel--focus {
+  justify-content: space-between;
+}
+
+.prog-panel--focus .prog-orbit {
+  top: auto;
+  bottom: -34%;
+  right: -26%;
+  width: 22rem;
+  transform: none;
+  opacity: 0.11;
+}
+
+.prog-focus-body {
+  position: relative;
+  z-index: 1;
+}
+
+.prog-focus-topic {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-optical-sizing: auto;
+  font-size: clamp(1.6rem, 2.2vw, 2.05rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.prog-focus-text {
+  margin: 0.8rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.prog-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.6rem;
+  padding: 0.85rem 1.3rem;
+  border-radius: var(--prog-radius);
+  background: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  transition: background 180ms ease;
+}
+
+.prog-cta:hover {
+  background: var(--accent-hover);
+}
+
+.prog-cta svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.prog-focus-mark {
+  margin-top: 2rem;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1.7;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+
+.prog-quote {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: color-mix(in oklab, var(--foreground) 62%, transparent);
+}
+
+.prog-quote .prog-motto-rule,
+.prog-quote .prog-motto-mark {
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* —— SAT → Analytics ——————————————————————————————————————————————
+   Built on the Progress system: .prog supplies the tokens, header, statistics
+   row, 65/35 grid, panels, bars, table and responsive rules. Only what the
+   analytics page genuinely adds lives here — the two-column breakdown, the
+   loss ranking, the scatter frame and the heatmap. One warm tone is
+   introduced for "missed", and it is the only colour outside the theme.
+   -------------------------------------------------------------------------- */
+
+.anl {
+  --anl-warm: #d0714f;
+}
+
+.dark .anl {
+  --anl-warm: #e08a67;
+}
+
+/* Scope note in a panel head — a caption, not a control, because there is no
+   per-exam analytics data to filter yet. */
+.anl-scope {
+  margin-left: auto;
+  align-self: flex-start;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* —— 1. Score breakdown —— */
+
+.anl-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+.anl-section-name {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.anl-section-score {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.anl-section-of {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.anl-section-track {
+  display: block;
+  margin-top: 0.75rem;
+}
+
+.anl-topics {
+  margin-top: 1.25rem;
+}
+
+/* —— 2. Where you lose points —— */
+
+.anl-losses {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.anl-losses li {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.anl-loss-count {
+  flex: none;
+  width: 1.4rem;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--foreground);
+}
+
+.anl-loss-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.anl-loss-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.anl-loss-label {
+  font-size: 0.85rem;
+  color: var(--foreground);
+}
+
+.anl-loss-share {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.anl-loss-fill {
+  display: block;
+  height: 100%;
+  background: var(--anl-warm);
+}
+
+/* —— 3. Accuracy vs time —— */
+
+.anl-scatter-wrap {
+  position: relative;
+}
+
+.anl-scatter {
+  width: 100%;
+}
+
+.anl-scatter--loading {
+  height: 260px;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+}
+
+.anl-zone {
+  position: absolute;
+  left: 3.6rem;
+  top: 0.4rem;
+  z-index: 1;
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  background: var(--card);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--foreground);
+  pointer-events: none;
+}
+
+.anl-zone span {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.anl-legend {
+  display: flex;
+  gap: 1.1rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.anl-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.anl-key {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.anl-key--correct {
+  background: var(--accent);
+}
+
+.anl-key--incorrect {
+  background: var(--anl-warm);
+}
+
+/* —— 4. Time analytics —— */
+
+.anl-insight {
+  gap: 0.6rem;
+  margin-top: auto;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--prog-line);
+  border-radius: var(--prog-radius);
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.anl-insight svg {
+  color: var(--accent);
+  margin-top: 0.1rem;
+}
+
+/* —— 5. Exam comparison —— */
+
+.anl-table th:not(:first-child),
+.anl-table td:not(:first-child) {
+  text-align: right;
+}
+
+/* —— 6. Mistake heatmap —— */
+
+.anl-heat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.anl-heat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(4, 2.6rem);
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.anl-heat-head span {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.anl-heat-label {
+  font-size: 0.78rem;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anl-heat-cell {
+  height: 1.55rem;
+  border-radius: var(--prog-radius);
+  background: var(--accent);
+}
+
+.anl-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.anl-heat-key {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: var(--prog-radius);
+  background: var(--accent);
+}
+
+.anl-heat-key.is-high {
+  opacity: 1;
+}
+
+.anl-heat-key.is-low {
+  margin-left: 0.75rem;
+  opacity: 0.18;
+}
+
+/* —— 7. Pattern —— */
+
+.anl-pattern .prog-panel-head p strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.anl-pattern-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.anl-pattern-foot .prog-cta {
+  margin-top: 0;
+}
+
+/* —— responsive —— */
+
+@media (max-width: 1100px) {
+  .anl-heat-row {
+    grid-template-columns: minmax(0, 1fr) repeat(4, 3.2rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .anl-split {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .anl-scope {
+    margin-left: 0;
+  }
+
+  .anl-heat-row {
+    grid-template-columns: minmax(0, 1fr) repeat(4, 2.2rem);
+  }
+
+  .anl-pattern-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* —— responsive —— */
+
+@media (max-width: 1100px) {
+  .prog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prog-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .prog-stat:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .prog-stat:nth-child(n + 3) {
+    border-top: 1px solid var(--prog-line);
+  }
+}
+
+@media (max-width: 720px) {
+  .prog-head {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .prog-motto {
+    text-align: left;
+  }
+
+  .prog-motto-rule {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .prog-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .prog-stat {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--prog-line);
+  }
+
+  .prog-stat:first-child {
+    border-top: 0;
+  }
+
+  .prog-chart-row,
+  .prog-readiness-row {
+    grid-template-columns: 1fr;
+  }
+
+  .prog-panel {
+    padding: 1.25rem 1.1rem 1.4rem;
+  }
+
+  /* The table keeps its columns; the panel scrolls rather than wrapping. */
+  .prog-panel--exams {
+    overflow-x: auto;
+  }
+
+  .prog-table {
+    min-width: 34rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prog-meter-value,
+  .prog-bar-fill {
+    transition: none;
   }
 }

@@ -54,7 +54,7 @@ export const COLOR_THEMES: ThemeSwatch[] = [
   {
     id: "crimson-ivory",
     labelKey: "theme.colorCrimsonIvory",
-    primary: "#990011",
+    primary: "#E60000",
     secondary: "#FCF6F5",
   },
 ];
