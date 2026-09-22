@@ -9808,7 +9808,9 @@ a:hover .kepler-logo-mark {
 .sat-bd-dust {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  /* No filter: blur() here. A radial gradient is already soft, so the blur
+     bought nothing but a huge composited layer that Chrome re-rasterises for
+     the life of the page. */
 }
 
 .sat-bd-dust--tl {
@@ -9819,9 +9821,9 @@ a:hover .kepler-logo-mark {
   background: radial-gradient(
     circle,
     color-mix(in oklab, var(--sat-ink) 22%, transparent) 0%,
-    transparent 70%
+    transparent 78%
   );
-  opacity: 0.06;
+  opacity: 0.07;
   animation: sat-bd-drift 52s ease-in-out infinite;
 }
 
@@ -9833,9 +9835,9 @@ a:hover .kepler-logo-mark {
   background: radial-gradient(
     circle,
     color-mix(in oklab, #7c5cff 20%, transparent) 0%,
-    transparent 70%
+    transparent 78%
   );
-  opacity: 0.05;
+  opacity: 0.06;
   animation: sat-bd-drift 64s ease-in-out infinite reverse;
 }
 
@@ -9861,10 +9863,9 @@ a:hover .kepler-logo-mark {
   background: radial-gradient(
     circle,
     color-mix(in oklab, var(--sat-ink) 26%, transparent) 0%,
-    transparent 72%
+    transparent 80%
   );
-  filter: blur(70px);
-  opacity: 0.05;
+  opacity: 0.06;
   animation: sat-bd-breathe 26s ease-in-out infinite;
 }
 
