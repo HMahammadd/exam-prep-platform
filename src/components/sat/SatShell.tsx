@@ -53,7 +53,7 @@ const NAV: NavItem[] = [
   { icon: ClipboardList, label: "Practice Exams", href: "/dashboard/sat" },
   { icon: TrendingUp, label: "Progress", href: "/dashboard/sat/progress" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/sat/analytics" },
-  { icon: Star, label: "Mistakes" },
+  { icon: Star, label: "Mistakes", href: "/dashboard/sat/mistakes" },
   { icon: BookMarked, label: "Vocabulary", href: "/dashboard/vocabulary" },
   { icon: Timer, label: "Timed Practice" },
   { icon: Target, label: "Daily Goal" },
@@ -106,6 +106,8 @@ function describeRoute(bare: string): { title: string; breadcrumb?: string } {
       return { title: "SAT Lessons", breadcrumb: "Dashboard / SAT / Lessons" };
     case "/dashboard/sat/progress":
       return { title: "Progress", breadcrumb: "Dashboard / SAT / Progress" };
+    case "/dashboard/sat/mistakes":
+      return { title: "Mistakes", breadcrumb: "Dashboard / SAT / Mistakes" };
     case "/dashboard/vocabulary":
       return { title: "Vocabulary", breadcrumb: "Dashboard / Vocabulary" };
     case "/dashboard/settings":
