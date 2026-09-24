@@ -25,6 +25,17 @@ export function shouldShowBriefing(): boolean {
     return false;
   }
 
+  // ?briefing=1 forces it open regardless of storage or environment — a
+  // reliable way to reopen it when a cached bundle makes the dev flag below
+  // look broken.
+  try {
+    if (new URLSearchParams(window.location.search).has("briefing")) {
+      return true;
+    }
+  } catch {
+    // no URL access — fall through
+  }
+
   if (ALWAYS_SHOW_IN_DEV && process.env.NODE_ENV === "development") {
     return true;
   }
