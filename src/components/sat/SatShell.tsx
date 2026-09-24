@@ -7,7 +7,6 @@ import {
   BookMarked,
   BookOpen,
   ClipboardList,
-  LogOut,
   PanelLeft,
   Settings,
   Star,
@@ -17,22 +16,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useLinkStatus } from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   useEffect,
   useState,
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { useI18n, useTranslations } from "@/components/I18nProvider";
 import { KeplerLogo } from "@/components/KeplerLogo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LocaleLink } from "@/components/LocaleLink";
 import { SatBackdrop } from "@/components/sat/SatBackdrop";
 import { ThemeSelector } from "@/components/ThemeSelector";
-import { parseLocalePath, withLocale } from "@/lib/i18n/config";
+import { parseLocalePath } from "@/lib/i18n/config";
 import { getSatLesson } from "@/lib/sat-lessons";
-import { supabase } from "@/lib/supabaseClient";
 
 type NavItem = {
   icon: LucideIcon;
@@ -47,7 +44,7 @@ type NavItem = {
  */
 const NAV: NavItem[] = [
   // No "Dashboard" row: the exam-selection page is reached through "Back to
-  // exams" in the topbar, and two controls for one destination read as two
+  // exams" in the sidebar, and two controls for one destination read as two
   // different places.
   { icon: BookOpen, label: "SAT Lessons", href: "/dashboard/sat/lessons" },
   { icon: ClipboardList, label: "Practice Exams", href: "/dashboard/sat" },
@@ -80,7 +77,7 @@ function NavPending() {
 }
 
 /**
- * The topbar is mounted once by the layout, so it cannot take a title from the
+ * The shell is mounted once by the layout, so it cannot take a title from the
  * page below it. It reads the current route instead, which also means the
  * heading and the active rail row update on the same render as the URL.
  */
@@ -137,20 +134,22 @@ function activeNavIndex(bare: string): number {
 }
 
 export function SatShell({ children }: { children: ReactNode }) {
-  const t = useTranslations();
-  const { locale } = useI18n();
-  const router = useRouter();
   const pathname = usePathname() ?? "";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [signingOut, setSigningOut] = useState(false);
 
   // Below this width the rail is always collapsed, so the collapsed layout is
   // one code path instead of a CSS duplicate of itself.
   const [forced, setForced] = useState(false);
 
+  // Below this width the sidebar is a full-width drawer (see the 767px CSS
+  // block), so the icon-only squeeze that the collapsed rail applies to the
+  // footer controls must not also apply there — there is no width to save.
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const media = window.matchMedia("(max-width: 1100px)");
+    const mobileMedia = window.matchMedia("(max-width: 767px)");
 
     let stored = false;
     try {
@@ -162,10 +161,17 @@ export function SatShell({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCollapsed(stored);
     setForced(media.matches);
+    setIsMobile(mobileMedia.matches);
 
     const onChange = (event: MediaQueryListEvent) => setForced(event.matches);
+    const onMobileChange = (event: MediaQueryListEvent) =>
+      setIsMobile(event.matches);
     media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
+    mobileMedia.addEventListener("change", onMobileChange);
+    return () => {
+      media.removeEventListener("change", onChange);
+      mobileMedia.removeEventListener("change", onMobileChange);
+    };
   }, []);
 
   const isRailCollapsed = collapsed || forced;
@@ -188,17 +194,6 @@ export function SatShell({ children }: { children: ReactNode }) {
   // The active row drives the sliding indicator via a CSS custom property.
   const activeIndex = activeNavIndex(bare);
   const indicatorRow = Math.max(activeIndex, 0);
-
-  const logoutLabel =
-    t("nav.logout") === "nav.logout" ? "Log out" : t("nav.logout");
-
-  const handleLogout = async () => {
-    if (signingOut) return;
-    setSigningOut(true);
-    await supabase.auth.signOut();
-    router.replace(withLocale("/login", locale));
-    router.refresh();
-  };
 
   return (
     <div className={`sat-shell${isRailCollapsed ? " is-collapsed" : ""}`}>
@@ -226,6 +221,24 @@ export function SatShell({ children }: { children: ReactNode }) {
               <PanelLeft className="h-[1.1rem] w-[1.1rem]" aria-hidden />
             </button>
           </div>
+
+          {/*
+            Explicit route, not history.back(): the selection page must be
+            the destination however the user arrived here (direct link,
+            refresh, or deep into a lesson).
+          */}
+          <LocaleLink
+            href="/dashboard"
+            className="sat-nav-item sat-sidebar-back"
+            data-tip="Back to exams"
+            title="Back to exams"
+            aria-label="Back to exams"
+          >
+            <span className="sat-nav-slot">
+              <ArrowLeft className="sat-nav-icon" aria-hidden />
+            </span>
+            <span className="sat-nav-label">Back to exams</span>
+          </LocaleLink>
 
           <nav
             className="sat-nav"
@@ -277,81 +290,53 @@ export function SatShell({ children }: { children: ReactNode }) {
           <span className="sat-rail-spacer" aria-hidden />
 
           <div className="sat-sidebar-foot">
-            <button
-              type="button"
-              className="sat-nav-item"
-              onClick={handleLogout}
-              disabled={signingOut}
-              data-tip={logoutLabel}
-              title={logoutLabel}
-            >
-              <span className="sat-nav-slot">
-                <LogOut className="sat-nav-icon" aria-hidden />
-              </span>
-              <span className="sat-nav-label">
-                {signingOut ? "Signing out…" : logoutLabel}
-              </span>
-            </button>
-          </div>
-        </div>
-      </aside>
+            <div className="sat-sidebar-controls">
+              <LanguageSwitcher compact={isRailCollapsed && !isMobile} />
+              <ThemeSelector variant="nav" />
+            </div>
 
-      <div className="sat-main">
-        <header className="sat-topbar">
-          <button
-            type="button"
-            className="sat-drawer-btn"
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Open navigation"
-          >
-            <PanelLeft className="h-[1.15rem] w-[1.15rem]" aria-hidden />
-          </button>
-
-          <div className="sat-topbar-title">
-            <h1>{title}</h1>
-            {breadcrumb ? (
-              <p className="sat-breadcrumb">{breadcrumb}</p>
-            ) : null}
-
-            {/*
-              Explicit route, not history.back(): the selection page must be
-              the destination however the user arrived here (direct link,
-              refresh, or deep into a lesson).
-            */}
-            <LocaleLink
-              href="/dashboard"
-              className="sat-back-exams"
-              aria-label="Back to exams"
-            >
-              <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden />
-              <span className="sat-back-exams-text">Back to exams</span>
-            </LocaleLink>
-          </div>
-
-          <div className="sat-topbar-actions">
-            <LanguageSwitcher />
-            <ThemeSelector />
             <LocaleLink
               href="/dashboard/profile"
-              className="sat-topbar-profile"
+              className="sat-nav-item sat-sidebar-profile"
+              data-tip="Profile"
               aria-label="Profile"
               title="Student — SAT track"
             >
               <span className="sat-avatar" aria-hidden>
                 K
               </span>
-              <span className="sat-topbar-profile-text hidden min-w-0 flex-col sm:flex">
-                <span className="sat-topbar-profile-name">Student</span>
-                <span className="sat-topbar-profile-role">SAT track</span>
+              <span className="sat-sidebar-profile-text">
+                <span className="sat-sidebar-profile-name">Student</span>
+                <span className="sat-sidebar-profile-role">SAT track</span>
               </span>
             </LocaleLink>
           </div>
-        </header>
+        </div>
+      </aside>
 
+      <div className="sat-main">
         <main className="sat-content">
+          <div className="sat-page-head">
+            <button
+              type="button"
+              className="sat-drawer-btn"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="Open navigation"
+            >
+              <PanelLeft className="h-[1.15rem] w-[1.15rem]" aria-hidden />
+            </button>
+
+            <div className="sat-page-head-text">
+              <h1>{title}</h1>
+              {breadcrumb ? (
+                <p className="sat-breadcrumb">{breadcrumb}</p>
+              ) : null}
+            </div>
+          </div>
+
           {/*
             Keyed on the route so the swap animation replays per section. Only
-            this inner node remounts — the shell, rail and topbar above it stay
+            this inner node remounts — the shell and rail above it stay
             mounted across every navigation.
           */}
           <div key={bare} className="sat-route">

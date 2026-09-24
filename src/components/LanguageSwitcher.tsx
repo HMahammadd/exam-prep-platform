@@ -14,7 +14,12 @@ import {
   type Locale,
 } from "@/lib/i18n/config";
 
-export function LanguageSwitcher() {
+type LanguageSwitcherProps = {
+  /** Icon-only trigger, e.g. for the collapsed sidebar rail. */
+  compact?: boolean;
+};
+
+export function LanguageSwitcher({ compact = false }: LanguageSwitcherProps) {
   const { locale, t } = useI18n();
   const router = useRouter();
   const pathname = usePathname() || "/";
@@ -57,7 +62,7 @@ export function LanguageSwitcher() {
     <div className="language-switcher" ref={rootRef}>
       <button
         type="button"
-        className="language-switcher-trigger"
+        className={`language-switcher-trigger${compact ? " is-compact" : ""}`}
         aria-label={t("language.select")}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -65,13 +70,19 @@ export function LanguageSwitcher() {
         onClick={() => setOpen((value) => !value)}
       >
         <Languages className="h-4 w-4 shrink-0 text-accent" aria-hidden />
-        <span className="language-switcher-code">{localeShort[locale]}</span>
-        <ChevronDown
-          className={`h-3.5 w-3.5 shrink-0 opacity-70 transition ${
-            open ? "rotate-180" : ""
-          }`}
-          aria-hidden
-        />
+        {!compact ? (
+          <>
+            <span className="language-switcher-code">
+              {localeShort[locale]}
+            </span>
+            <ChevronDown
+              className={`h-3.5 w-3.5 shrink-0 opacity-70 transition ${
+                open ? "rotate-180" : ""
+              }`}
+              aria-hidden
+            />
+          </>
+        ) : null}
       </button>
 
       {open ? (

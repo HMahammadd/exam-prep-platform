@@ -7757,10 +7757,10 @@ a:hover .kepler-logo-mark {
   translate: 2px -50%;
 }
 
-/* Short viewports: the nav list alone scrolls, so the header and Log out
-   stay pinned where they are instead of being pushed off the end of the
-   rail. A scrolling axis clips the other one, so the collapsed tooltips are
-   traded away at these heights only. */
+/* Short viewports: the nav list alone scrolls, so the header and footer
+   controls stay pinned where they are instead of being pushed off the end
+   of the rail. A scrolling axis clips the other one, so the collapsed
+   tooltips are traded away at these heights only. */
 @media (max-height: 640px) {
   .sat-nav {
     flex: 1 1 auto;
@@ -7798,53 +7798,24 @@ a:hover .kepler-logo-mark {
   transition: padding-left var(--sat-anim) var(--sat-ease);
 }
 
-.sat-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 30;
+/* Title + breadcrumb now live at the top of the content column instead of a
+   sticky topbar — .sat-drawer-btn (mobile only, see the 767px block below)
+   sits inline beside them instead of in its own bar. */
+.sat-page-head {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.15rem var(--sat-gap) 1rem;
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  background: color-mix(in oklab, var(--home-band) 78%, transparent);
+  gap: 0.75rem;
+  padding-top: 1.15rem;
+  margin-bottom: 0.75rem;
 }
 
-/* Leaves the shell for the exam-selection page. */
-.sat-back-exams {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  align-self: flex-start;
-  margin-top: 0.55rem;
-  padding: 0.45rem 0.7rem;
-  border-radius: 0;
-  border: 1px solid var(--card-border);
-  background: var(--card);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--muted);
-  transition:
-    color 200ms ease,
-    border-color 200ms ease,
-    background 200ms ease;
-}
-
-.sat-back-exams:hover,
-.sat-back-exams:focus-visible {
-  color: var(--foreground);
-  border-color: color-mix(in oklab, var(--accent) 45%, var(--card-border));
-  background: var(--accent-soft);
-}
-
-.sat-topbar-title {
+.sat-page-head-text {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.sat-topbar-title h1 {
+.sat-page-head-text h1 {
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -7858,12 +7829,88 @@ a:hover .kepler-logo-mark {
   margin-top: 0.1rem;
 }
 
-.sat-topbar-actions {
-  margin-left: auto;
+/* Sits directly under the sidebar's logo, closed off with its own divider —
+   leaving a section always returns to the same spot it was entered from. */
+.sat-sidebar-back {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid color-mix(in oklab, var(--card-border) 70%, transparent);
+}
+
+/* Language + Appearance, relocated from the old topbar. Icon-only so the row
+   holds up at the collapsed rail width; both popovers are re-anchored to open
+   up-and-right from their own trigger, since their default right-anchored
+   flyout (built for a topbar near the right edge) would run off the left
+   edge of the viewport from here. */
+.sat-sidebar-controls {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* Desktop only — matches the nav-label collapse guard below: the mobile
+   drawer is always full width, so there is no room to save there. */
+@media (min-width: 768px) {
+  .is-collapsed .sat-sidebar-controls {
+    flex-direction: column;
+  }
+}
+
+.sat-sidebar-controls .language-switcher-trigger {
+  height: var(--sat-tile);
+  padding: 0 0.55rem;
+  border-radius: var(--sat-radius);
+  color: var(--muted);
+}
+
+.sat-sidebar-controls .language-switcher-trigger.is-compact {
+  padding: 0;
+  width: var(--sat-tile);
+  justify-content: center;
+}
+
+.sat-sidebar-controls .language-switcher-trigger:hover,
+.sat-sidebar-controls .language-switcher-trigger:focus-visible {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
+}
+
+.sat-sidebar-controls .theme-toggle.liquid-nav-theme {
+  border-radius: var(--sat-radius);
+  color: var(--muted);
+}
+
+.sat-sidebar-controls .theme-toggle.liquid-nav-theme:hover {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
+  transform: none;
+  box-shadow: none;
+}
+
+.sat-sidebar-controls .theme-toggle.liquid-nav-theme:focus-visible {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--muted) 10%, transparent);
+}
+
+.sat-sidebar-controls .language-switcher-menu {
+  left: 0;
+  right: auto;
+  top: auto;
+  bottom: calc(100% + 0.4rem);
+  transform-origin: bottom left;
+}
+
+@media (min-width: 640px) {
+  .sat-sidebar-controls .theme-panel {
+    left: 0;
+    right: auto;
+    top: auto;
+    bottom: calc(100% + 0.6rem);
+    transform-origin: bottom left;
+  }
 }
 
 .sat-avatar {
@@ -7878,34 +7925,34 @@ a:hover .kepler-logo-mark {
   background: var(--accent);
   box-shadow: 0 4px 14px -6px color-mix(in oklab, var(--accent) 80%, transparent);
   transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  flex: 0 0 auto;
 }
 
 .sat-avatar:hover {
   transform: translateY(-1px) scale(1.04);
 }
 
-.sat-topbar-profile {
-  display: flex;
-  align-items: center;
+/* Rounded profile button — replaces the old Log out row at the very bottom
+   of the rail; Log out itself now lives on the Profile page this opens. */
+.sat-sidebar-profile {
+  height: auto;
+  min-height: var(--sat-row);
   gap: 0.6rem;
-  padding: 0.2rem 0.4rem 0.2rem 0.2rem;
+  padding: 0.3rem 0.4rem;
   border-radius: 999px;
-  transition: background 220ms ease;
 }
 
-.sat-topbar-profile:hover {
-  background: color-mix(in oklab, var(--muted) 10%, transparent);
-}
-
-/* Visibility (hidden below sm) and flex-column layout are handled by the
-   `hidden min-w-0 flex-col sm:flex` utility classes in the JSX — matches
-   the same proven pattern ThemeSelector already uses for its own label. */
-.sat-topbar-profile-text {
+.sat-sidebar-profile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
   line-height: 1.2;
   text-align: left;
+  transition: opacity 180ms ease 110ms;
 }
 
-.sat-topbar-profile-name {
+.sat-sidebar-profile-name {
   max-width: 9rem;
   overflow: hidden;
   font-size: 0.82rem;
@@ -7915,13 +7962,29 @@ a:hover .kepler-logo-mark {
   text-overflow: ellipsis;
 }
 
-.sat-topbar-profile-role {
+.sat-sidebar-profile-role {
   max-width: 9rem;
   overflow: hidden;
   font-size: 0.68rem;
   color: var(--muted);
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+/* Desktop only — see the .sat-sidebar-controls guard above. */
+@media (min-width: 768px) {
+  .is-collapsed .sat-sidebar-profile {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .is-collapsed .sat-sidebar-profile-text {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    transition-duration: 120ms;
+    transition-delay: 0s;
+  }
 }
 
 .sat-drawer-btn,
@@ -9231,8 +9294,15 @@ a:hover .kepler-logo-mark {
   color: var(--muted);
 }
 
+.sat-note-body {
+  flex: 1;
+  min-width: 0;
+}
+
 .sat-note-text {
   margin-top: 0.3rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--foreground);
@@ -9249,7 +9319,9 @@ a:hover .kepler-logo-mark {
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--foreground);
-  resize: vertical;
+  overflow-wrap: anywhere;
+  overflow-y: hidden;
+  resize: none;
 }
 
 .sat-note-field:focus-visible {
@@ -9281,6 +9353,10 @@ a:hover .kepler-logo-mark {
   transition:
     border-color 250ms ease,
     color 250ms ease;
+}
+
+.sat-note-edit {
+  flex-shrink: 0;
 }
 
 .sat-note-save {
@@ -9772,14 +9848,12 @@ a:hover .kepler-logo-mark {
 
 /* —— Rail furniture ————————————————————————————————————————————— */
 
-/* Pins log out to the bottom at any height */
+/* Pins the footer controls and the profile button to the bottom at any
+   height */
 .sat-rail-spacer {
   flex: 1 1 auto;
   min-height: 8px;
 }
-
-/* Profile + Appearance live in the topbar (see .sat-topbar-profile above) —
-   the sidebar only holds section navigation and Log out. */
 
 /* —— SAT backdrop ——————————————————————————————————————————————
    Six layers, none above 8% opacity: canvas, dust, stars, orbits, academic
