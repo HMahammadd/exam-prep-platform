@@ -9231,8 +9231,15 @@ a:hover .kepler-logo-mark {
   color: var(--muted);
 }
 
+.sat-note-body {
+  flex: 1;
+  min-width: 0;
+}
+
 .sat-note-text {
   margin-top: 0.3rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--foreground);
@@ -9249,7 +9256,9 @@ a:hover .kepler-logo-mark {
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--foreground);
-  resize: vertical;
+  overflow-wrap: anywhere;
+  overflow-y: hidden;
+  resize: none;
 }
 
 .sat-note-field:focus-visible {
@@ -9281,6 +9290,10 @@ a:hover .kepler-logo-mark {
   transition:
     border-color 250ms ease,
     color 250ms ease;
+}
+
+.sat-note-edit {
+  flex-shrink: 0;
 }
 
 .sat-note-save {

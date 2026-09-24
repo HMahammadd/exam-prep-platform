@@ -1,7 +1,7 @@
 "use client";
 
 import { Pencil, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type SatExamNoteProps = {
   examId: number;
@@ -35,6 +35,14 @@ export function SatExamNote({
   useEffect(() => {
     if (editing) fieldRef.current?.focus();
   }, [editing]);
+
+  // Grow the field with its content so the whole draft stays visible.
+  useLayoutEffect(() => {
+    const field = fieldRef.current;
+    if (!editing || !field) return;
+    field.style.height = "auto";
+    field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
+  }, [editing, draft]);
 
   const commit = () => {
     onSave(examId, draft);
