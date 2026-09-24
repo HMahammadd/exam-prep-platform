@@ -7851,8 +7851,12 @@ a:hover .kepler-logo-mark {
   margin-bottom: 10px;
 }
 
-.is-collapsed .sat-sidebar-controls {
-  flex-direction: column;
+/* Desktop only — matches the nav-label collapse guard below: the mobile
+   drawer is always full width, so there is no room to save there. */
+@media (min-width: 768px) {
+  .is-collapsed .sat-sidebar-controls {
+    flex-direction: column;
+  }
 }
 
 .sat-sidebar-controls .language-switcher-trigger {
@@ -7967,17 +7971,20 @@ a:hover .kepler-logo-mark {
   text-overflow: ellipsis;
 }
 
-.is-collapsed .sat-sidebar-profile {
-  justify-content: center;
-  gap: 0;
-}
+/* Desktop only — see the .sat-sidebar-controls guard above. */
+@media (min-width: 768px) {
+  .is-collapsed .sat-sidebar-profile {
+    justify-content: center;
+    gap: 0;
+  }
 
-.is-collapsed .sat-sidebar-profile-text {
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  transition-duration: 120ms;
-  transition-delay: 0s;
+  .is-collapsed .sat-sidebar-profile-text {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    transition-duration: 120ms;
+    transition-delay: 0s;
+  }
 }
 
 .sat-drawer-btn,

@@ -140,8 +140,14 @@ export function SatShell({ children }: { children: ReactNode }) {
   // one code path instead of a CSS duplicate of itself.
   const [forced, setForced] = useState(false);
 
+  // Below this width the sidebar is a full-width drawer (see the 767px CSS
+  // block), so the icon-only squeeze that the collapsed rail applies to the
+  // footer controls must not also apply there — there is no width to save.
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const media = window.matchMedia("(max-width: 1100px)");
+    const mobileMedia = window.matchMedia("(max-width: 767px)");
 
     let stored = false;
     try {
@@ -153,10 +159,17 @@ export function SatShell({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCollapsed(stored);
     setForced(media.matches);
+    setIsMobile(mobileMedia.matches);
 
     const onChange = (event: MediaQueryListEvent) => setForced(event.matches);
+    const onMobileChange = (event: MediaQueryListEvent) =>
+      setIsMobile(event.matches);
     media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
+    mobileMedia.addEventListener("change", onMobileChange);
+    return () => {
+      media.removeEventListener("change", onChange);
+      mobileMedia.removeEventListener("change", onMobileChange);
+    };
   }, []);
 
   const isRailCollapsed = collapsed || forced;
@@ -276,7 +289,7 @@ export function SatShell({ children }: { children: ReactNode }) {
 
           <div className="sat-sidebar-foot">
             <div className="sat-sidebar-controls">
-              <LanguageSwitcher compact={isRailCollapsed} />
+              <LanguageSwitcher compact={isRailCollapsed && !isMobile} />
               <ThemeSelector variant="nav" />
             </div>
 
