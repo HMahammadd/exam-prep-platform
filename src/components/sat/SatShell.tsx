@@ -53,7 +53,7 @@ const NAV: NavItem[] = [
   { icon: Star, label: "Mistakes", href: "/dashboard/sat/mistakes" },
   { icon: BookMarked, label: "Vocabulary", href: "/dashboard/vocabulary" },
   { icon: Timer, label: "Timed Practice" },
-  { icon: Target, label: "Daily Goal" },
+  { icon: Target, label: "Daily Goal", href: "/dashboard/sat/daily-goal" },
   { icon: Award, label: "Achievements" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
@@ -81,7 +81,20 @@ function NavPending() {
  * page below it. It reads the current route instead, which also means the
  * heading and the active rail row update on the same render as the URL.
  */
-function describeRoute(bare: string): { title: string; breadcrumb?: string } {
+function describeRoute(bare: string): {
+  title: string;
+  breadcrumb?: string;
+  /** Full-bleed page that draws its own heading (the shell's stays for AT). */
+  immersive?: boolean;
+} {
+  if (/^\/dashboard\/sat\/daily-goal(\/[^/]+)?$/.test(bare)) {
+    return {
+      title: "Daily Mission",
+      breadcrumb: "Dashboard / SAT / Daily Mission",
+      immersive: true,
+    };
+  }
+
   const lesson = bare.match(/^\/dashboard\/sat\/lessons\/([^/]+)$/);
   if (lesson) {
     const title = getSatLesson(lesson[1])?.title ?? "Lesson";
@@ -189,7 +202,7 @@ export function SatShell({ children }: { children: ReactNode }) {
   };
 
   const bare = parseLocalePath(pathname).pathname;
-  const { title, breadcrumb } = describeRoute(bare);
+  const { title, breadcrumb, immersive } = describeRoute(bare);
 
   // The active row drives the sliding indicator via a CSS custom property.
   const activeIndex = activeNavIndex(bare);
@@ -315,7 +328,7 @@ export function SatShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="sat-main">
-        <main className="sat-content">
+        <main className={`sat-content${immersive ? " is-immersive" : ""}`}>
           <div className="sat-page-head">
             <button
               type="button"
@@ -326,7 +339,7 @@ export function SatShell({ children }: { children: ReactNode }) {
               <PanelLeft className="h-[1.15rem] w-[1.15rem]" aria-hidden />
             </button>
 
-            <div className="sat-page-head-text">
+            <div className={`sat-page-head-text${immersive ? " sr-only" : ""}`}>
               <h1>{title}</h1>
               {breadcrumb ? (
                 <p className="sat-breadcrumb">{breadcrumb}</p>
