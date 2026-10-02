@@ -346,5 +346,149 @@
     "dismiss": "Bağla",
     "faqQ": "Keplerly həqiqətən pulsuzdur?",
     "faqA": "Bəli. Keplerly-də hazırda mövcud olan bütün funksiyalar Beta dövründə tamamilə pulsuzdur və heç bir ödəniş məlumatı tələb olunmur. Gələcəkdə ayrıca premium funksiyalar əlavə oluna bilər, amma bu gün mövcud olan hər şeydən ödəniş etmədən istifadə edə bilərsən."
+  },
+  "timedPractice": {
+    "eyebrow": "Vaxtlı məşq",
+    "title": "Məqsədlə",
+    "titleEmphasis": "məşq et.",
+    "subtitle": "Fokus və vaxt limiti seç. Sessiyanı biz quraq.",
+    "sessionLength": "Sessiyanın müddəti",
+    "sessionTime": "Sessiya vaxtı",
+    "durations": {
+      "10": "10 dəq",
+      "20": "20 dəq",
+      "35": "35 dəq",
+      "full": "Tam bölmə"
+    },
+    "fullSectionHint": {
+      "mixed": "Hər bölmədən bir modul",
+      "math": "Riyaziyyatın hər iki modulu",
+      "reading-writing": "Oxu və Yazının hər iki modulu"
+    },
+    "practiceFocus": "Məşqin fokusu",
+    "focus": {
+      "mixed": {
+        "title": "Qarışıq məşq",
+        "description": "Riyaziyyat və Oxu və Yazı bərabər"
+      },
+      "math": {
+        "title": "Riyaziyyat",
+        "description": "Cəbr, Qabaqcıl riyaziyyat, Məsələ həlli"
+      },
+      "reading-writing": {
+        "title": "Oxu və Yazı",
+        "description": "Quruluş, İfadə, Məlumat və fikirlər"
+      }
+    },
+    "comingSoon": "Tezliklə",
+    "comingSoonHint": "Riyaziyyat sualları hələ əlavə olunur.",
+    "customizeTopics": "Mövzuları seç",
+    "topicsLegend": "Mövzular",
+    "topicsHint": "Hər bölmədə ən azı bir mövzu qalır.",
+    "useAllTopics": "Bütün mövzular",
+    "sections": {
+      "math": "Riyaziyyat",
+      "reading-writing": "Oxu və Yazı"
+    },
+    "topics": {
+      "craftStructure": {
+        "name": "Sənətkarlıq və quruluş",
+        "skills": "Kontekstdə sözlər, mətn quruluşu, mətnlərarası"
+      },
+      "informationIdeas": {
+        "name": "Məlumat və fikirlər",
+        "skills": "Əsas fikir, sübut, nəticə çıxarma"
+      },
+      "conventions": {
+        "name": "Standart ingilis dili qaydaları",
+        "skills": "Sərhədlər, forma və məna"
+      },
+      "expressionIdeas": {
+        "name": "Fikirlərin ifadəsi",
+        "skills": "Keçidlər, ritorik sintez"
+      },
+      "algebra": {
+        "name": "Cəbr",
+        "skills": "Xətti tənliklər və sistemlər"
+      },
+      "advancedMath": {
+        "name": "Qabaqcıl riyaziyyat",
+        "skills": "Qeyri-xətti funksiyalar və tənliklər"
+      },
+      "problemSolving": {
+        "name": "Məsələ həlli və verilənlərin təhlili",
+        "skills": "Nisbətlər, faizlər, verilənlər"
+      },
+      "geometryTrig": {
+        "name": "Həndəsə və triqonometriya",
+        "skills": "Sahə, həcm, bucaqlar, üçbucaqlar"
+      }
+    },
+    "yourSession": "Sənin sessiyan",
+    "minutes": {
+      "one": "{{count}} dəqiqə",
+      "other": "{{count}} dəqiqə"
+    },
+    "questions": {
+      "one": "{{count}} sual",
+      "other": "{{count}} sual"
+    },
+    "mixedDifficulty": "Qarışıq çətinlik",
+    "contentSplit": "Məzmun bölgüsü:",
+    "topicsOf": "{{all}} mövzudan {{on}}",
+    "limited": "Bu mövzulara uyğun sual bu müddət üçün azdır.",
+    "pacing": "SAT tempindən istifadə et",
+    "pacingHint": "Vaxt bitəndə sessiya avtomatik təhvil verilir.",
+    "start": "Vaxtlı məşqə başla",
+    "starting": "Sessiya hazırlanır…",
+    "resume": "Əvvəlki sessiyanı davam etdir",
+    "resumeLeft": "{{time}} qalıb",
+    "resumeOver": "vaxt bitib",
+    "recent": "Son",
+    "recentEmpty": "Tamamladığın vaxtlı sessiyalar burada görünəcək.",
+    "recentMinutes": "{{count}} dəq",
+    "recentCorrect": "{{correct}}/{{total}} düz",
+    "viewHistory": "Tarixçəyə bax",
+    "hideHistory": "Tarixçəni gizlət",
+    "historyLabel": "Vaxtlı məşq tarixçəsi",
+    "errors": {
+      "signed-out": "Hesabdan çıxmısan. Davam etmək üçün yenidən daxil ol.",
+      "invalid": "Bu ayarları oxumaq olmadı. Səhifəni yenilə və yenidən cəhd et.",
+      "focus-unavailable": "Bu fokus üçün suallar hələ hazır deyil.",
+      "no-topics": "Hər bölmədə ən azı bir mövzu saxla.",
+      "no-questions": "Bu mövzulara uyğun sual hələ yoxdur.",
+      "no-session": "Bu sessiya artıq bitib.",
+      "failed": "Keplerly ilə əlaqə qurulmadı. Bağlantını yoxla və yenidən cəhd et."
+    },
+    "runner": {
+      "heading": {
+        "mixed": "Vaxtlı məşq: Riyaziyyat və Oxu və Yazı",
+        "math": "Vaxtlı məşq: Riyaziyyat",
+        "reading-writing": "Vaxtlı məşq: Oxu və Yazı"
+      },
+      "banner": "Vaxtlı məşq · SAT tempi",
+      "bannerRelaxed": "Vaxtlı məşq · sərbəst vaxt",
+      "hide": "Gizlət",
+      "show": "Göstər",
+      "timerHidden": "Taymer gizlidir",
+      "overtime": "artıq",
+      "saveExit": "Saxla və çıx",
+      "saving": "Saxlanılır…",
+      "submitTitle": "Sessiya təhvil verilsin?",
+      "submitBody": "{{total}} sualdan {{answered}}-nə cavab vermisən. Təhvildən sonra cavabları dəyişmək olmur.",
+      "submit": "Təhvil ver",
+      "keepWorking": "Davam et",
+      "submitting": "Təhvil verilir…",
+      "timeUp": "Vaxt bitdi. Sessiya təhvil verilir…",
+      "timeUpRelaxed": "Vaxt bitdi. Davam et və ya hazır olanda təhvil ver.",
+      "loading": "Sessiya yüklənir…"
+    },
+    "results": {
+      "eyebrow": "Vaxtlı məşq · Nəticələr",
+      "summary": "{{minutes}} dəqiqəlik sessiya · {{used}} ərzində bitdi",
+      "examName": "Vaxtlı məşq · {{date}}",
+      "back": "Vaxtlı məşq",
+      "again": "Yeni sessiyaya başla"
+    }
   }
 }

@@ -346,5 +346,149 @@
     "dismiss": "Dismiss",
     "faqQ": "Is Keplerly really free?",
     "faqA": "Yes. Every feature currently available on Keplerly is completely free during our Beta period, and no payment information is required. Premium features may be introduced separately later, but everything available today can be used without paying."
+  },
+  "timedPractice": {
+    "eyebrow": "Timed practice",
+    "title": "Practice",
+    "titleEmphasis": "with intention.",
+    "subtitle": "Choose a focus and a time limit. We’ll build the session.",
+    "sessionLength": "Session length",
+    "sessionTime": "Session time",
+    "durations": {
+      "10": "10 min",
+      "20": "20 min",
+      "35": "35 min",
+      "full": "Full section"
+    },
+    "fullSectionHint": {
+      "mixed": "One module of each section",
+      "math": "Both Math modules",
+      "reading-writing": "Both Reading & Writing modules"
+    },
+    "practiceFocus": "Practice focus",
+    "focus": {
+      "mixed": {
+        "title": "Mixed practice",
+        "description": "Balanced Math and Reading & Writing"
+      },
+      "math": {
+        "title": "Math",
+        "description": "Algebra, Advanced Math, Problem Solving"
+      },
+      "reading-writing": {
+        "title": "Reading & Writing",
+        "description": "Craft, Expression, Information and Ideas"
+      }
+    },
+    "comingSoon": "Soon",
+    "comingSoonHint": "Math questions are still being added.",
+    "customizeTopics": "Customize topics",
+    "topicsLegend": "Topics",
+    "topicsHint": "Each section keeps at least one topic.",
+    "useAllTopics": "Use all topics",
+    "sections": {
+      "math": "Math",
+      "reading-writing": "Reading & Writing"
+    },
+    "topics": {
+      "craftStructure": {
+        "name": "Craft and Structure",
+        "skills": "Words in context, text structure, cross-text"
+      },
+      "informationIdeas": {
+        "name": "Information and Ideas",
+        "skills": "Central ideas, evidence, inferences"
+      },
+      "conventions": {
+        "name": "Standard English Conventions",
+        "skills": "Boundaries, form and sense"
+      },
+      "expressionIdeas": {
+        "name": "Expression of Ideas",
+        "skills": "Transitions, rhetorical synthesis"
+      },
+      "algebra": {
+        "name": "Algebra",
+        "skills": "Linear equations and systems"
+      },
+      "advancedMath": {
+        "name": "Advanced Math",
+        "skills": "Nonlinear functions and equations"
+      },
+      "problemSolving": {
+        "name": "Problem Solving and Data Analysis",
+        "skills": "Ratios, percentages, data"
+      },
+      "geometryTrig": {
+        "name": "Geometry and Trigonometry",
+        "skills": "Area, volume, angles, triangles"
+      }
+    },
+    "yourSession": "Your session",
+    "minutes": {
+      "one": "{{count}} minute",
+      "other": "{{count}} minutes"
+    },
+    "questions": {
+      "one": "{{count}} question",
+      "other": "{{count}} questions"
+    },
+    "mixedDifficulty": "Mixed difficulty",
+    "contentSplit": "Content split:",
+    "topicsOf": "{{on}} of {{all}} topics",
+    "limited": "Fewer questions match these topics than this length allows.",
+    "pacing": "Use SAT pacing",
+    "pacingHint": "Submits automatically when time runs out.",
+    "start": "Start timed practice",
+    "starting": "Building your session…",
+    "resume": "Resume previous session",
+    "resumeLeft": "{{time}} left",
+    "resumeOver": "time’s up",
+    "recent": "Recent",
+    "recentEmpty": "Your completed timed sessions will appear here.",
+    "recentMinutes": "{{count}} min",
+    "recentCorrect": "{{correct}}/{{total}} correct",
+    "viewHistory": "View history",
+    "hideHistory": "Hide history",
+    "historyLabel": "Timed practice history",
+    "errors": {
+      "signed-out": "You’ve been signed out. Sign in again to continue.",
+      "invalid": "This setup couldn’t be read. Refresh the page and try again.",
+      "focus-unavailable": "Questions for this focus aren’t available yet.",
+      "no-topics": "Keep at least one topic in each section.",
+      "no-questions": "No questions match these topics yet.",
+      "no-session": "That session has already ended.",
+      "failed": "Couldn’t reach Keplerly. Check your connection and try again."
+    },
+    "runner": {
+      "heading": {
+        "mixed": "Timed Practice: Math and Reading & Writing",
+        "math": "Timed Practice: Math",
+        "reading-writing": "Timed Practice: Reading and Writing"
+      },
+      "banner": "Timed practice · SAT pacing",
+      "bannerRelaxed": "Timed practice · relaxed timing",
+      "hide": "Hide",
+      "show": "Show",
+      "timerHidden": "Timer hidden",
+      "overtime": "over",
+      "saveExit": "Save and exit",
+      "saving": "Saving…",
+      "submitTitle": "Submit this session?",
+      "submitBody": "You’ve answered {{answered}} of {{total}} questions. Answers can’t be changed after submitting.",
+      "submit": "Submit",
+      "keepWorking": "Keep working",
+      "submitting": "Submitting…",
+      "timeUp": "Time’s up. Submitting your session…",
+      "timeUpRelaxed": "Time’s up. Keep going, or submit when you’re ready.",
+      "loading": "Loading session…"
+    },
+    "results": {
+      "eyebrow": "Timed practice · Results",
+      "summary": "{{minutes}}-minute session · finished in {{used}}",
+      "examName": "Timed practice · {{date}}",
+      "back": "Timed Practice",
+      "again": "Start another session"
+    }
   }
 }

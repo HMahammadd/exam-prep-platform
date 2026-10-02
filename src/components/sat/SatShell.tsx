@@ -52,7 +52,7 @@ const NAV: NavItem[] = [
   { icon: BarChart3, label: "Analytics", href: "/dashboard/sat/analytics" },
   { icon: Star, label: "Mistakes", href: "/dashboard/sat/mistakes" },
   { icon: BookMarked, label: "Vocabulary", href: "/dashboard/vocabulary" },
-  { icon: Timer, label: "Timed Practice" },
+  { icon: Timer, label: "Timed Practice", href: "/dashboard/sat/timed-practice" },
   { icon: Target, label: "Daily Goal", href: "/dashboard/sat/daily-goal" },
   { icon: Award, label: "Achievements" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
@@ -92,6 +92,21 @@ function describeRoute(bare: string): {
       title: "Daily Mission",
       breadcrumb: "Dashboard / SAT / Daily Mission",
       immersive: true,
+    };
+  }
+
+  if (bare === "/dashboard/sat/timed-practice") {
+    return {
+      title: "Timed Practice",
+      breadcrumb: "Dashboard / SAT / Timed Practice",
+      immersive: true,
+    };
+  }
+
+  if (bare === "/dashboard/sat/timed-practice/results") {
+    return {
+      title: "Timed Practice Results",
+      breadcrumb: "Dashboard / SAT / Timed Practice / Results",
     };
   }
 
